@@ -161,6 +161,105 @@ const helperTextRecipe = defineRecipe({
   defaultVariants: { tone: "neutral" },
 });
 
+// Table — matches Figma cell-header (bg.subtle, Departure Mono 12/18 uppercase,
+// 40h, 24px x-padding) and cell-type-* (white bg, Geist 14/18, 64h, 16px x-padding,
+// 1px border.muted bottom). size="sm" gives compact 40h cells.
+const tableSlotRecipe = defineSlotRecipe({
+  className: "agentic-table",
+  slots: ["root", "header", "body", "row", "cell", "columnHeader", "caption", "footer"],
+  base: {
+    root: {
+      fontFamily: "body",
+      color: "fg",
+      width: "full",
+      borderCollapse: "collapse",
+      captionSide: "bottom",
+    },
+    header: {
+      bg: "bg.subtle",
+    },
+    body: {
+      bg: "bg",
+    },
+    row: {
+      bg: "bg",
+      transitionProperty: "background-color",
+      transitionDuration: "fast",
+    },
+    columnHeader: {
+      fontFamily: "mono",
+      textTransform: "uppercase",
+      letterSpacing: "wide",
+      fontWeight: "500",
+      fontSize: "12px",
+      lineHeight: "18px",
+      color: "fg.muted",
+      bg: "bg.subtle",
+      h: "10",
+      px: "6",
+      py: "3",
+      textAlign: "start",
+      whiteSpace: "nowrap",
+      verticalAlign: "middle",
+    },
+    cell: {
+      fontFamily: "body",
+      fontSize: "14px",
+      lineHeight: "18px",
+      color: "fg",
+      h: "16",
+      px: "4",
+      py: "3",
+      borderBottomWidth: "1px",
+      borderColor: "border.muted",
+      verticalAlign: "middle",
+    },
+    caption: {
+      fontFamily: "mono",
+      textTransform: "uppercase",
+      letterSpacing: "wide",
+      fontSize: "12px",
+      lineHeight: "18px",
+      color: "fg.muted",
+      px: "4",
+      py: "3",
+    },
+    footer: {
+      fontFamily: "body",
+      fontSize: "13px",
+      color: "fg.muted",
+      bg: "bg.subtle",
+    },
+  },
+  variants: {
+    size: {
+      sm: {
+        columnHeader: { h: "8", px: "3", py: "2", fontSize: "11px" },
+        cell: { h: "10", px: "3", py: "2", fontSize: "13px", lineHeight: "16px" },
+      },
+      md: {},
+    },
+    interactive: {
+      true: {
+        row: {
+          cursor: "pointer",
+          _hover: { bg: "bg.subtle" },
+        },
+      },
+    },
+    striped: {
+      true: {
+        row: {
+          _even: { bg: "bg.subtle" },
+        },
+      },
+    },
+  },
+  defaultVariants: {
+    size: "md",
+  },
+});
+
 // Dialog — modal sheet matching Figma SYSTEM/MODAL.
 // Layout: 480w, 24px gap stack inside 24px padding, 16px radius,
 // 0.5px subtle border, elevation 4 shadow, pill close trigger top-right.
@@ -651,28 +750,7 @@ const config = defineConfig({
       fileUpload: fileUploadRecipe,
     },
     slotRecipes: {
-      table: {
-        slots: ["root", "header", "body", "row", "cell", "columnHeader", "caption", "footer"],
-        base: {
-          columnHeader: {
-            fontFamily: "mono",
-            textTransform: "uppercase",
-            letterSpacing: "wide",
-            fontWeight: "500",
-            fontSize: "11px",
-            color: "fg.muted",
-            borderBottomWidth: "1px",
-            borderColor: "border",
-          },
-          cell: {
-            fontFamily: "body",
-            fontSize: "14px",
-            color: "fg",
-            borderBottomWidth: "1px",
-            borderColor: "border.muted",
-          },
-        },
-      },
+      table: tableSlotRecipe,
       // Menu — popover with subtle border + elevation.
       menu: {
         slots: ["content", "item", "trigger", "indicator", "itemGroup", "itemGroupLabel", "separator"],
