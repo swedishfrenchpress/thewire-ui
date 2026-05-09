@@ -14,7 +14,9 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { HelperText } from "@/components/HelperText";
 import { TriageTag } from "@/components/TriageTag";
+import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { getCase } from "@/lib/api";
+import { casesStore } from "@/lib/cases-store";
 import type { Rating } from "@/lib/types";
 
 const TRIAGE_ORDER: Record<Rating, number> = { high: 0, medium: 1, low: 2 };
@@ -115,10 +117,29 @@ function DashboardContent() {
   );
 }
 
+function DashboardCrumbs() {
+  const searchParams = useSearchParams();
+  const caseParam = searchParams.get("case");
+  const caseId = caseParam !== null ? Number(caseParam) : null;
+  const caseIdValid = caseId !== null && Number.isFinite(caseId);
+  const entry = caseIdValid ? casesStore.getCase(caseId as number) : undefined;
+  const label = caseIdValid
+    ? entry?.displayName ?? `Case ${caseId}`
+    : "Case";
+  return (
+    <Breadcrumbs
+      items={[{ label: "Cases", href: "/" }, { label }]}
+    />
+  );
+}
+
 export default function DashboardPage() {
   return (
-    <Container maxW="5xl" py="12">
-      <Stack gap="6">
+    <Container maxW="5xl" pb="12">
+      <Suspense fallback={null}>
+        <DashboardCrumbs />
+      </Suspense>
+      <Stack gap="6" pt="6">
         <Heading size="3xl">Dashboard</Heading>
         <Suspense fallback={<HelperText>Loading…</HelperText>}>
           <DashboardContent />

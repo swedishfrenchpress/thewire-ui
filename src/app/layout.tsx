@@ -3,6 +3,8 @@ import localFont from "next/font/local";
 import { JetBrains_Mono } from "next/font/google";
 import { Provider } from "@/components/Provider";
 import { QueryProvider } from "@/components/QueryProvider";
+import { TopBar } from "@/components/dashboard/TopBar";
+import "./globals.css";
 
 // Heading: Newsreader (locally hosted, OFL-licensed editorial serif from Google).
 // Variable axes: opsz (9–144), wght (200–800) — single file covers all weights/sizes.
@@ -53,7 +55,10 @@ export default function RootLayout({
     >
       <body>
         <Provider>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <TopBar />
+            {children}
+          </QueryProvider>
         </Provider>
       </body>
     </html>
