@@ -8,6 +8,7 @@ import {
   FailedSection,
   ProcessingSection,
 } from "@/components/dashboard/CaseSection";
+import { EmptyDashboard } from "@/components/dashboard/EmptyDashboard";
 import { OverviewPanel } from "@/components/dashboard/OverviewPanel";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { getCase } from "@/lib/api";
@@ -58,6 +59,15 @@ export default function DashboardPage() {
 
   if (!mounted) {
     return <Box maxW="960px" mx="auto" px="6" minH="60vh" />;
+  }
+
+  if (entries.length === 0) {
+    return (
+      <Box maxW="960px" mx="auto" px="6" pb="20">
+        <PageHeader />
+        <EmptyDashboard />
+      </Box>
+    );
   }
 
   return (

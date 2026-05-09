@@ -1,9 +1,16 @@
 "use client";
 
-import { Box, HStack, Text } from "@chakra-ui/react";
+import { Box, Button, HStack, Spacer, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
+import { UploadModal } from "@/components/UploadModal";
+import {
+  uploadDialogStore,
+  useUploadDialog,
+} from "@/lib/upload-dialog-store";
 
 export function TopBar() {
+  const dialog = useUploadDialog();
+
   return (
     <Box
       as="header"
@@ -41,7 +48,20 @@ export function TopBar() {
             The Wire
           </Text>
         </NextLink>
+        <Spacer />
+        <Button
+          variant="solid"
+          size="sm"
+          onClick={() => uploadDialogStore.openDialog()}
+        >
+          + Upload
+        </Button>
       </HStack>
+      <UploadModal
+        open={dialog.open}
+        initialFiles={dialog.initialFiles}
+        onClose={() => uploadDialogStore.closeDialog()}
+      />
     </Box>
   );
 }

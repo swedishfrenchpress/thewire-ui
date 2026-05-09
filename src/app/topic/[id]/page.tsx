@@ -261,7 +261,7 @@ function TopicCrumbs({
   return (
     <Breadcrumbs
       items={[
-        { label: "Cases", href: "/" },
+        { label: "Dashboard", href: "/" },
         {
           label: caseLabel,
           href: caseId !== null ? `/dashboard?case=${caseId}` : undefined,
