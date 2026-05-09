@@ -3,6 +3,7 @@ import {
   defaultConfig,
   defineConfig,
   defineRecipe,
+  defineSlotRecipe,
 } from "@chakra-ui/react";
 
 const ramp = (shades: Record<string, string>) =>
@@ -160,6 +161,151 @@ const helperTextRecipe = defineRecipe({
   defaultVariants: { tone: "neutral" },
 });
 
+// Dialog — modal sheet matching Figma SYSTEM/MODAL.
+// Layout: 480w, 24px gap stack inside 24px padding, 16px radius,
+// 0.5px subtle border, elevation 4 shadow, pill close trigger top-right.
+// Type: title in heading family at 20/24, description in body 16/24.
+const dialogSlotRecipe = defineSlotRecipe({
+  className: "agentic-dialog",
+  slots: [
+    "trigger",
+    "backdrop",
+    "positioner",
+    "content",
+    "header",
+    "body",
+    "footer",
+    "title",
+    "description",
+    "closeTrigger",
+  ],
+  base: {
+    backdrop: {
+      bg: "blackAlpha.400",
+      pos: "fixed",
+      inset: 0,
+    },
+    positioner: {
+      display: "flex",
+      pos: "fixed",
+      inset: 0,
+      p: "4",
+      overflow: "auto",
+    },
+    content: {
+      pos: "relative",
+      display: "flex",
+      flexDirection: "column",
+      gap: "6",
+      p: "6",
+      bg: "bg",
+      color: "fg",
+      borderWidth: "0.5px",
+      borderColor: "border",
+      borderRadius: "2xl",
+      boxShadow: "dialog",
+      outline: "0",
+    },
+    header: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+      gap: "1",
+      p: "0",
+    },
+    body: {
+      p: "0",
+      flex: "1",
+      fontFamily: "body",
+      fontSize: "14px",
+      lineHeight: "18px",
+      color: "fg",
+    },
+    footer: {
+      display: "flex",
+      alignItems: "center",
+      gap: "2.5",
+      p: "0",
+    },
+    title: {
+      fontFamily: "heading",
+      fontWeight: "400",
+      fontSize: "20px",
+      lineHeight: "24px",
+      letterSpacing: "tight",
+      color: "fg",
+    },
+    description: {
+      fontFamily: "body",
+      fontWeight: "400",
+      fontSize: "16px",
+      lineHeight: "24px",
+      letterSpacing: "normal",
+      color: "fg.muted",
+    },
+    closeTrigger: {
+      pos: "absolute",
+      top: "3",
+      insetEnd: "3",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      w: "6",
+      h: "6",
+      minW: "6",
+      p: "0",
+      bg: "bg.subtle",
+      color: "fg",
+      borderRadius: "full",
+      cursor: "pointer",
+      transitionProperty: "background-color, color",
+      transitionDuration: "fast",
+      _hover: { bg: "bg.muted" },
+      _focusVisible: {
+        outline: "none",
+        boxShadow: "focusRing",
+      },
+    },
+  },
+  variants: {
+    placement: {
+      center: {
+        positioner: { alignItems: "center", justifyContent: "center" },
+        content: { mx: "auto" },
+      },
+      top: {
+        positioner: { alignItems: "flex-start", justifyContent: "center" },
+        content: { mt: "16", mx: "auto" },
+      },
+    },
+    size: {
+      sm: { content: { width: "100%", maxW: "400px" } },
+      md: { content: { width: "100%", maxW: "480px" } },
+      lg: { content: { width: "100%", maxW: "560px" } },
+    },
+    motionPreset: {
+      scale: {
+        content: {
+          _open: { animationName: "scale-in, fade-in" },
+          _closed: { animationName: "scale-out, fade-out" },
+        },
+      },
+      "slide-in-bottom": {
+        content: {
+          _open: { animationName: "slide-from-bottom, fade-in" },
+          _closed: { animationName: "slide-to-bottom, fade-out" },
+        },
+      },
+      none: {},
+    },
+  },
+  defaultVariants: {
+    size: "md",
+    placement: "center",
+    motionPreset: "scale",
+  },
+});
+
 // File upload dropzone — idle/dragging/disabled.
 const fileUploadRecipe = defineRecipe({
   className: "agentic-file-upload",
@@ -251,6 +397,12 @@ const config = defineConfig({
         menu: {
           value:
             "0 8px 16px -8px rgba(0,0,0,0.04), 0 6px 6px -3px rgba(0,0,0,0.04), 0 3px 3px -1.5px rgba(0,0,0,0.04), 0 1px 1px -0.5px rgba(0,0,0,0.04)",
+        },
+        // Figma: Shadows/elevation4 — modal/dialog float. The system is flat
+        // by doctrine, but a dialog is detached float (same exception as menu).
+        dialog: {
+          value:
+            "0 0 0 1px rgba(0,0,0,0.08), 0 1px 1px -0.5px rgba(0,0,0,0.04), 0 3px 3px rgba(0,0,0,0.04), 0 6px 6px rgba(0,0,0,0.04), 0 12px 12px rgba(0,0,0,0.04), 0 16px 16px rgba(0,0,0,0.04)",
         },
       },
     },
@@ -563,6 +715,7 @@ const config = defineConfig({
           },
         },
       },
+      dialog: dialogSlotRecipe,
       // Select / NativeSelect — same field styling as Input, with chevron from default.
       select: {
         slots: ["trigger", "content", "item", "indicator", "label"],
