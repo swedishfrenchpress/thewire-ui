@@ -1,0 +1,282 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-09T00:00:00Z",
+  "title": "Design System: the-wire",
+  "extensions": {
+    "colorMeta": {
+      "wire-black": {
+        "role": "primary",
+        "displayName": "Wire Black",
+        "canonical": "oklch(0% 0 0)",
+        "tonalRamp": ["#000000", "#191919", "#363636", "#616161", "#8f8f8f", "#e0e0e0", "#e5e5e5", "#f7f7f7"]
+      },
+      "press-ink": {
+        "role": "primary",
+        "displayName": "Press Ink",
+        "canonical": "oklch(20% 0 0)",
+        "tonalRamp": ["#000000", "#191919", "#363636", "#616161", "#8f8f8f", "#e0e0e0", "#e5e5e5", "#f7f7f7"]
+      },
+      "mid-graphite": {
+        "role": "neutral",
+        "displayName": "Mid-Graphite",
+        "tonalRamp": ["#000000", "#191919", "#363636", "#616161", "#8f8f8f", "#e0e0e0", "#e5e5e5", "#f7f7f7"]
+      },
+      "desk-graphite": {
+        "role": "neutral",
+        "displayName": "Desk-Graphite",
+        "tonalRamp": ["#000000", "#191919", "#363636", "#616161", "#8f8f8f", "#e0e0e0", "#e5e5e5", "#f7f7f7"]
+      },
+      "working-grey": {
+        "role": "neutral",
+        "displayName": "Working-Grey",
+        "tonalRamp": ["#000000", "#191919", "#363636", "#616161", "#8f8f8f", "#e0e0e0", "#e5e5e5", "#f7f7f7"]
+      },
+      "column-rule": {
+        "role": "neutral",
+        "displayName": "Column-Rule",
+        "tonalRamp": ["#000000", "#191919", "#363636", "#616161", "#8f8f8f", "#e0e0e0", "#e5e5e5", "#f7f7f7"]
+      },
+      "newsprint-tint": {
+        "role": "neutral",
+        "displayName": "Newsprint-Tint",
+        "tonalRamp": ["#000000", "#191919", "#363636", "#616161", "#8f8f8f", "#e0e0e0", "#e5e5e5", "#f7f7f7"]
+      },
+      "newsprint": {
+        "role": "neutral",
+        "displayName": "Newsprint",
+        "tonalRamp": ["#000000", "#191919", "#363636", "#616161", "#8f8f8f", "#e0e0e0", "#e5e5e5", "#f7f7f7"]
+      },
+      "filing-red": {
+        "role": "tertiary",
+        "displayName": "Filing Red",
+        "canonical": "oklch(54% 0.21 28)",
+        "tonalRamp": ["#2a0303", "#570303", "#d50b0b", "#f02d2d", "#ff5c5c", "#ffa0a0", "#ffdede", "#fff5f5"]
+      },
+      "filing-red-deep": {
+        "role": "tertiary",
+        "displayName": "Filing Red Deep",
+        "tonalRamp": ["#2a0303", "#570303", "#d50b0b", "#f02d2d", "#ff5c5c", "#ffa0a0", "#ffdede", "#fff5f5"]
+      },
+      "triage-red-tint": {
+        "role": "tertiary",
+        "displayName": "Triage Red Tint",
+        "tonalRamp": ["#2a0303", "#570303", "#d50b0b", "#f02d2d", "#ff5c5c", "#ffa0a0", "#ffdede", "#fff5f5"]
+      },
+      "wire-yellow": {
+        "role": "tertiary",
+        "displayName": "Wire Yellow",
+        "canonical": "oklch(82% 0.16 90)",
+        "tonalRamp": ["#312102", "#553b06", "#855f00", "#eebb04", "#ffbd14", "#ffe58a", "#fff8d5", "#fffcf5"]
+      },
+      "wire-yellow-deep": {
+        "role": "tertiary",
+        "displayName": "Wire Yellow Deep",
+        "tonalRamp": ["#312102", "#553b06", "#855f00", "#eebb04", "#ffbd14", "#ffe58a", "#fff8d5", "#fffcf5"]
+      },
+      "triage-yellow-tint": {
+        "role": "tertiary",
+        "displayName": "Triage Yellow Tint",
+        "tonalRamp": ["#312102", "#553b06", "#855f00", "#eebb04", "#ffbd14", "#ffe58a", "#fff8d5", "#fffcf5"]
+      },
+      "cleared-green": {
+        "role": "tertiary",
+        "displayName": "Cleared Green",
+        "canonical": "oklch(70% 0.20 145)",
+        "tonalRamp": ["#0c310d", "#1b561a", "#288034", "#3cc14e", "#4ce160", "#a6f0a5", "#e0fae0", "#f6fef6"]
+      },
+      "cleared-green-deep": {
+        "role": "tertiary",
+        "displayName": "Cleared Green Deep",
+        "tonalRamp": ["#0c310d", "#1b561a", "#288034", "#3cc14e", "#4ce160", "#a6f0a5", "#e0fae0", "#f6fef6"]
+      },
+      "triage-green-tint": {
+        "role": "tertiary",
+        "displayName": "Triage Green Tint",
+        "tonalRamp": ["#0c310d", "#1b561a", "#288034", "#3cc14e", "#4ce160", "#a6f0a5", "#e0fae0", "#f6fef6"]
+      },
+      "focus-blue": {
+        "role": "special",
+        "displayName": "Focus Blue",
+        "canonical": "oklch(54% 0.22 260)",
+        "tonalRamp": ["#19133a", "#002a69", "#0049b8", "#0968f6", "#4d93fc", "#84b4fb", "#d4e5fe", "#f5f9ff"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Top-of-page titles only ('Upload', 'Dashboard', 'Category'). Newsreader at one weight; emphasis from optical size and tracking, never from going bolder."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Inline page subjects — the category title sitting next to its triage chip on /category/[id]."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Section heads and document filenames. The smallest serif step before type goes sans."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default running prose — heuristic descriptions, helper text, table cell content. Cap at 65–75ch on prose surfaces."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "The machine register — buttons, table column headers, triage chips, link text, group labels. Always uppercase, always tracked."
+      }
+    },
+    "shadows": [
+      {
+        "name": "focusRing",
+        "value": "0 0 0 1px #ffffff, 0 0 0 3px rgba(9, 104, 246, 0.5)",
+        "purpose": "Keyboard focus signal on every interactive element. White halo separates the blue glow from any adjacent dark fill so the ring stays visible against any background. Never suppressed."
+      },
+      {
+        "name": "menu",
+        "value": "0 8px 16px -8px rgba(0,0,0,0.04), 0 6px 6px -3px rgba(0,0,0,0.04), 0 3px 3px -1.5px rgba(0,0,0,0.04), 0 1px 1px -0.5px rgba(0,0,0,0.04)",
+        "purpose": "Floating-UI only — popover menus, select dropdowns. Four-layer composite at 4% opacity that reads as 'this surface is detached' without any visible glow. Do not raise the opacity to make it 'feel' more lifted."
+      }
+    ],
+    "motion": [
+      {
+        "name": "fast",
+        "value": "150ms",
+        "purpose": "Default transition duration on background-color, color, border-color, and box-shadow for hover, focus, and active states. Tuned to feel like a physical click rather than a UI animation."
+      },
+      {
+        "name": "tile",
+        "value": "120ms",
+        "purpose": "Slightly snappier transition used on the file-upload tile's background-color and border-color when transitioning between idle and dragging states. The drop affordance should respond instantly."
+      },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Default easing for state transitions. No bounce, no elastic; the system never animates layout properties so the easing only carries color and opacity."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The metal-nameplate primary action. Wire-black ground, newsprint mono uppercase label, near-square corners. Hover shifts to mid-graphite; active to desk-graphite.",
+      "html": "<button class=\"ds-btn-primary\">UPLOAD 2 FILES</button>",
+      "css": ".ds-btn-primary { font-family: 'Departure Mono', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px; font-weight: 600; line-height: 15px; letter-spacing: 0; text-transform: uppercase; color: #ffffff; background: #000000; height: 32px; min-width: 32px; padding: 0 16px; border: none; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: #363636; } .ds-btn-primary:active { background: #616161; } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 1px #ffffff, 0 0 0 3px rgba(9, 104, 246, 0.5); } .ds-btn-primary:disabled { background: #f7f7f7; color: #8f8f8f; cursor: not-allowed; }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "The default secondary action. Newsprint ground with a 1px column-rule border and press-ink mono uppercase label. Hover lifts the ground to newsprint-tint.",
+      "html": "<button class=\"ds-btn-outline\">OR SELECT FILE</button>",
+      "css": ".ds-btn-outline { font-family: 'Departure Mono', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 10px; font-weight: 600; line-height: 11px; letter-spacing: 0; text-transform: uppercase; color: #191919; background: #ffffff; height: 24px; min-width: 24px; padding: 0 8px; border: 1px solid #e5e5e5; border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-outline:hover { background: #f7f7f7; } .ds-btn-outline:active { background: #e5e5e5; } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 1px #ffffff, 0 0 0 3px rgba(9, 104, 246, 0.5); }"
+    },
+    {
+      "name": "Triage Chip (HIGH)",
+      "kind": "chip",
+      "refersTo": "chip-triage-high",
+      "description": "The signature severity chip. Filling-red text on triage-red-tint ground, uppercase mono label, near-square corners. Always rendered alongside the literal severity word so color is never the sole carrier.",
+      "html": "<span class=\"ds-chip-triage-high\">HIGH</span>",
+      "css": ".ds-chip-triage-high { display: inline-flex; align-items: center; font-family: 'Departure Mono', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 10px; font-weight: 600; line-height: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #570303; background: #ffdede; padding: 4px 8px; border-radius: 2px; }"
+    },
+    {
+      "name": "Helper Text (Error)",
+      "kind": "custom",
+      "refersTo": "helper-text",
+      "description": "Inline status pill carrying short editorial prose — error messages, processing states, empty-state nudges. The error tone uses triage-red-tint and filing-red-deep with a leading ✕ glyph, plus role=alert for screen readers.",
+      "html": "<div class=\"ds-helper ds-helper-error\" role=\"alert\"><span class=\"ds-helper-glyph\" aria-hidden=\"true\">✕</span><span>Upload failed: case 2812 not found.</span></div>",
+      "css": ".ds-helper { display: inline-flex; align-items: center; gap: 8px; font-family: 'Geist', system-ui, -apple-system, sans-serif; font-size: 13px; line-height: 16px; font-weight: 400; padding: 8px 12px; border-radius: 2px; } .ds-helper-glyph { font-weight: 600; } .ds-helper-error { background: #ffdede; color: #570303; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Quiet 40px field on newsprint with a 1px column-rule border and 2px corners. Hover lifts the border to working-grey; focus stacks the focus ring on top of the border shift.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Case id…\" />",
+      "css": ".ds-input { font-family: 'Geist', system-ui, -apple-system, sans-serif; font-size: 14px; line-height: 18px; color: #191919; background: #ffffff; height: 40px; padding: 0 12px; border: 1px solid #e5e5e5; border-radius: 2px; width: 100%; max-width: 320px; transition: border-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-input::placeholder { color: #616161; } .ds-input:hover { border-color: #8f8f8f; } .ds-input:focus-visible { outline: none; border-color: #8f8f8f; box-shadow: 0 0 0 1px #ffffff, 0 0 0 3px rgba(9, 104, 246, 0.5); } .ds-input:disabled { background: #f7f7f7; color: #8f8f8f; cursor: not-allowed; }"
+    },
+    {
+      "name": "File Upload Tile (Idle)",
+      "kind": "custom",
+      "refersTo": "file-upload-idle",
+      "description": "The signature consumer-facing surface. Flat newsprint-tint ground with 8px radius (the only place 8px appears in the system), centered icon, prompt text, secondary action, and metadata. Not a dashed-border drop zone by default.",
+      "html": "<div class=\"ds-upload-tile\"><svg class=\"ds-upload-icon\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"square\" stroke-linejoin=\"miter\" aria-hidden=\"true\"><path d=\"M12 4v12\"/><path d=\"M6 10l6-6 6 6\"/><path d=\"M4 20h16\"/></svg><div class=\"ds-upload-prompt\">Drag and drop your files here</div><button class=\"ds-btn-outline\" type=\"button\">OR SELECT FILE</button><div class=\"ds-upload-meta\"><div>Up to 10 files</div><div>Plain text or Markdown</div></div></div>",
+      "css": ".ds-upload-tile { font-family: 'Geist', system-ui, -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 12px; padding: 32px 24px; min-height: 224px; max-width: 360px; background: #f7f7f7; color: #191919; border: 1px solid transparent; border-radius: 8px; cursor: pointer; transition: background-color 120ms cubic-bezier(0.4, 0, 0.2, 1), border-color 120ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-upload-tile:hover { background: #e5e5e5; border-style: dashed; border-color: #8f8f8f; } .ds-upload-icon { color: #191919; } .ds-upload-prompt { font-size: 14px; line-height: 18px; color: #191919; } .ds-upload-meta { font-size: 13px; line-height: 16px; color: #616161; } .ds-upload-meta > div + div { margin-top: 0; }"
+    },
+    {
+      "name": "Triage Table",
+      "kind": "custom",
+      "refersTo": "card-document",
+      "description": "The dashboard's primary affordance. Uppercase mono column headers on naked newsprint, body cells in Geist 14, 1px hairline rules between rows, no zebra. Severity chip carries the visual weight in the leftmost column.",
+      "html": "<table class=\"ds-table\"><thead><tr><th>TRIAGE</th><th>TITLE</th><th>DESCRIPTION</th></tr></thead><tbody><tr><td><span class=\"ds-chip-triage-high\">HIGH</span></td><td><a class=\"ds-table-link\" href=\"#\">Cash transfers, offshore</a></td><td>Wire activity through three correspondent banks; recipient entity registered in BVI.</td></tr><tr><td><span class=\"ds-chip-triage-medium\">MEDIUM</span></td><td><a class=\"ds-table-link\" href=\"#\">Interview transcripts, 2024 Q4</a></td><td>Three sources reference the same intermediary; corroboration partial.</td></tr><tr><td><span class=\"ds-chip-triage-low\">LOW</span></td><td><a class=\"ds-table-link\" href=\"#\">Routine board minutes</a></td><td>Standard governance items; no flagged heuristics.</td></tr></tbody></table>",
+      "css": ".ds-table { width: 100%; border-collapse: collapse; background: #ffffff; font-family: 'Geist', system-ui, -apple-system, sans-serif; } .ds-table th { font-family: 'Departure Mono', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 11px; font-weight: 500; line-height: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: #616161; text-align: left; padding: 12px 16px; border-bottom: 1px solid #e5e5e5; } .ds-table td { font-size: 14px; line-height: 18px; color: #191919; padding: 14px 16px; border-bottom: 1px solid #f7f7f7; vertical-align: middle; } .ds-table tr:last-child td { border-bottom: none; } .ds-table-link { font-family: 'Departure Mono', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 12px; font-weight: 500; line-height: 14px; letter-spacing: 0.05em; text-transform: uppercase; color: #191919; text-decoration: underline; text-underline-offset: 0.25em; transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1); } .ds-table-link:hover { color: #616161; } .ds-chip-triage-high { display: inline-flex; align-items: center; font-family: 'Departure Mono', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 10px; font-weight: 600; line-height: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #570303; background: #ffdede; padding: 4px 8px; border-radius: 2px; } .ds-chip-triage-medium { display: inline-flex; align-items: center; font-family: 'Departure Mono', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 10px; font-weight: 600; line-height: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #855f00; background: #fff8d5; padding: 4px 8px; border-radius: 2px; } .ds-chip-triage-low { display: inline-flex; align-items: center; font-family: 'Departure Mono', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 10px; font-weight: 600; line-height: 11px; letter-spacing: 0.05em; text-transform: uppercase; color: #1b561a; background: #e0fae0; padding: 4px 8px; border-radius: 2px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Wire-Service Desk",
+    "overview": "the-wire renders like a wire-service copy desk on a slow news day: a clean sheet, ranked dispatches, mono filing slugs, ink for the page and chrome for almost nothing else. The system inherits its weight from the page, not from frames or panels, and its rhythm from the difference between newsprint and ink, not from shadows or color. When the operator sits down, the screen behaves like the desk: stories ranked top-to-bottom by urgency, severity called out in three small chips that read at a glance, and absolutely nothing else asking for attention. The visual register is split between two specific moves. Headings use Newsreader, the editorial serif, set in a single weight at tight tracking, so titles feel typeset rather than user-generated. Labels and metadata use Departure Mono in uppercase with 0.05em tracking, the typographic equivalent of a teleprinter slug or a margin annotation. The palette is monochromatic by doctrine, punctuated only by the three triage states which always appear paired with their literal label so they survive without color. The system explicitly rejects stock SaaS dashboards, consumer-warm app aesthetics, enterprise / gov-tech density, and AI-tool decoration. If a screen looks 'underdesigned' by any of those references, it is probably correct.",
+    "keyCharacteristics": [
+      "Ink and newsprint, with three exceptions. Pure #000000 on pure #ffffff (or inverted in dark mode), one graphite ramp, plus the three triage tints. That is the entire color story.",
+      "Near-square corners. 2px radii are the default for buttons, inputs, chips, cards, and menus. 8px is reserved for one element: the file-drop tile.",
+      "Mono labels, serif titles, sans body. Three faces, three jobs, no overlap. The mono register signals 'metadata' and is used for buttons, table column headers, links, triage chips, and any uppercase microcopy.",
+      "Flat by default; depth only on focus and float. No ambient shadows. Surfaces stack via 1px borders and a single subtle background tint. The only shadows are the focus ring and the menu popover.",
+      "Status earns color; nothing else does. Red, yellow, and green appear exclusively for triage state. They never mean 'primary action,' 'decoration,' or 'category.'",
+      "Dual-theme inversion. Dark mode is not a tinted dark; it is a full inversion to chalk-on-blackboard, preserving the same monochromatic doctrine."
+    ],
+    "rules": [
+      { "name": "The Ink Rule", "body": "The only neutrals are pure #000000 and pure #ffffff and the graphite ramp between them. Do not tint either endpoint toward another hue. The ink-on-newsprint extremity is the brand; tinted neutrals soften it into a generic SaaS surface.", "section": "colors" },
+      { "name": "The Triage-Only Rule", "body": "Filing Red, Wire Yellow, and Cleared Green appear only in the context of a triage signal — the chip, its tinted background, the destructive-button variant of Filing Red, and tone-matched helper text. They are forbidden as decorative accents, 'primary brand color' treatments, illustration fills, or iconography hues. If a designer wants color for a non-triage reason, the answer is 'no color.'", "section": "colors" },
+      { "name": "The Pair Rule", "body": "A chromatic foreground is only legal on its own tinted background. Filing Red text appears on Triage Red Tint, Wire Yellow Deep text appears on Triage Yellow Tint, Cleared Green Deep text appears on Triage Green Tint. Never put a triage color on Newsprint or on Press Ink without the matching tint behind it; the contrast budget assumes the pair.", "section": "colors" },
+      { "name": "The Three-Face Rule", "body": "Newsreader for titles, Geist for body, Departure Mono for labels. No exceptions, no swaps, no decorative use of one face inside another's lane. If a piece of text doesn't clearly belong to one of the three jobs, the text is wrong, not the type.", "section": "typography" },
+      { "name": "The One-Weight Rule (for Newsreader)", "body": "All Newsreader-set headings ship at weight 400 only. Hierarchy is built from optical size and tracking, not from bolder or lighter cuts. Newsreader's variable axes (opsz, wght) exist as fallback flexibility, not as a license to mix weights inside the same view.", "section": "typography" },
+      { "name": "The Uppercase Mono Rule", "body": "Departure Mono is always uppercase and always tracked. Lowercase mono reads as code; uppercase tracked mono reads as a teleprinter slug, which is the register the system needs.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Shadows are reserved for two roles: the focus ring (keyboard signal) and the menu/popover composite (detached float). No card, no panel, no button, no input gets an ambient shadow under any condition, including hover.", "section": "elevation" },
+      { "name": "The Border-Carries-Depth Rule", "body": "When two surfaces sit on each other (a card on the page, an inner content panel inside a card), depth is conveyed by a 1px column-rule border and a switch between newsprint and newsprint-tint. This is the entire toolkit. Nesting beyond two levels of surface is not legal: if you want a third level, redesign.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do lead every screen with a triage signal at the top of the eye path. Sort fastest-first; the user should know within one second where the HIGH category is.",
+      "Do use the literal label ('HIGH' / 'MEDIUM' / 'LOW') next to every triage chip, on every surface. Color is never the sole carrier; the Pair Rule and the small-text contrast budget both depend on it.",
+      "Do keep Newsreader at weight 400 across all heading sizes. Build hierarchy from optical size and tracking, not from going bolder.",
+      "Do use the focusRing token on every interactive element. It is the keyboard signal; never replace it with a CSS outline and never suppress it for visual taste.",
+      "Do use Departure Mono uppercase for any string that would be a 'label', 'slug', or 'metadata' in print: column headers, button text, link text, chip text, group labels, status microcopy. The register is itself the brand.",
+      "Do keep Geist body text within 65–75ch on prose surfaces. Heuristic descriptions and document content panels should not span 1200px columns.",
+      "Do vary spacing between sections (Chakra gap-3, gap-4, gap-6) for visual rhythm. Identical padding everywhere reads as monotonous.",
+      "Do respect prefers-reduced-motion on every transition, polling indicator, and progressive reveal.",
+      "Do treat the page itself as the canvas — page background newsprint, content lives directly on it. Most things do not need a wrapping card."
+    ],
+    "donts": [
+      "Don't add ambient drop shadows to cards, buttons, inputs, or panels. The Flat-By-Default Rule is doctrine. Shadows exist on focusRing and menu only.",
+      "Don't tint the wire-black or newsprint neutrals toward another hue. The Ink Rule keeps the system at its press-ready extremity; tinted neutrals are how this system becomes a generic SaaS surface.",
+      "Don't use Filing Red, Wire Yellow, or Cleared Green for any non-triage purpose. No 'primary brand red', no decorative green tag, no yellow caution banner that is not actually a triage signal. The Triage-Only Rule is the entire color budget.",
+      "Don't apply any triage color to text on plain newsprint or press-ink surfaces. The Pair Rule mandates the matching tinted background; the small-text contrast budget assumes it.",
+      "Don't use the stock SaaS dashboard template. No hero metric grid, no big-number-with-gradient, no identical icon-and-text card rows. If a screen could pass for a Stripe-clone landing or a Vercel template, it has failed.",
+      "Don't use the consumer-warm app vocabulary. No pastel illustrations, no mascot, no chubby rounded UI, no emoji-decorated empty states.",
+      "Don't use the enterprise / gov-tech vocabulary. No IBM Carbon density, no navy-and-gold, no breadcrumb soup, no eight-column dense forms with collapse-all toggles.",
+      "Don't use the AI-tool aesthetic. No gradient text, no glassmorphism, no neon-on-black, no sparkle / star iconography, no 'powered by' framing, no shimmer effects on streamed text.",
+      "Don't mix Newsreader weights inside the same view. The One-Weight Rule says weight 400 across every Newsreader-set heading.",
+      "Don't set Departure Mono in lowercase. Lowercase mono reads as code; the system needs the uppercase teleprinter register.",
+      "Don't nest a card inside a card inside a card. Two levels of surface (card + inner content panel) is the maximum; a third level signals the architecture is wrong, not the styling.",
+      "Don't use side-stripe borders (border-left greater than 1px as a colored stripe on cards, list items, callouts, or alerts). Convey severity with the chip and the tinted card background, never with a left rail.",
+      "Don't animate CSS layout properties (width, height, padding, margin, top, left). Use background-color, color, border-color, transform, opacity, box-shadow.",
+      "Don't use the em dash in copy. Use commas, colons, semicolons, periods, or parentheses. The voice is editorial, not affected.",
+      "Don't decorate the model. No 'Thinking…' with a shimmer, no '✨ AI insights', no 'Here's what I found for you!'. The model is plumbing; the user's judgment is the product."
+    ]
+  }
+}
