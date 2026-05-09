@@ -14,7 +14,9 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { HelperText } from "@/components/HelperText";
 import { TriageTag } from "@/components/TriageTag";
+import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { getCategory, getCategoryDocuments } from "@/lib/api";
+import { casesStore } from "@/lib/cases-store";
 import type { Heuristic, Rating } from "@/lib/types";
 
 const RATING_TONE: Record<Rating, "success" | "warning" | "error"> = {
@@ -164,10 +166,51 @@ function CategoryContent() {
   );
 }
 
+function CategoryCrumbs() {
+  const { id } = useParams<{ id: string }>();
+  const searchParams = useSearchParams();
+  const caseParam = searchParams.get("case");
+  const caseId = caseParam !== null ? Number(caseParam) : null;
+  const categoryId = Number(id);
+  const idsValid =
+    caseId !== null && Number.isFinite(caseId) && Number.isFinite(categoryId);
+
+  const entry = idsValid
+    ? casesStore.getCase(caseId as number)
+    : undefined;
+  const caseLabel = idsValid
+    ? entry?.displayName ?? `Case ${caseId}`
+    : "Case";
+
+  const detail = useQuery({
+    queryKey: ["category", caseId, categoryId],
+    queryFn: () => getCategory(caseId as number, categoryId),
+    enabled: idsValid,
+  });
+
+  const categoryLabel = detail.data?.category.title ?? "Category";
+
+  return (
+    <Breadcrumbs
+      items={[
+        { label: "Cases", href: "/" },
+        {
+          label: caseLabel,
+          href: idsValid ? `/dashboard?case=${caseId}` : undefined,
+        },
+        { label: categoryLabel },
+      ]}
+    />
+  );
+}
+
 export default function CategoryPage() {
   return (
-    <Container maxW="4xl" py="12">
-      <Stack gap="6">
+    <Container maxW="4xl" pb="12">
+      <Suspense fallback={null}>
+        <CategoryCrumbs />
+      </Suspense>
+      <Stack gap="6" pt="6">
         <Heading size="3xl">Category</Heading>
         <Suspense fallback={<HelperText>Loading…</HelperText>}>
           <CategoryContent />

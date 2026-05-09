@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { FileUploadArea } from "@/components/FileUploadArea";
 import { HelperText } from "@/components/HelperText";
+import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { createCase } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
 
@@ -54,8 +55,14 @@ export default function UploadPage() {
   };
 
   return (
-    <Container maxW="3xl" py="12">
-      <Stack gap="6">
+    <Container maxW="3xl" pb="12">
+      <Breadcrumbs
+        items={[
+          { label: "Cases", href: "/" },
+          { label: "Upload" },
+        ]}
+      />
+      <Stack gap="6" pt="6">
         <Heading size="3xl">Upload</Heading>
         <form onSubmit={onSubmit}>
           <Stack gap="4">
