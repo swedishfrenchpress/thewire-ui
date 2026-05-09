@@ -43,17 +43,32 @@ export function CaseList({
     return (
       <Stack
         align="center"
-        py="20"
-        gap="4"
+        py="24"
+        px="6"
+        gap="5"
         bg="bg.subtle"
         mt="6"
         borderRadius="sm"
+        textAlign="center"
       >
-        <Text fontFamily="body" fontSize="14px" color="fg.muted">
-          No cases yet.
-        </Text>
+        <EmptyStateIcon />
+        <Stack gap="2" align="center" maxW="md">
+          <Text
+            fontFamily="heading"
+            fontSize="20px"
+            lineHeight="26px"
+            letterSpacing="tight"
+            color="fg"
+          >
+            No cases yet
+          </Text>
+          <Text fontFamily="body" fontSize="14px" color="fg.muted">
+            Upload plain text or Markdown documents to start a case. The wire
+            will triage and categorize them.
+          </Text>
+        </Stack>
         <Button asChild variant="solid" size="md">
-          <NextLink href="/upload">Start a case</NextLink>
+          <NextLink href="/upload">Upload files</NextLink>
         </Button>
       </Stack>
     );
@@ -135,5 +150,26 @@ export function CaseList({
         )}
       </Table.Root>
     </Box>
+  );
+}
+
+function EmptyStateIcon() {
+  return (
+    <svg
+      width="48"
+      height="48"
+      viewBox="0 0 48 48"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
+      aria-hidden
+      style={{ color: "var(--chakra-colors-fg-muted)" }}
+    >
+      <path d="M10 14h12l3 3h13v22H10z" />
+      <path d="M24 22v10" />
+      <path d="M20 26l4-4 4 4" />
+    </svg>
   );
 }

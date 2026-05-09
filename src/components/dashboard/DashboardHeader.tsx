@@ -55,16 +55,9 @@ export function DashboardHeader({ rows }: { rows: Row[] }) {
         >
           Case index
         </Heading>
-        <HStack gap="2">
-          <Button asChild variant="ghost" size="md" aria-label="Settings">
-            <NextLink href="/settings">
-              <GearIcon />
-            </NextLink>
-          </Button>
-          <Button asChild variant="solid" size="md">
-            <NextLink href="/upload">+ New case</NextLink>
-          </Button>
-        </HStack>
+        <Button asChild variant="solid" size="md">
+          <NextLink href="/upload">+ New case</NextLink>
+        </Button>
       </HStack>
 
       <HStack gap="12" align="flex-end" wrap="wrap">
@@ -117,21 +110,3 @@ function Stat({
   );
 }
 
-function GearIcon() {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="square"
-      strokeLinejoin="miter"
-      aria-hidden
-    >
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2" />
-    </svg>
-  );
-}
