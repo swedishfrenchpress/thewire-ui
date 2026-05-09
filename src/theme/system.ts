@@ -405,6 +405,89 @@ const dialogSlotRecipe = defineSlotRecipe({
   },
 });
 
+// Breadcrumb — Figma SYSTEM/Breadcrumbs (node 549:163).
+// Item labels: Departure Mono Medium 12/18, uppercase, wide tracking, fg.
+// Separator "/": Departure Mono Regular 14/15, tight tracking, fg.disabled.
+// Trailing item is the current page → fg.muted.
+const breadcrumbSlotRecipe = defineSlotRecipe({
+  className: "agentic-breadcrumb",
+  slots: ["root", "list", "item", "link", "currentLink", "separator", "ellipsis"],
+  base: {
+    root: {
+      fontFamily: "mono",
+      color: "fg",
+    },
+    list: {
+      display: "flex",
+      alignItems: "center",
+      gap: "0.5",
+      flexWrap: "wrap",
+    },
+    item: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "2",
+    },
+    link: {
+      fontFamily: "mono",
+      textTransform: "uppercase",
+      fontWeight: "500",
+      fontSize: "12px",
+      lineHeight: "18px",
+      letterSpacing: "wide",
+      color: "fg",
+      textDecoration: "none",
+      transitionProperty: "color",
+      transitionDuration: "fast",
+      _hover: { color: "fg.muted" },
+      _focusVisible: {
+        outline: "none",
+        boxShadow: "focusRing",
+        borderRadius: "xs",
+      },
+    },
+    currentLink: {
+      fontFamily: "mono",
+      textTransform: "uppercase",
+      fontWeight: "500",
+      fontSize: "12px",
+      lineHeight: "18px",
+      letterSpacing: "wide",
+      color: "fg.muted",
+    },
+    separator: {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minW: "5",
+      minH: "5",
+      fontFamily: "mono",
+      fontWeight: "400",
+      fontSize: "14px",
+      lineHeight: "15px",
+      letterSpacing: "tight",
+      color: "fg.disabled",
+      textTransform: "uppercase",
+      userSelect: "none",
+    },
+    ellipsis: {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minW: "4",
+      minH: "5",
+      fontFamily: "mono",
+      fontWeight: "500",
+      fontSize: "12px",
+      lineHeight: "18px",
+      letterSpacing: "wide",
+      color: "fg",
+      cursor: "pointer",
+      _hover: { color: "fg.muted" },
+    },
+  },
+});
+
 // File upload dropzone — idle/dragging/disabled.
 const fileUploadRecipe = defineRecipe({
   className: "agentic-file-upload",
@@ -757,6 +840,7 @@ const config = defineConfig({
     },
     slotRecipes: {
       table: tableSlotRecipe,
+      breadcrumb: breadcrumbSlotRecipe,
       // Menu — popover with subtle border + elevation.
       menu: {
         slots: ["content", "item", "trigger", "indicator", "itemGroup", "itemGroupLabel", "separator"],
