@@ -1,8 +1,6 @@
 "use client";
 
-import { Box, Button, HStack, Input, chakra } from "@chakra-ui/react";
-
-const StyledSelect = chakra("select");
+import { Box, Button, HStack, Input, NativeSelect } from "@chakra-ui/react";
 import type { CaseStatus } from "@/lib/types";
 import type { SortDir, SortKey } from "@/lib/triage";
 
@@ -54,38 +52,24 @@ export function CaseFilters({
         >
           Sort
         </Box>
-        <StyledSelect
-          value={sort.key}
-          onChange={(e) =>
-            onSortChange({
-              key: e.target.value as SortKey,
-              dir: sort.dir,
-            })
-          }
-          aria-label="Sort cases by"
-          fontFamily="body"
-          fontSize="13px"
-          lineHeight="16px"
-          color="fg"
-          bg="bg"
-          h="8"
-          px="2"
-          borderWidth="1px"
-          borderColor="border"
-          borderRadius="sm"
-          cursor="pointer"
-          _hover={{ borderColor: "border.medium" }}
-          _focusVisible={{
-            outline: "none",
-            borderColor: "border.medium",
-            boxShadow: "focusRing",
-          }}
-        >
-          <option value="topTriage">Top triage</option>
-          <option value="lastViewed">Last viewed</option>
-          <option value="created">Created</option>
-          <option value="name">Name</option>
-        </StyledSelect>
+        <NativeSelect.Root size="sm" width="auto">
+          <NativeSelect.Field
+            value={sort.key}
+            onChange={(e) =>
+              onSortChange({
+                key: e.target.value as SortKey,
+                dir: sort.dir,
+              })
+            }
+            aria-label="Sort cases by"
+          >
+            <option value="topTriage">Top triage</option>
+            <option value="lastViewed">Last viewed</option>
+            <option value="created">Created</option>
+            <option value="name">Name</option>
+          </NativeSelect.Field>
+          <NativeSelect.Indicator />
+        </NativeSelect.Root>
         <Button
           variant="ghost"
           size="sm"
@@ -136,10 +120,8 @@ export function CaseFilters({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Filter by name"
-          h="8"
+          size="sm"
           pl="9"
-          pr="3"
-          fontSize="13px"
           aria-label="Filter cases by name"
         />
       </Box>

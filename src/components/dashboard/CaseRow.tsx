@@ -99,9 +99,7 @@ export function CaseRow({ row }: { row: Row }) {
               else if (e.key === "Escape") cancel();
             }}
             onBlur={commit}
-            h="8"
-            px="2"
-            fontSize="14px"
+            size="sm"
             aria-label="Case name"
           />
         ) : (
