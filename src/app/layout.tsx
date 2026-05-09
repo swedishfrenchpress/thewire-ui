@@ -39,7 +39,7 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "the-wire",
+  title: "Palantir for the People",
 };
 
 export default function RootLayout({
