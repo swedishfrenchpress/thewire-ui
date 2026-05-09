@@ -38,7 +38,7 @@ function DashboardContent() {
   if (caseId === null) {
     return (
       <HelperText tone="warning">
-        No case selected. Start from the upload screen.
+        No case selected. Open the dashboard to start one.
       </HelperText>
     );
   }
@@ -117,19 +117,41 @@ function DashboardContent() {
   );
 }
 
+function caseHeading(caseId: number | null): string {
+  if (caseId === null || !Number.isFinite(caseId)) return "Case";
+  const entry = casesStore.getCase(caseId);
+  return entry?.displayName ?? `Case ${caseId}`;
+}
+
 function DashboardCrumbs() {
   const searchParams = useSearchParams();
   const caseParam = searchParams.get("case");
   const caseId = caseParam !== null ? Number(caseParam) : null;
-  const caseIdValid = caseId !== null && Number.isFinite(caseId);
-  const entry = caseIdValid ? casesStore.getCase(caseId as number) : undefined;
-  const label = caseIdValid
-    ? entry?.displayName ?? `Case ${caseId}`
-    : "Case";
   return (
     <Breadcrumbs
-      items={[{ label: "Cases", href: "/" }, { label }]}
+      items={[
+        { label: "Dashboard", href: "/" },
+        { label: caseHeading(caseId) },
+      ]}
     />
+  );
+}
+
+function CaseHeading() {
+  const searchParams = useSearchParams();
+  const caseParam = searchParams.get("case");
+  const caseId = caseParam !== null ? Number(caseParam) : null;
+  return (
+    <Heading
+      as="h1"
+      fontFamily="heading"
+      fontWeight="400"
+      letterSpacing="tight"
+      fontSize={{ base: "28px", md: "36px" }}
+      lineHeight="1.05"
+    >
+      {caseHeading(caseId)}
+    </Heading>
   );
 }
 
@@ -140,7 +162,9 @@ export default function DashboardPage() {
         <DashboardCrumbs />
       </Suspense>
       <Stack gap="6" pt="6">
-        <Heading size="3xl">Dashboard</Heading>
+        <Suspense fallback={null}>
+          <CaseHeading />
+        </Suspense>
         <Suspense fallback={<HelperText>Loading…</HelperText>}>
           <DashboardContent />
         </Suspense>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, HStack, Heading, Stack, Text } from "@chakra-ui/react";
-import NextLink from "next/link";
+import { uploadDialogStore } from "@/lib/upload-dialog-store";
 
 export function PageHeader() {
   return (
@@ -22,7 +22,7 @@ export function PageHeader() {
           letterSpacing="tight"
           color="fg"
         >
-          Cases
+          Dashboard
         </Heading>
         <Text
           fontFamily="body"
@@ -34,8 +34,12 @@ export function PageHeader() {
         </Text>
       </Stack>
 
-      <Button asChild variant="solid" size="md">
-        <NextLink href="/upload">+ New case</NextLink>
+      <Button
+        variant="solid"
+        size="md"
+        onClick={() => uploadDialogStore.openDialog()}
+      >
+        + New case
       </Button>
     </HStack>
   );
