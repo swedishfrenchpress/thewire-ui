@@ -13,9 +13,9 @@ export function CaseMetricStrip({ row }: { row: Row }) {
   const isFailed = summary?.status === "failed";
   const noSummaryYet = !summary;
 
-  const top = summary ? topTriage(summary.categories) : null;
+  const top = summary ? topTriage(summary.topics) : null;
   const mix = summary
-    ? triageMix(summary.categories)
+    ? triageMix(summary.topics)
     : { high: 0, medium: 0, low: 0 };
 
   return (
@@ -32,7 +32,7 @@ export function CaseMetricStrip({ row }: { row: Row }) {
       <MetricColumn label="Triage mix">
         {isFailed ? (
           <Dash />
-        ) : isProcessing && summary && summary.categories.length === 0 ? (
+        ) : isProcessing && summary && summary.topics.length === 0 ? (
           <Analyzing />
         ) : noSummaryYet ? (
           <Dash />
@@ -51,14 +51,14 @@ export function CaseMetricStrip({ row }: { row: Row }) {
         )}
       </MetricColumn>
 
-      <MetricColumn label="Categories" align="end">
+      <MetricColumn label="Topics" align="end">
         {isFailed || noSummaryYet ? (
           <Dash />
         ) : (
           <BigMono
-            pulse={isProcessing && summary.categories.length === 0}
+            pulse={isProcessing && summary.topics.length === 0}
           >
-            {summary.categories.length}
+            {summary.topics.length}
           </BigMono>
         )}
       </MetricColumn>

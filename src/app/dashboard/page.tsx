@@ -61,7 +61,7 @@ function DashboardContent() {
     );
   }
 
-  const sorted = [...data.categories].sort(
+  const sorted = [...data.topics].sort(
     (a, b) => TRIAGE_ORDER[a.triage] - TRIAGE_ORDER[b.triage],
   );
 
@@ -75,15 +75,15 @@ function DashboardContent() {
       {data.status === "processing" && (
         <HelperText>
           Analyzing documents…
-          {data.categories.length > 0
-            ? ` ${data.categories.length} categor${data.categories.length === 1 ? "y" : "ies"} available so far.`
+          {data.topics.length > 0
+            ? ` ${data.topics.length} topic${data.topics.length === 1 ? "" : "s"} available so far.`
             : ""}
         </HelperText>
       )}
 
       {sorted.length === 0 ? (
         data.status === "complete" && (
-          <Text>No categories were inferred for this case.</Text>
+          <Text>No topics were inferred for this case.</Text>
         )
       ) : (
         <Table.Root>
@@ -102,7 +102,7 @@ function DashboardContent() {
                 </Table.Cell>
                 <Table.Cell>
                   <ChakraLink asChild>
-                    <NextLink href={`/category/${c.id}?case=${data.case_id}`}>
+                    <NextLink href={`/topic/${c.id}?case=${data.case_id}`}>
                       {c.title}
                     </NextLink>
                   </ChakraLink>
