@@ -136,6 +136,7 @@ const palette = {
 };
 
 // Helper text — small, themed by status. Themed via the `tone` variant.
+// Figma SYSTEM/HelperText: 8px radius, 8px h-pad, 4px v-pad, 13/15 Geist.
 const helperTextRecipe = defineRecipe({
   className: "agentic-helper-text",
   base: {
@@ -145,10 +146,10 @@ const helperTextRecipe = defineRecipe({
     fontWeight: "400",
     display: "inline-flex",
     alignItems: "center",
-    gap: "2",
-    px: "3",
-    py: "2",
-    borderRadius: "sm",
+    gap: "1",
+    px: "2",
+    py: "1",
+    borderRadius: "lg",
   },
   variants: {
     tone: {
@@ -488,6 +489,260 @@ const breadcrumbSlotRecipe = defineSlotRecipe({
   },
 });
 
+// Text input — Figma SYSTEM/Text input. Geist body, white bg, 1px subtle
+// border, 8px radius, 12px h-padding.
+// States: hover → bg.subtle; focus → black border (no glow ring);
+// invalid → red border; disabled → subtle border + disabled text.
+// Sizes: md=40h (14/18), sm=32h (13/15).
+const inputRecipe = defineRecipe({
+  className: "agentic-input",
+  base: {
+    fontFamily: "body",
+    color: "fg",
+    bg: "bg",
+    px: "3",
+    borderWidth: "1px",
+    borderColor: "border",
+    borderRadius: "lg",
+    transitionProperty: "background-color, border-color",
+    transitionDuration: "fast",
+    _placeholder: { color: "fg.muted" },
+    _hover: { bg: "bg.subtle" },
+    _focusVisible: {
+      outline: "none",
+      bg: "bg",
+      borderColor: "border.strong",
+    },
+    _invalid: {
+      borderColor: "border.attention",
+    },
+    _disabled: {
+      bg: "bg",
+      color: "fg.disabled",
+      borderColor: "border",
+      cursor: "not-allowed",
+      _placeholder: { color: "fg.disabled" },
+      _hover: { bg: "bg" },
+    },
+  },
+  variants: {
+    size: {
+      md: { h: "10", fontSize: "14px", lineHeight: "18px" },
+      sm: { h: "8", fontSize: "13px", lineHeight: "15px" },
+    },
+  },
+  defaultVariants: { size: "md" },
+});
+
+// Menu — Figma SYSTEM/Menu popover. 0.5px subtle border, 12px radius,
+// elevation2 shadow. Items 40px min-height, 12px/8px padding, Geist 14/18;
+// selected gets bg.subtle + medium weight.
+const menuSlotRecipe = defineSlotRecipe({
+  className: "agentic-menu",
+  slots: ["content", "item", "trigger", "indicator", "itemGroup", "itemGroupLabel", "separator"],
+  base: {
+    content: {
+      bg: "bg",
+      borderWidth: "0.5px",
+      borderColor: "border",
+      borderRadius: "xl",
+      boxShadow: "menu",
+      overflow: "hidden",
+      minW: "40",
+    },
+    item: {
+      fontFamily: "body",
+      fontSize: "14px",
+      lineHeight: "18px",
+      color: "fg",
+      px: "3",
+      py: "2",
+      minH: "10",
+      borderRadius: "0",
+      cursor: "pointer",
+      _hover: { bg: "bg.subtle" },
+      _focus: { bg: "bg.subtle" },
+      _highlighted: { bg: "bg.subtle" },
+      _selected: { bg: "bg.subtle", fontWeight: "500" },
+      _disabled: { color: "fg.disabled", cursor: "not-allowed" },
+    },
+    itemGroupLabel: {
+      fontFamily: "mono",
+      textTransform: "uppercase",
+      fontSize: "10px",
+      letterSpacing: "wide",
+      color: "fg.muted",
+      px: "3",
+      py: "1",
+    },
+    separator: {
+      borderColor: "border.muted",
+    },
+  },
+});
+
+// Dropdown / Select — Figma SYSTEM/DropdownMenu. White bg, 1px subtle border,
+// 8px radius, 12px h-pad, Geist body; chevron-sort right.
+// Hover: 1px medium border + tiny drop-shadow. Focus: medium border +
+// 2px blue focusRing. Open (data-state=open): black border, no shadow.
+// Disabled: subtle border, disabled text.
+// Content popover matches Menu: 0.5px border, 12px radius, 40h items.
+const selectSlotRecipe = defineSlotRecipe({
+  className: "agentic-select",
+  slots: [
+    "trigger",
+    "content",
+    "item",
+    "indicator",
+    "label",
+    "valueText",
+    "itemText",
+    "itemIndicator",
+    "itemGroup",
+    "itemGroupLabel",
+  ],
+  base: {
+    trigger: {
+      fontFamily: "body",
+      color: "fg",
+      bg: "bg",
+      px: "3",
+      gap: "2",
+      borderWidth: "1px",
+      borderColor: "border",
+      borderRadius: "lg",
+      cursor: "pointer",
+      transitionProperty: "background-color, border-color, box-shadow",
+      transitionDuration: "fast",
+      _placeholder: { color: "fg.muted" },
+      _hover: {
+        borderColor: "border.medium",
+        boxShadow: "0 1px 1px rgba(0,0,0,0.05)",
+      },
+      _focusVisible: {
+        outline: "none",
+        borderColor: "border.medium",
+        boxShadow: "focusRing",
+      },
+      "&[data-state='open']": {
+        borderColor: "border.strong",
+        boxShadow: "none",
+      },
+      _invalid: {
+        borderColor: "border.attention",
+      },
+      _disabled: {
+        borderColor: "border",
+        color: "fg.disabled",
+        bg: "bg",
+        cursor: "not-allowed",
+        _hover: { borderColor: "border", boxShadow: "none" },
+      },
+    },
+    content: {
+      bg: "bg",
+      borderWidth: "0.5px",
+      borderColor: "border",
+      borderRadius: "xl",
+      boxShadow: "menu",
+      overflow: "hidden",
+      minW: "40",
+    },
+    item: {
+      fontFamily: "body",
+      fontSize: "14px",
+      lineHeight: "18px",
+      color: "fg",
+      px: "3",
+      py: "2",
+      minH: "10",
+      cursor: "pointer",
+      _hover: { bg: "bg.subtle" },
+      _highlighted: { bg: "bg.subtle" },
+      _selected: { bg: "bg.subtle", fontWeight: "500" },
+      _disabled: { color: "fg.disabled", cursor: "not-allowed" },
+    },
+    valueText: {
+      color: "fg",
+    },
+    indicator: {
+      color: "fg.muted",
+    },
+    itemGroupLabel: {
+      fontFamily: "mono",
+      textTransform: "uppercase",
+      fontSize: "10px",
+      letterSpacing: "wide",
+      color: "fg.muted",
+      px: "3",
+      py: "1",
+    },
+  },
+  variants: {
+    size: {
+      md: {
+        trigger: { h: "10", fontSize: "14px", lineHeight: "18px" },
+      },
+      sm: {
+        trigger: { h: "8", fontSize: "13px", lineHeight: "15px" },
+      },
+    },
+  },
+  defaultVariants: { size: "md" },
+});
+
+// NativeSelect — same trigger styling for the native <select> element.
+// Uses the chevron from defaultConfig.
+const nativeSelectSlotRecipe = defineSlotRecipe({
+  className: "agentic-native-select",
+  slots: ["root", "field", "indicator"],
+  base: {
+    field: {
+      fontFamily: "body",
+      color: "fg",
+      bg: "bg",
+      px: "3",
+      borderWidth: "1px",
+      borderColor: "border",
+      borderRadius: "lg",
+      cursor: "pointer",
+      transitionProperty: "background-color, border-color",
+      transitionDuration: "fast",
+      _hover: {
+        borderColor: "border.medium",
+      },
+      _focusVisible: {
+        outline: "none",
+        borderColor: "border.medium",
+        boxShadow: "focusRing",
+      },
+      _invalid: {
+        borderColor: "border.attention",
+      },
+      _disabled: {
+        borderColor: "border",
+        color: "fg.disabled",
+        cursor: "not-allowed",
+        _hover: { borderColor: "border" },
+      },
+    },
+    indicator: {
+      color: "fg.muted",
+    },
+  },
+  variants: {
+    size: {
+      md: {
+        field: { h: "10", fontSize: "14px", lineHeight: "18px", pe: "8" },
+      },
+      sm: {
+        field: { h: "8", fontSize: "13px", lineHeight: "15px", pe: "7" },
+      },
+    },
+  },
+  defaultVariants: { size: "md" },
+});
+
 // File upload dropzone — idle/dragging/disabled.
 const fileUploadRecipe = defineRecipe({
   className: "agentic-file-upload",
@@ -662,8 +917,18 @@ const config = defineConfig({
           medium: {
             value: { base: "{colors.neutral.500}", _dark: "{colors.neutral.500}" },
           },
+          // Figma `border/strong` is true black; used for input focus + dropdown active.
           strong: {
-            value: { base: "{colors.neutral.800}", _dark: "{colors.neutral.100}" },
+            value: { base: "{colors.neutral.900}", _dark: "{colors.neutral.100}" },
+          },
+          attention: {
+            value: { base: "{colors.red.600}", _dark: "{colors.red.400}" },
+          },
+          success: {
+            value: { base: "{colors.green.600}", _dark: "{colors.green.400}" },
+          },
+          warning: {
+            value: { base: "{colors.yellow.600}", _dark: "{colors.yellow.400}" },
           },
         },
         // Button-specific surface colors (Figma BUTTON/* tokens).
@@ -806,125 +1071,17 @@ const config = defineConfig({
           _hover: { color: "fg.muted" },
         },
       },
-      // Form fields — DropdownMenu / Input.
-      // 40h, 1px subtle border, Geist 14/18 body, dark text on white.
-      input: {
-        base: {
-          fontFamily: "body",
-          fontSize: "14px",
-          lineHeight: "18px",
-          color: "fg",
-          bg: "bg",
-          h: "10",
-          px: "3",
-          borderWidth: "1px",
-          borderColor: "border",
-          borderRadius: "sm",
-          _placeholder: { color: "fg.muted" },
-          _hover: { borderColor: "border.medium" },
-          _focusVisible: {
-            outline: "none",
-            borderColor: "border.medium",
-            boxShadow: "focusRing",
-          },
-          _disabled: {
-            bg: "bg.subtle",
-            color: "fg.disabled",
-            cursor: "not-allowed",
-            _placeholder: { color: "fg.disabled" },
-          },
-        },
-      },
+      input: inputRecipe,
       helperText: helperTextRecipe,
       fileUpload: fileUploadRecipe,
     },
     slotRecipes: {
       table: tableSlotRecipe,
       breadcrumb: breadcrumbSlotRecipe,
-      // Menu — popover with subtle border + elevation.
-      menu: {
-        slots: ["content", "item", "trigger", "indicator", "itemGroup", "itemGroupLabel", "separator"],
-        base: {
-          content: {
-            bg: "bg",
-            borderWidth: "1px",
-            borderColor: "border",
-            borderRadius: "sm",
-            boxShadow: "menu",
-            py: "1",
-            minW: "40",
-          },
-          item: {
-            fontFamily: "body",
-            fontSize: "14px",
-            lineHeight: "18px",
-            color: "fg",
-            px: "3",
-            py: "2",
-            borderRadius: "0",
-            cursor: "pointer",
-            _hover: { bg: "bg.subtle" },
-            _focus: { bg: "bg.subtle" },
-            _highlighted: { bg: "bg.subtle" },
-            _selected: { bg: "bg.subtle", fontWeight: "500" },
-            _disabled: { color: "fg.disabled", cursor: "not-allowed" },
-          },
-          itemGroupLabel: {
-            fontFamily: "mono",
-            textTransform: "uppercase",
-            fontSize: "10px",
-            letterSpacing: "wide",
-            color: "fg.muted",
-            px: "3",
-            py: "1",
-          },
-          separator: {
-            borderColor: "border.muted",
-          },
-        },
-      },
+      menu: menuSlotRecipe,
       dialog: dialogSlotRecipe,
-      // Select / NativeSelect — same field styling as Input, with chevron from default.
-      select: {
-        slots: ["trigger", "content", "item", "indicator", "label"],
-        base: {
-          trigger: {
-            fontFamily: "body",
-            fontSize: "14px",
-            lineHeight: "18px",
-            color: "fg",
-            bg: "bg",
-            h: "10",
-            px: "3",
-            borderWidth: "1px",
-            borderColor: "border",
-            borderRadius: "sm",
-            _placeholder: { color: "fg.muted" },
-            _hover: { borderColor: "border.medium" },
-            _focusVisible: {
-              outline: "none",
-              borderColor: "border.medium",
-              boxShadow: "focusRing",
-            },
-          },
-          content: {
-            bg: "bg",
-            borderWidth: "1px",
-            borderColor: "border",
-            borderRadius: "sm",
-            boxShadow: "menu",
-          },
-          item: {
-            fontFamily: "body",
-            fontSize: "14px",
-            color: "fg",
-            px: "3",
-            py: "2",
-            _hover: { bg: "bg.subtle" },
-            _selected: { bg: "bg.subtle", fontWeight: "500" },
-          },
-        },
-      },
+      select: selectSlotRecipe,
+      nativeSelect: nativeSelectSlotRecipe,
     },
   },
   globalCss: {
