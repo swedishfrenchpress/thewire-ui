@@ -130,10 +130,9 @@ export function FileUploadArea({
 
 function UploadIcon() {
   return (
-    <Box
-      as="svg"
-      width="24px"
-      height="24px"
+    <svg
+      width="24"
+      height="24"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -145,6 +144,6 @@ function UploadIcon() {
       <path d="M12 4v12" />
       <path d="M6 10l6-6 6 6" />
       <path d="M4 20h16" />
-    </Box>
+    </svg>
   );
 }
