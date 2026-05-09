@@ -1,16 +1,10 @@
 "use client";
 
-import { Box, Stack } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { useQueries } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import {
-  ActiveCasesSection,
-  FailedSection,
-  ProcessingSection,
-} from "@/components/dashboard/CaseSection";
-import { EmptyDashboard } from "@/components/dashboard/EmptyDashboard";
-import { OverviewPanel } from "@/components/dashboard/OverviewPanel";
-import { PageHeader } from "@/components/dashboard/PageHeader";
+import { ActiveCasesTable } from "@/components/dashboard/ActiveCasesTable";
+import { OrbHero } from "@/components/landing/OrbHero";
 import { getCase } from "@/lib/api";
 import { compareCases, type Row } from "@/lib/triage";
 import type { CaseSummary } from "@/lib/types";
@@ -52,47 +46,34 @@ export default function DashboardPage() {
     [entries, queries],
   );
 
-  const { active, processing, failed } = useMemo(
-    () => partition(rows),
-    [rows],
-  );
+  const sortedRows = useMemo(() => sortRows(rows), [rows]);
 
   if (!mounted) {
-    return <Box maxW="960px" mx="auto" px="6" minH="60vh" />;
-  }
-
-  if (entries.length === 0) {
-    return (
-      <Box maxW="960px" mx="auto" px="6" pb="20">
-        <PageHeader />
-        <EmptyDashboard />
-      </Box>
-    );
+    return <Box minH="60vh" />;
   }
 
   return (
-    <Box maxW="960px" mx="auto" px="6" pb="20">
-      <PageHeader />
-      <Stack gap="0">
-        <ActiveCasesSection rows={active} />
-        {processing.length > 0 && <ProcessingSection rows={processing} />}
-        {failed.length > 0 && <FailedSection rows={failed} />}
-        <OverviewPanel rows={rows} />
-      </Stack>
-    </Box>
+    <>
+      <OrbHero />
+      {sortedRows.length > 0 && (
+        <Box maxW="1080px" mx="auto" px="6" pb="20">
+          <ActiveCasesTable rows={sortedRows} />
+        </Box>
+      )}
+    </>
   );
 }
 
-function partition(rows: Row[]) {
+function sortRows(rows: Row[]): Row[] {
   const active: Row[] = [];
   const processing: Row[] = [];
   const failed: Row[] = [];
 
   for (const r of rows) {
     const status = r.summary?.status;
-    if (status === "processing") {
+    if (status === "processing" || (r.isLoading && !r.summary)) {
       processing.push(r);
-    } else if (status === "failed") {
+    } else if (status === "failed" || r.isError) {
       failed.push(r);
     } else {
       active.push(r);
@@ -109,5 +90,5 @@ function partition(rows: Row[]) {
   processing.sort((a, b) => compareCases(a, b, "lastViewed", "desc"));
   failed.sort((a, b) => compareCases(a, b, "created", "desc"));
 
-  return { active, processing, failed };
+  return [...active, ...processing, ...failed];
 }
