@@ -4,9 +4,9 @@ import { Box } from "@chakra-ui/react";
 import type { Rating } from "@/lib/types";
 
 const STYLES: Record<Rating, { bg: string; color: string; label: string }> = {
-  high: { bg: "bg.attentionSubtle", color: "fg.attention", label: "HIGH" },
-  medium: { bg: "bg.warningSubtle", color: "fg.warning", label: "MEDIUM" },
-  low: { bg: "bg.successSubtle", color: "fg.success", label: "LOW" },
+  high: { bg: "bg.attentionSubtle", color: "fg.attention", label: "High" },
+  medium: { bg: "bg.warningSubtle", color: "fg.warning", label: "Medium" },
+  low: { bg: "bg.successSubtle", color: "fg.success", label: "Low" },
 };
 
 export function TriageBadge({ level }: { level: Rating | null }) {
@@ -15,12 +15,12 @@ export function TriageBadge({ level }: { level: Rating | null }) {
       <Box
         as="span"
         display="inline-block"
-        fontFamily="mono"
+        fontFamily="body"
         color="fg.disabled"
-        fontSize="11px"
-        lineHeight="13px"
+        fontSize="13px"
+        lineHeight="18px"
         textAlign="center"
-        minW="68px"
+        minW="64px"
       >
         —
       </Box>
@@ -35,16 +35,15 @@ export function TriageBadge({ level }: { level: Rating | null }) {
       justifyContent="center"
       bg={s.bg}
       color={s.color}
-      fontFamily="mono"
-      fontSize="11px"
-      lineHeight="13px"
-      fontWeight="500"
-      letterSpacing="wide"
-      textTransform="uppercase"
+      fontFamily="body"
+      fontSize="13px"
+      lineHeight="15px"
+      fontWeight="400"
       px="2"
-      py="1"
-      borderRadius="sm"
-      minW="68px"
+      py="0.5"
+      borderRadius="md"
+      minH="19px"
+      minW="64px"
     >
       {s.label}
     </Box>

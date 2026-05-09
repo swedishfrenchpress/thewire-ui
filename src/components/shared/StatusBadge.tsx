@@ -7,9 +7,9 @@ const STYLES: Record<
   CaseStatus,
   { bg: string; color: string; label: string }
 > = {
-  processing: { bg: "bg.subtle", color: "fg.muted", label: "PROCESSING" },
-  complete: { bg: "transparent", color: "fg", label: "COMPLETE" },
-  failed: { bg: "bg.attentionSubtle", color: "fg.attention", label: "FAILED" },
+  processing: { bg: "bg.muted", color: "fg.muted", label: "Processing" },
+  complete: { bg: "transparent", color: "fg", label: "Complete" },
+  failed: { bg: "bg.attentionSubtle", color: "fg.attention", label: "Failed" },
 };
 
 export function StatusBadge({ status }: { status: CaseStatus }) {
@@ -22,16 +22,15 @@ export function StatusBadge({ status }: { status: CaseStatus }) {
       justifyContent="center"
       bg={s.bg}
       color={s.color}
-      fontFamily="mono"
-      fontSize="11px"
-      lineHeight="13px"
-      fontWeight="500"
-      letterSpacing="wide"
-      textTransform="uppercase"
+      fontFamily="body"
+      fontSize="13px"
+      lineHeight="15px"
+      fontWeight="400"
       px="2"
-      py="1"
-      borderRadius="sm"
-      minW="92px"
+      py="0.5"
+      borderRadius="md"
+      minH="19px"
+      minW="84px"
       animation={
         status === "processing"
           ? "wirePulse 2s ease-in-out infinite"

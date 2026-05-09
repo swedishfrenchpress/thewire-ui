@@ -21,9 +21,9 @@ export function ShaderSphere({ segments }: ShaderSphereProps) {
   const uniforms = useMemo(
     () => ({
       ...SHADER_UNIFORMS,
-      uLightAColor: { value: new THREE.Color("#191919") },
-      uLightBColor: { value: new THREE.Color("#4a4a4a") },
-      uBaseColor: { value: new THREE.Color("#e5e5e5") },
+      uLightAColor: { value: new THREE.Color("#f7f7f7") },
+      uLightBColor: { value: new THREE.Color("#a5a5a5") },
+      uBaseColor: { value: new THREE.Color("#191919") },
     }),
     [],
   );

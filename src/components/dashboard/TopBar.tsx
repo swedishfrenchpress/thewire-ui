@@ -2,6 +2,7 @@
 
 import { Box, HStack, Spacer, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { UploadModal } from "@/components/UploadModal";
 import {
@@ -57,7 +58,7 @@ export function TopBar() {
       >
         <NextLink
           href="/"
-          aria-label="Palantir for the People — home"
+          aria-label="Palantir for the People, home"
           style={{
             textDecoration: "none",
             display: "inline-flex",
@@ -108,6 +109,11 @@ export function TopBar() {
           </HStack>
         </NextLink>
 
+        <HStack gap="6" display={{ base: "none", md: "flex" }} ml="6">
+          <NavLink href="/about" label="About" />
+          <NavLink href="/methodology" label="Methodology" />
+        </HStack>
+
         <Spacer />
 
         <Text
@@ -130,5 +136,28 @@ export function TopBar() {
         onClose={() => uploadDialogStore.closeDialog()}
       />
     </Box>
+  );
+}
+
+function NavLink({ href, label }: { href: string; label: string }) {
+  const pathname = usePathname();
+  const isActive = pathname === href || pathname.startsWith(`${href}/`);
+  return (
+    <NextLink href={href} style={{ textDecoration: "none" }}>
+      <Text
+        as="span"
+        fontFamily="mono"
+        fontSize="11px"
+        lineHeight="14px"
+        letterSpacing="wider"
+        textTransform="uppercase"
+        fontWeight="500"
+        color={isActive ? "fg" : "fg.muted"}
+        transition="color 150ms"
+        _hover={{ color: "fg" }}
+      >
+        {label}
+      </Text>
+    </NextLink>
   );
 }

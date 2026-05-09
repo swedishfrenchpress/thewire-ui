@@ -58,24 +58,26 @@ export function ActiveCasesTable({ rows }: { rows: Row[] }) {
   return (
     <Box>
       <SectionHeading count={rows.length} />
-      <Table.Root size="md" interactive>
-        <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader w="112px">Triage</Table.ColumnHeader>
-            <Table.ColumnHeader>Case</Table.ColumnHeader>
-            <Table.ColumnHeader>Top topic</Table.ColumnHeader>
-            <Table.ColumnHeader textAlign="end" w="96px">
-              Docs
-            </Table.ColumnHeader>
-            <Table.ColumnHeader w="80px">Filed</Table.ColumnHeader>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {rows.map((row) => (
-            <CaseRow key={row.entry.caseId} row={row} />
-          ))}
-        </Table.Body>
-      </Table.Root>
+      <Box bg="bg.subtle" borderRadius="2xl" px="2" overflow="hidden">
+        <Table.Root size="md" interactive>
+          <Table.Header>
+            <Table.Row>
+              <Table.ColumnHeader w="112px">Triage</Table.ColumnHeader>
+              <Table.ColumnHeader>Case</Table.ColumnHeader>
+              <Table.ColumnHeader>Top topic</Table.ColumnHeader>
+              <Table.ColumnHeader textAlign="end" w="96px">
+                Docs
+              </Table.ColumnHeader>
+              <Table.ColumnHeader w="80px">Filed</Table.ColumnHeader>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
+            {rows.map((row) => (
+              <CaseRow key={row.entry.caseId} row={row} />
+            ))}
+          </Table.Body>
+        </Table.Root>
+      </Box>
     </Box>
   );
 }

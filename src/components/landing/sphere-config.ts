@@ -6,7 +6,7 @@ export const SPHERE_CONFIG = {
 
   timeScale: 0.3,
   intensityDecay: 0.9,
-  rotationSpeed: 5.0,
+  rotationSpeed: 1.5,
 
   cameraPosition: [0, 0, 5] as [number, number, number],
   cameraFov: 50,
@@ -15,8 +15,8 @@ export const SPHERE_CONFIG = {
 };
 
 export const ANIMATION_INTENSITY = {
-  baseDistortion: 0.15,
-  baseDisplacement: 0.1,
+  baseDistortion: 0.05,
+  baseDisplacement: 0.04,
   baseLightIntensity: 2.0,
 };
 
@@ -31,11 +31,11 @@ export const SHADER_UNIFORMS = {
   uBaseColor: { value: new THREE.Color("#e5e5e5") },
   uSubdivision: { value: new THREE.Vector2(64, 64) },
   uOffset: { value: new THREE.Vector3(0, 0, 0) },
-  uDistortionFrequency: { value: 0.8 },
+  uDistortionFrequency: { value: 1.6 },
   uDistortionStrength: { value: ANIMATION_INTENSITY.baseDistortion },
-  uDisplacementFrequency: { value: 0.8 },
+  uDisplacementFrequency: { value: 1.8 },
   uDisplacementStrength: { value: ANIMATION_INTENSITY.baseDisplacement },
-  uFresnelOffset: { value: -1.6 },
-  uFresnelMultiplier: { value: 3.587 },
-  uFresnelPower: { value: 2.5 },
+  uFresnelOffset: { value: -1.2 },
+  uFresnelMultiplier: { value: 3.0 },
+  uFresnelPower: { value: 1.8 },
 };

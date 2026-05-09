@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { JetBrains_Mono } from "next/font/google";
 import { Provider } from "@/components/Provider";
 import { QueryProvider } from "@/components/QueryProvider";
+import { Toaster } from "@/components/Toaster";
 import { TopBar } from "@/components/dashboard/TopBar";
 import "./globals.css";
 
@@ -58,6 +59,7 @@ export default function RootLayout({
           <QueryProvider>
             <TopBar />
             {children}
+            <Toaster />
           </QueryProvider>
         </Provider>
       </body>

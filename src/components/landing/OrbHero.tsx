@@ -66,14 +66,9 @@ export function OrbHero() {
           size="lg"
           variant="solid"
           onClick={() => uploadDialogStore.openDialog()}
-          borderRadius="full"
-          h="48px"
-          px="7"
           minW="220px"
-          fontSize="13px"
-          letterSpacing="wide"
         >
-          + Upload a document
+          + New case
         </Button>
       </Stack>
     </Box>

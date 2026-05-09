@@ -175,12 +175,17 @@ const tableSlotRecipe = defineSlotRecipe({
       width: "full",
       borderCollapse: "collapse",
       captionSide: "bottom",
+      bg: "transparent",
     },
     header: {
       bg: "bg.subtle",
     },
     body: {
       bg: "bg",
+      "& tr:last-of-type td": {
+        borderBottomWidth: "0",
+        boxShadow: "inset 0 -1px 0 rgba(0,0,0,0.05)",
+      },
     },
     row: {
       bg: "bg",
@@ -197,7 +202,7 @@ const tableSlotRecipe = defineSlotRecipe({
       color: "fg.muted",
       bg: "bg.subtle",
       h: "10",
-      px: "6",
+      px: "4",
       py: "3",
       textAlign: "start",
       whiteSpace: "nowrap",
@@ -244,7 +249,7 @@ const tableSlotRecipe = defineSlotRecipe({
       true: {
         row: {
           cursor: "pointer",
-          _hover: { bg: "bg.subtle" },
+          _hover: { bg: "bg.muted" },
         },
       },
     },

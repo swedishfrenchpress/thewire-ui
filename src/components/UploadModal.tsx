@@ -1,9 +1,16 @@
 "use client";
 
-import { Box, Button, IconButton, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  IconButton,
+  Stack,
+  Text,
+  Textarea,
+} from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Dialog } from "@/components/Dialog";
 import { FileUploadArea } from "@/components/FileUploadArea";
 import { HelperText } from "@/components/HelperText";
@@ -21,35 +28,53 @@ type Props = {
   onClose: () => void;
 };
 
+const MAX_FILES = 5;
+
 export function UploadModal({ open, initialFiles = [], onClose }: Props) {
-  const router = useRouter();
+  const [reportText, setReportText] = useState("");
   const [files, setFiles] = useState<File[]>(initialFiles);
 
   const mutation = useMutation({
-    mutationFn: async (selected: File[]) => {
+    mutationFn: async ({
+      text,
+      selected,
+    }: {
+      text: string;
+      selected: File[];
+    }) => {
       const documents = await Promise.all(
         selected.map(async (f) => ({
           filename: f.name,
           content: await readFileAsText(f),
         })),
       );
+      const trimmed = text.trim();
+      if (trimmed.length > 0) {
+        // TODO: switch to a per-document `description` field when the backend ships it.
+        documents.unshift({ filename: "report.txt", content: trimmed });
+      }
       const result = await createCase({ documents });
-      return { result, displayName: deriveDisplayName(selected) };
+      return {
+        result,
+        displayName: deriveDisplayName(text, selected),
+        count: documents.length,
+      };
     },
-    onSuccess: ({ result, displayName }) => {
+    onSuccess: ({ result, displayName, count }) => {
       casesStore.addCase(result.case_id, displayName);
       onClose();
-      router.push(`/cases/${result.case_id}`);
+      toast.success("Case created", {
+        description: `${displayName}, ${count} document${count === 1 ? "" : "s"}`,
+      });
     },
   });
 
-  // Reset internal state whenever the modal is opened (or seeded with new files).
   useEffect(() => {
     if (open) {
+      setReportText("");
       setFiles(initialFiles);
       mutation.reset();
     }
-    // intentionally exclude mutation from deps — it's only reset on open transitions
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initialFiles]);
 
@@ -57,9 +82,11 @@ export function UploadModal({ open, initialFiles = [], onClose }: Props) {
     setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const hasContent = reportText.trim().length > 0 || files.length > 0;
+
   const onSubmit = () => {
-    if (files.length === 0 || mutation.isPending) return;
-    mutation.mutate(files);
+    if (!hasContent || mutation.isPending) return;
+    mutation.mutate({ text: reportText, selected: files });
   };
 
   const handleOpenChange = (details: { open: boolean }) => {
@@ -74,34 +101,62 @@ export function UploadModal({ open, initialFiles = [], onClose }: Props) {
         <Dialog.Header>
           <Dialog.Title>New case</Dialog.Title>
           <Dialog.Description>
-            Drop documents to create a case. Plain text or Markdown, up to 10
-            files.
+            Type a report, attach documents, or both. We triage what you send.
           </Dialog.Description>
         </Dialog.Header>
         <Dialog.Body>
-          <Stack gap="4">
-            <Box w="full">
-              <FileUploadArea
-                files={files}
-                onChange={setFiles}
-                accept="text/plain,.txt,.md"
-                hint="Plain text or Markdown"
+          <Stack gap="6">
+            <Stack gap="2">
+              <FieldLabel>What is the report?</FieldLabel>
+              <Textarea
+                value={reportText}
+                onChange={(e) => setReportText(e.target.value)}
+                placeholder="Describe what happened. When, where, who was involved."
+                minH="160px"
+                resize="vertical"
                 disabled={mutation.isPending}
+                fontFamily="body"
+                fontSize="14px"
+                lineHeight="20px"
+                px="3"
+                py="3"
+                borderWidth="1px"
+                borderColor="border"
+                borderRadius="lg"
+                bg="bg"
+                color="fg"
+                _placeholder={{ color: "fg.muted" }}
+                _hover={{ bg: "bg.subtle" }}
+                _focusVisible={{
+                  outline: "none",
+                  bg: "bg",
+                  borderColor: "border.strong",
+                }}
+                _disabled={{
+                  bg: "bg",
+                  color: "fg.disabled",
+                  cursor: "not-allowed",
+                }}
               />
-            </Box>
+            </Stack>
+
+            <Stack gap="2">
+              <FieldLabel>Attach documents (optional)</FieldLabel>
+              <Box w="full">
+                <FileUploadArea
+                  files={files}
+                  onChange={setFiles}
+                  accept="text/plain,.txt,.md"
+                  hint="Plain text or Markdown"
+                  maxFiles={MAX_FILES}
+                  disabled={mutation.isPending}
+                />
+              </Box>
+            </Stack>
 
             {files.length > 0 && (
               <Stack gap="2">
-                <Text
-                  fontFamily="mono"
-                  fontSize="11px"
-                  letterSpacing="wider"
-                  textTransform="uppercase"
-                  color="fg.muted"
-                  fontWeight="500"
-                >
-                  Selected ({files.length})
-                </Text>
+                <FieldLabel>Selected ({files.length})</FieldLabel>
                 <Stack gap="0">
                   {files.map((f, i) => (
                     <FileRow
@@ -133,13 +188,30 @@ export function UploadModal({ open, initialFiles = [], onClose }: Props) {
             flex="1"
             onClick={onSubmit}
             loading={mutation.isPending}
-            disabled={files.length === 0}
+            disabled={!hasContent}
           >
-            Create case ({files.length} file{files.length === 1 ? "" : "s"})
+            Create case
           </Button>
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog>
+  );
+}
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <Text
+      as="label"
+      fontFamily="mono"
+      fontSize="11px"
+      lineHeight="13px"
+      letterSpacing="wider"
+      textTransform="uppercase"
+      color="fg.muted"
+      fontWeight="500"
+    >
+      {children}
+    </Text>
   );
 }
 
