@@ -6,7 +6,7 @@ export interface Heuristic {
   description: string;
 }
 
-export interface CategorySummary {
+export interface TopicSummary {
   id: number;
   title: string;
   triage: Rating;
@@ -20,10 +20,10 @@ export interface CaseSummary {
   created_at: string;
   status: CaseStatus;
   document_count: number;
-  categories: CategorySummary[];
+  topics: TopicSummary[];
 }
 
-export interface CategoryDetail {
+export interface TopicDetail {
   id: number;
   title: string;
   triage: Rating;
@@ -32,9 +32,9 @@ export interface CategoryDetail {
   heuristics: Heuristic[];
 }
 
-export interface CategoryDetailResponse {
+export interface TopicDetailResponse {
   case_id: number;
-  category: CategoryDetail;
+  topic: TopicDetail;
 }
 
 export interface DocumentRecord {
@@ -44,9 +44,9 @@ export interface DocumentRecord {
   heuristics: Heuristic[];
 }
 
-export interface CategoryDocumentsResponse {
+export interface TopicDocumentsResponse {
   case_id: number;
-  category_id: number;
+  topic_id: number;
   documents: DocumentRecord[];
 }
 

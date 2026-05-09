@@ -266,17 +266,17 @@ function sublineText(
     const docs = summary.document_count;
     return `Analyzing ${docs} document${docs === 1 ? "" : "s"}…`;
   }
-  const cats = summary.categories.length;
+  const tops = summary.topics.length;
   const docs = summary.document_count;
   const TRIAGE_ORDER = { high: 0, medium: 1, low: 2 } as const;
-  const topCategory = [...summary.categories].sort(
+  const topTopic = [...summary.topics].sort(
     (a, b) => TRIAGE_ORDER[a.triage] - TRIAGE_ORDER[b.triage],
   )[0];
   const parts = [
-    `${cats} categor${cats === 1 ? "y" : "ies"}`,
+    `${tops} topic${tops === 1 ? "" : "s"}`,
     `${docs} document${docs === 1 ? "" : "s"}`,
   ];
-  if (topCategory?.title) parts.push(`top: ${topCategory.title}`);
+  if (topTopic?.title) parts.push(`top: ${topTopic.title}`);
   return parts.join(" · ");
 }
 

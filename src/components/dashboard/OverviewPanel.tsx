@@ -10,12 +10,12 @@ export function OverviewPanel({ rows }: { rows: Row[] }) {
   const total = rows.length;
 
   let documentsAnalyzed = 0;
-  let highTriageCategories = 0;
+  let highTriageTopics = 0;
   for (const r of rows) {
     if (!r.summary) continue;
     documentsAnalyzed += r.summary.document_count;
-    for (const c of r.summary.categories) {
-      if (c.triage === "high") highTriageCategories++;
+    for (const t of r.summary.topics) {
+      if (t.triage === "high") highTriageTopics++;
     }
   }
 
@@ -49,9 +49,9 @@ export function OverviewPanel({ rows }: { rows: Row[] }) {
           <BigValue>{String(documentsAnalyzed)}</BigValue>
         </MetricColumn>
 
-        <MetricColumn label="High triage categories">
-          <BigValue tone={highTriageCategories > 0 ? "attention" : "default"}>
-            {pad(highTriageCategories)}
+        <MetricColumn label="High triage topics">
+          <BigValue tone={highTriageTopics > 0 ? "attention" : "default"}>
+            {pad(highTriageTopics)}
           </BigValue>
         </MetricColumn>
 

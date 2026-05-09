@@ -1,9 +1,9 @@
 import type {
   CaseSummary,
-  CategoryDetailResponse,
-  CategoryDocumentsResponse,
   CreateCaseRequest,
   CreateCaseResponse,
+  TopicDetailResponse,
+  TopicDocumentsResponse,
 } from "@/lib/types";
 
 const API_BASE_URL =
@@ -46,16 +46,16 @@ export function getCase(caseId: number): Promise<CaseSummary> {
   return request(`/api/v1/cases/${caseId}`);
 }
 
-export function getCategory(
+export function getTopic(
   caseId: number,
-  categoryId: number,
-): Promise<CategoryDetailResponse> {
-  return request(`/api/v1/cases/${caseId}/categories/${categoryId}`);
+  topicId: number,
+): Promise<TopicDetailResponse> {
+  return request(`/api/v1/cases/${caseId}/topics/${topicId}`);
 }
 
-export function getCategoryDocuments(
+export function getTopicDocuments(
   caseId: number,
-  categoryId: number,
-): Promise<CategoryDocumentsResponse> {
-  return request(`/api/v1/cases/${caseId}/categories/${categoryId}/documents`);
+  topicId: number,
+): Promise<TopicDocumentsResponse> {
+  return request(`/api/v1/cases/${caseId}/topics/${topicId}/documents`);
 }
