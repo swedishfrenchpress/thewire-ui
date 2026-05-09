@@ -452,6 +452,12 @@ const fileUploadRecipe = defineRecipe({
 
 const config = defineConfig({
   theme: {
+    keyframes: {
+      wirePulse: {
+        "0%, 100%": { opacity: "1" },
+        "50%": { opacity: "0.55" },
+      },
+    },
     tokens: {
       colors: palette,
       fonts: {
@@ -847,6 +853,12 @@ const config = defineConfig({
       bg: "neutral.800",
       color: "neutral.100",
     },
+    "[data-pencil]": {
+      opacity: 0,
+      transition: "opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+    },
+    "tr[data-row]:hover [data-pencil]": { opacity: 1 },
+    "[data-pencil]:focus-visible": { opacity: 1 },
   },
 });
 

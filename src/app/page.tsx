@@ -1,78 +1,119 @@
 "use client";
 
-import { Button, Container, Heading, Stack } from "@chakra-ui/react";
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
-import { FileUploadArea } from "@/components/FileUploadArea";
-import { HelperText } from "@/components/HelperText";
-import { createCase } from "@/lib/api";
+import { Box } from "@chakra-ui/react";
+import { useQueries } from "@tanstack/react-query";
+import { useEffect, useMemo, useState } from "react";
+import { CaseFilters, type StatusFilters } from "@/components/dashboard/CaseFilters";
+import { CaseList } from "@/components/dashboard/CaseList";
+import { DashboardHeader } from "@/components/dashboard/DashboardHeader";
+import { getCase } from "@/lib/api";
+import { compareCases, type Row, type SortDir, type SortKey } from "@/lib/triage";
+import type { CaseSummary } from "@/lib/types";
+import { useCases } from "@/lib/use-cases";
 
-function readFileAsText(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsText(file);
+const ALL_STATUS: StatusFilters = {
+  processing: true,
+  complete: true,
+  failed: true,
+};
+
+export default function DashboardPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const entries = useCases();
+
+  const queries = useQueries({
+    queries: entries.map((e) => ({
+      queryKey: ["case", e.caseId] as const,
+      queryFn: () => getCase(e.caseId),
+      refetchInterval: (q: { state: { data?: CaseSummary } }) =>
+        q.state.data?.status === "processing" ? 3000 : false,
+      staleTime: 30_000,
+      retry: 2,
+    })),
   });
-}
 
-export default function UploadPage() {
-  const router = useRouter();
-  const [files, setFiles] = useState<File[]>([]);
+  const rows: Row[] = useMemo(
+    () =>
+      entries.map((entry, i) => {
+        const q = queries[i];
+        return {
+          entry,
+          summary: q?.data,
+          isLoading: q?.isLoading ?? false,
+          isError: q?.isError ?? false,
+          refetch: () => {
+            q?.refetch();
+          },
+        };
+      }),
+    [entries, queries],
+  );
 
-  const mutation = useMutation({
-    mutationFn: async (selected: File[]) => {
-      const documents = await Promise.all(
-        selected.map(async (f) => ({
-          filename: f.name,
-          content: await readFileAsText(f),
-        })),
+  const [sort, setSort] = useState<{ key: SortKey; dir: SortDir }>({
+    key: "topTriage",
+    dir: "desc",
+  });
+  const [statusFilters, setStatusFilters] =
+    useState<StatusFilters>(ALL_STATUS);
+  const [search, setSearch] = useState("");
+
+  const { pinned, unpinned } = useMemo(() => {
+    let r = rows;
+    const q = search.trim().toLowerCase();
+    if (q) {
+      r = r.filter((row) =>
+        row.entry.displayName.toLowerCase().includes(q),
       );
-      return createCase({ documents });
-    },
-    onSuccess: ({ case_id }) => {
-      router.push(`/dashboard?case=${case_id}`);
-    },
-  });
+    }
+    const allOn =
+      statusFilters.processing &&
+      statusFilters.complete &&
+      statusFilters.failed;
+    if (!allOn) {
+      r = r.filter((row) => {
+        if (!row.summary) return true;
+        return statusFilters[row.summary.status];
+      });
+    }
+    const cmp = (a: Row, b: Row) => compareCases(a, b, sort.key, sort.dir);
+    return {
+      pinned: r.filter((x) => x.entry.pinned).slice().sort(cmp),
+      unpinned: r.filter((x) => !x.entry.pinned).slice().sort(cmp),
+    };
+  }, [rows, sort, statusFilters, search]);
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (files.length === 0) return;
-    mutation.mutate(files);
-  };
+  if (!mounted) {
+    return <Box maxW="1280px" mx="auto" px="6" py="6" minH="60vh" />;
+  }
 
   return (
-    <Container maxW="3xl" py="12">
-      <Stack gap="6">
-        <Heading size="3xl">Upload</Heading>
-        <form onSubmit={onSubmit}>
-          <Stack gap="4">
-            <FileUploadArea
-              files={files}
-              onChange={setFiles}
-              accept="text/plain,.txt,.md"
-              hint="Plain text or Markdown"
-              disabled={mutation.isPending}
-            />
-
-            {mutation.isError && (
-              <HelperText tone="error">
-                Upload failed: {String(mutation.error)}
-              </HelperText>
-            )}
-
-            <Button
-              type="submit"
-              loading={mutation.isPending}
-              disabled={files.length === 0}
-              alignSelf="flex-start"
-            >
-              Upload {files.length} file{files.length === 1 ? "" : "s"}
-            </Button>
-          </Stack>
-        </form>
-      </Stack>
-    </Container>
+    <Box maxW="1280px" mx="auto" px="6" py="6">
+      <DashboardHeader rows={rows} />
+      {entries.length > 0 && (
+        <CaseFilters
+          sort={sort}
+          onSortChange={setSort}
+          statusFilters={statusFilters}
+          onStatusFiltersChange={setStatusFilters}
+          search={search}
+          onSearchChange={setSearch}
+        />
+      )}
+      <CaseList
+        pinned={pinned}
+        unpinned={unpinned}
+        hasAnyEntries={entries.length > 0}
+        sort={sort}
+        onSortChange={setSort}
+        onClearFilters={() => {
+          setStatusFilters(ALL_STATUS);
+          setSearch("");
+        }}
+      />
+    </Box>
   );
 }
