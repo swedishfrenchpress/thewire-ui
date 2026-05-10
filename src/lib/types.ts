@@ -45,6 +45,7 @@ export interface DocumentRecord {
   filename: string;
   content: string;
   heuristics: Heuristic[];
+  facts_to_verify: string[];
 }
 
 export interface TopicDocumentsResponse {
