@@ -8,11 +8,7 @@ import { HelperText } from "@/components/HelperText";
 import { createCase } from "@/lib/api";
 import { notify } from "@/lib/notify";
 import { casesStore } from "@/lib/cases-store";
-import {
-  deriveDisplayName,
-  formatBytes,
-  readFileAsText,
-} from "@/lib/upload-helpers";
+import { formatBytes, readFileAsText } from "@/lib/upload-helpers";
 
 const ACCEPT = "text/plain,.txt,.md";
 
@@ -44,11 +40,11 @@ export function TipComposer() {
       const result = await createCase({ documents });
       return {
         result,
-        displayName: deriveDisplayName(text, selected),
         count: documents.length,
       };
     },
-    onSuccess: ({ result, displayName, count }) => {
+    onSuccess: ({ result, count }) => {
+      const displayName = `Case #${result.case_id}`;
       casesStore.addCase(result.case_id, displayName);
       setReportText("");
       setFiles([]);
