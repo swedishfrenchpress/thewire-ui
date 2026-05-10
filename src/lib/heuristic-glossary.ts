@@ -147,3 +147,8 @@ export function definitionFor(name: string): HeuristicDefinition | null {
 export function displayHeuristicName(name: string): string {
   return name.replace(/_/g, " ");
 }
+
+/** Title-case version: "evidence_quality" → "Evidence Quality". */
+export function titleCaseHeuristicName(name: string): string {
+  return name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}

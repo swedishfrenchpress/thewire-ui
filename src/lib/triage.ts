@@ -1,4 +1,5 @@
 import type { CaseEntry } from "@/lib/cases-store";
+import { titleCaseHeuristicName } from "@/lib/heuristic-glossary";
 import { polarityOf } from "@/lib/heuristic-polarity";
 import type {
   CaseSummary,
@@ -251,7 +252,7 @@ export function distributeHeuristicsByVerdict(
   return distributeByVerdict(
     heuristics,
     (h) => heuristicVerdict(h),
-    (h) => h.name,
+    (h) => titleCaseHeuristicName(h.name),
     "signals",
   );
 }

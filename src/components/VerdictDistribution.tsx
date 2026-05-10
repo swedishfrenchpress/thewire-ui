@@ -103,8 +103,8 @@ export function VerdictDistributionView({
             return (
               <Box
                 key={seg.verdict}
-                flexBasis={`${seg.pct}%`}
-                flexGrow={0}
+                flexBasis="max-content"
+                flexGrow={seg.pct}
                 flexShrink={0}
                 bg={style.bg}
                 color={style.color}
