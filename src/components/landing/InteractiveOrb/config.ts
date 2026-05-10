@@ -29,7 +29,7 @@ export const ORB_RANGES = {
   distortionFrequencyMaxProcessing: 4,
   distortionStrengthIdle: 0.1,
   distortionStrengthBusy: 0.18,
-  fresnelMultiplier: { idle: 2.5, hot: 4.0 },
+  fresnelMultiplier: { idle: 4.0, hot: 4.0 },
   // Lerp factor per frame. ~0.04 settles in roughly one second at 60fps.
   lerp: 0.04,
   // Submission ping: brief boost to time advance when a new filing arrived.
@@ -43,9 +43,9 @@ export function makeShaderUniforms() {
     uLightAColor: { value: new THREE.Color("#5cb478") },
     uLightAPosition: { value: new THREE.Vector3(1, 1, 0) },
     uLightAIntensity: { value: 0.7 },
-    uLightBColor: { value: new THREE.Color("#000000") },
+    uLightBColor: { value: new THREE.Color("#5cb478") },
     uLightBPosition: { value: new THREE.Vector3(-1, -1, 0) },
-    uLightBIntensity: { value: 0.3 },
+    uLightBIntensity: { value: 0.7 },
     uBaseColor: { value: new THREE.Color("#1a1a1a") },
     uSubdivision: { value: new THREE.Vector2(64, 64) },
     uOffset: { value: new THREE.Vector3(0, 0, 0) },

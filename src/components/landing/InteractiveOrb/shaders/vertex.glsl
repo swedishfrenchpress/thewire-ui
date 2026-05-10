@@ -217,8 +217,8 @@ void main()
     vFresnel = fresnel;
 
     // Color
-    float lightARatio = max(0.0, dot(computedNormal, normalize(uLightAPosition)));
-    float lightBRatio = max(0.0, dot(computedNormal, normalize(uLightBPosition)));
+    float lightARatio = 0.5 + 0.5 * dot(computedNormal, normalize(uLightAPosition));
+    float lightBRatio = 0.5 + 0.5 * dot(computedNormal, normalize(uLightBPosition));
 
   // Base color plus additive lighting to avoid harsh seams where lights overlap
   vec3 baseColor = uBaseColor;
