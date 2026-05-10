@@ -2,19 +2,17 @@
 
 import { Box, Stack, Text } from "@chakra-ui/react";
 import type { ReactNode } from "react";
-import { TRIAGE_LABELS, type Distribution } from "@/lib/triage";
+import {
+  RATING_SHORT_LABEL,
+  TRIAGE_LABELS,
+  type Distribution,
+} from "@/lib/triage";
 import type { Rating } from "@/lib/types";
 
 const SEGMENT_STYLE: Record<Rating, { bg: string; color: string }> = {
   high: { bg: "bg.attentionSubtle", color: "fg.attention" },
   medium: { bg: "bg.warningSubtle", color: "fg.warning" },
   low: { bg: "bg.successSubtle", color: "fg.success" },
-};
-
-const SHORT_LABEL: Record<Rating, string> = {
-  high: "HIGH",
-  medium: "MED",
-  low: "LOW",
 };
 
 export interface TriageDistributionProps {
@@ -118,7 +116,7 @@ export function TriageDistribution({
                 overflow="hidden"
                 title={`${TRIAGE_LABELS[seg.rating]} ${seg.pct.toFixed(0)}% (${seg.count})`}
               >
-                {SHORT_LABEL[seg.rating]} {seg.pct.toFixed(0)}%
+                {RATING_SHORT_LABEL[seg.rating]} {seg.pct.toFixed(0)}%
               </Box>
             );
           })
@@ -148,7 +146,7 @@ export function TriageDistribution({
                     py="0.5"
                     borderRadius="sm"
                   >
-                    {SHORT_LABEL[seg.rating]}
+                    {RATING_SHORT_LABEL[seg.rating]}
                   </Box>
                   <Text
                     as="span"

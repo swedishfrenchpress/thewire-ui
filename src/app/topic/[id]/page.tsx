@@ -108,7 +108,7 @@ function HeuristicDistributionPanel({
       bg="bg"
     >
       <TriageDistribution
-        eyebrow="Heuristic distribution"
+        eyebrow="Signal mix across this topic"
         unit="heuristics"
         distribution={dist}
       />
@@ -355,12 +355,12 @@ function TopicContent() {
         </GridItem>
         <GridItem>
           <Stack gap="4" position={{ lg: "sticky" }} top={{ lg: "6" }}>
-            {/* With a single doc the bar is trivially 100%; only show
-                the document mix once a real distribution exists. */}
-            {docs.length > 1 && <DistributionPanel docs={docs} />}
             {t.heuristics.length > 0 && (
               <HeuristicDistributionPanel heuristics={t.heuristics} />
             )}
+            {/* With a single doc the bar is trivially 100%; only show
+                the document mix once a real distribution exists. */}
+            {docs.length > 1 && <DistributionPanel docs={docs} />}
           </Stack>
         </GridItem>
       </Grid>

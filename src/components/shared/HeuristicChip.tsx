@@ -2,21 +2,45 @@
 
 import { Box } from "@chakra-ui/react";
 import { polarityFor, type Polarity } from "@/lib/heuristic-polarity";
+import { RATING_SHORT_LABEL } from "@/lib/triage";
 import type { Rating } from "@/lib/types";
 
-type ToneStyle = { bg: string; color: string };
+type ToneStyle = { bg: string; color: string; border: string };
 
-const POSITIVE: ToneStyle = { bg: "bg.successSubtle", color: "fg.success" };
-const NEGATIVE: ToneStyle = { bg: "bg.attentionSubtle", color: "fg.attention" };
+const POSITIVE: ToneStyle = {
+  bg: "bg.successSubtle",
+  color: "fg.success",
+  border: "transparent",
+};
+const NEGATIVE: ToneStyle = {
+  bg: "bg.attentionSubtle",
+  color: "fg.attention",
+  border: "transparent",
+};
 const NEUTRAL_MEDIUM: ToneStyle = {
   bg: "bg.warningSubtle",
   color: "fg.warning",
+  border: "transparent",
 };
-const UNKNOWN: ToneStyle = { bg: "bg.subtle", color: "fg.muted" };
+// Unknown polarity (count metrics like `claims`, `validation`) — no
+// good/bad direction to encode, but we still need HIGH and LOW to read as
+// distinct from MEDIUM and from each other.
+const UNKNOWN_HIGH: ToneStyle = {
+  bg: "bg.muted",
+  color: "fg",
+  border: "transparent",
+};
+const UNKNOWN_LOW: ToneStyle = {
+  bg: "transparent",
+  color: "fg.muted",
+  border: "border.muted",
+};
 
 function toneFor(polarity: Polarity, rating: Rating): ToneStyle {
-  if (polarity === "unknown") return UNKNOWN;
   if (rating === "medium") return NEUTRAL_MEDIUM;
+  if (polarity === "unknown") {
+    return rating === "high" ? UNKNOWN_HIGH : UNKNOWN_LOW;
+  }
   const isGood =
     (polarity === "positive" && rating === "high") ||
     (polarity === "negative" && rating === "low");
@@ -41,11 +65,13 @@ export function HeuristicChip({ name, rating }: Props) {
       py="1"
       bg={tone.bg}
       color={tone.color}
+      borderWidth="1px"
+      borderColor={tone.border}
       textStyle="eyebrow.sm"
       fontWeight="600"
       borderRadius="sm"
     >
-      {rating}
+      {RATING_SHORT_LABEL[rating]}
     </Box>
   );
 }

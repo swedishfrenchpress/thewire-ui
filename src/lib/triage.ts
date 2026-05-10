@@ -19,6 +19,14 @@ export const TRIAGE_LABELS: Record<Rating, string> = {
   low: "LOW",
 };
 
+// Compact label used inside chips and the distribution bar segments where
+// "MEDIUM" would crowd the layout.
+export const RATING_SHORT_LABEL: Record<Rating, string> = {
+  high: "HIGH",
+  medium: "MED",
+  low: "LOW",
+};
+
 export interface TriageMixCounts {
   high: number;
   medium: number;
