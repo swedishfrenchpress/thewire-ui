@@ -1,13 +1,13 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
-import { polarityFor, type Polarity } from "@/lib/heuristic-polarity";
+import { polarityOf, type Polarity } from "@/lib/heuristic-polarity";
 import {
   countLabelFor,
   extractLeadingCount,
   vocabularyFor,
 } from "@/lib/heuristic-vocabulary";
-import type { Rating } from "@/lib/types";
+import type { Rating, Signal } from "@/lib/types";
 
 type ToneStyle = { bg: string; color: string; border: string };
 
@@ -58,10 +58,13 @@ type Props = {
   // description ("7 factual claim(s)…"); when present we render the number
   // instead of a level word.
   description?: string;
+  // Optional. The API populates `signal` on document-level heuristics; when
+  // present it overrides the static polarity registry.
+  signal?: Signal;
 };
 
-export function HeuristicChip({ name, rating, description }: Props) {
-  const polarity = polarityFor(name);
+export function HeuristicChip({ name, rating, description, signal }: Props) {
+  const polarity = polarityOf({ name, signal });
   const tone = toneFor(polarity, rating);
   const label = labelFor(name, rating, polarity, description);
 

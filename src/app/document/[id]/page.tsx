@@ -32,7 +32,12 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
   return (
     <Box display="flex" gap="3" alignItems="baseline">
       <Box flexShrink={0} pt="1">
-        <HeuristicChip name={h.name} rating={h.rating} description={h.description} />
+        <HeuristicChip
+          name={h.name}
+          rating={h.rating}
+          description={h.description}
+          signal={h.signal}
+        />
       </Box>
       <Stack gap="1.5" minW="0" flex="1">
         <Box>

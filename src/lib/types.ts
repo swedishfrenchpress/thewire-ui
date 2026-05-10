@@ -1,9 +1,16 @@
 export type Rating = "high" | "medium" | "low";
 
+// Per-heuristic polarity signal from the API. Only populated on document-level
+// heuristics (the closed set: consistency, references, emotive_language,
+// ideology). Topic-level heuristics omit it; we fall back to the static
+// polarity registry for those.
+export type Signal = "positive" | "negative";
+
 export interface Heuristic {
   name: string;
   rating: Rating;
   description: string;
+  signal?: Signal;
 }
 
 export interface TopicSummary {

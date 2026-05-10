@@ -25,7 +25,7 @@ import { VerdictTag } from "@/components/VerdictTag";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { ApiRequestError, getTopic, getTopicDocuments } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
-import { polarityFor } from "@/lib/heuristic-polarity";
+import { polarityOf } from "@/lib/heuristic-polarity";
 import { useCase } from "@/lib/hooks/useCase";
 import {
   distributeDocumentsByVerdict,
@@ -39,7 +39,7 @@ import type { DocumentRecord, Heuristic } from "@/lib/types";
 // ("evidence_quality LOW") both signal a problem; they should lead. Plain
 // counts (claims, validation) sit in the middle. Clean signals trail.
 function concernRank(h: Heuristic): number {
-  const polarity = polarityFor(h.name);
+  const polarity = polarityOf(h);
   if (polarity === "unknown") return h.rating === "medium" ? 1 : 2;
   if (h.rating === "medium") return 1;
   const isGood =
@@ -56,7 +56,12 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
   return (
     <Box display="flex" gap="3" alignItems="baseline">
       <Box flexShrink={0} pt="1">
-        <HeuristicChip name={h.name} rating={h.rating} description={h.description} />
+        <HeuristicChip
+          name={h.name}
+          rating={h.rating}
+          description={h.description}
+          signal={h.signal}
+        />
       </Box>
       <Stack gap="1.5" minW="0" flex="1">
         <Box>
@@ -141,7 +146,7 @@ function DocumentList({
         {sorted.map((d) => {
           const v = documentVerdict(d);
           const flaggedCount = d.heuristics.filter((h) => {
-            const polarity = polarityFor(h.name);
+            const polarity = polarityOf(h);
             if (polarity === "unknown" || h.rating === "medium") return false;
             return (
               (polarity === "negative" && h.rating === "high") ||

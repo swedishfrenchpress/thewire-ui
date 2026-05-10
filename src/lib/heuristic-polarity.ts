@@ -50,3 +50,14 @@ const REGISTRY: Record<string, Polarity> = {
 export function polarityFor(name: string): Polarity {
   return REGISTRY[name.trim().toLowerCase()] ?? "unknown";
 }
+
+// Authoritative polarity for a heuristic instance. The API supplies `signal`
+// on document-level heuristics — prefer it. For topic-level heuristics (group
+// signals), the API omits the field and we fall back to the static registry.
+export function polarityOf(h: {
+  name: string;
+  signal?: "positive" | "negative";
+}): Polarity {
+  if (h.signal) return h.signal;
+  return polarityFor(h.name);
+}

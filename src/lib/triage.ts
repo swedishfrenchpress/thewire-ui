@@ -1,5 +1,5 @@
 import type { CaseEntry } from "@/lib/cases-store";
-import { polarityFor } from "@/lib/heuristic-polarity";
+import { polarityOf } from "@/lib/heuristic-polarity";
 import type {
   CaseSummary,
   DocumentRecord,
@@ -145,7 +145,7 @@ export function documentVerdict(doc: { heuristics: Heuristic[] }): Verdict {
   let bad = 0;
   let good = 0;
   for (const h of doc.heuristics) {
-    const polarity = polarityFor(h.name);
+    const polarity = polarityOf(h);
     if (polarity === "unknown") continue;
     if (h.rating === "medium") continue;
     const isGood =
@@ -167,7 +167,7 @@ export function documentVerdict(doc: { heuristics: Heuristic[] }): Verdict {
 // medium ratings and unknown-polarity heuristics are mixed.
 export function heuristicVerdict(h: Heuristic): Verdict {
   if (h.rating === "medium") return "mixed";
-  const polarity = polarityFor(h.name);
+  const polarity = polarityOf(h);
   if (polarity === "unknown") return "mixed";
   const isGood =
     (polarity === "positive" && h.rating === "high") ||
