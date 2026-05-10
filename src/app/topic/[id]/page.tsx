@@ -16,36 +16,29 @@ import { useQuery } from "@tanstack/react-query";
 import NextLink from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
+import { HeuristicBreakdownView } from "@/components/HeuristicBreakdownView";
 import { HelperText } from "@/components/HelperText";
 import { VerdictDistributionView } from "@/components/VerdictDistribution";
-import { HeuristicChip } from "@/components/shared/HeuristicChip";
+import { HeuristicMoodChip } from "@/components/shared/HeuristicMoodChip";
 import { HeuristicName } from "@/components/shared/HeuristicName";
 import { TriageTag } from "@/components/TriageTag";
 import { VerdictTag } from "@/components/VerdictTag";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { ApiRequestError, getTopic, getTopicDocuments } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
+import { getHeuristicDisplay } from "@/lib/heuristic-display";
 import { polarityOf } from "@/lib/heuristic-polarity";
 import { useCase } from "@/lib/hooks/useCase";
-import {
-  distributeDocumentsByVerdict,
-  distributeHeuristicsByVerdict,
-  documentVerdict,
-} from "@/lib/triage";
+import { distributeDocumentsByVerdict, documentVerdict } from "@/lib/triage";
 import type { DocumentRecord, Heuristic } from "@/lib/types";
 
-// Order heuristics by how much attention they warrant for the journalist.
-// A negative-polarity HIGH ("sensitivity HIGH") and a positive-polarity LOW
-// ("evidence_quality LOW") both signal a problem; they should lead. Plain
-// counts (claims, validation) sit in the middle. Clean signals trail.
+// Order pills so concerning leads, mixed sits in the middle, healthy trails.
+// Sort key uses the same mood the sidebar buckets use, so the visual order on
+// the left matches the bucket order on the right.
+const MOOD_RANK = { concerning: 0, mixed: 1, healthy: 2 } as const;
+
 function concernRank(h: Heuristic): number {
-  const polarity = polarityOf(h);
-  if (polarity === "unknown") return h.rating === "medium" ? 1 : 2;
-  if (h.rating === "medium") return 1;
-  const isGood =
-    (polarity === "positive" && h.rating === "high") ||
-    (polarity === "negative" && h.rating === "low");
-  return isGood ? 3 : 0;
+  return MOOD_RANK[getHeuristicDisplay(h.name, h.rating).mood];
 }
 
 function sortHeuristics(heuristics: Heuristic[]): Heuristic[] {
@@ -64,12 +57,7 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
       alignItems="start"
     >
       <Box pt="0.5">
-        <HeuristicChip
-          name={h.name}
-          rating={h.rating}
-          description={h.description}
-          signal={h.signal}
-        />
+        <HeuristicMoodChip name={h.name} rating={h.rating} />
       </Box>
       <Stack gap="1.5" minW="0">
         <Box>
@@ -107,7 +95,6 @@ function HeuristicDistributionPanel({
 }: {
   heuristics: Heuristic[];
 }) {
-  const dist = distributeHeuristicsByVerdict(heuristics);
   return (
     <Box
       borderWidth="1px"
@@ -116,11 +103,7 @@ function HeuristicDistributionPanel({
       p="5"
       bg="bg"
     >
-      <VerdictDistributionView
-        eyebrow="Signal mix across this topic"
-        unit="signals"
-        distribution={dist}
-      />
+      <HeuristicBreakdownView heuristics={heuristics} />
     </Box>
   );
 }
