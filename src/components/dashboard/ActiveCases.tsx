@@ -1,57 +1,26 @@
 "use client";
 
-import { Box, HStack, Input, Stack, Text } from "@chakra-ui/react";
+import { Box, HStack, Input, Skeleton, Stack, Text } from "@chakra-ui/react";
+import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, type KeyboardEvent } from "react";
 import { casesStore } from "@/lib/cases-store";
-import { corroborationScore, topTriage, TRIAGE_RANK, type Row } from "@/lib/triage";
-import type { Rating, TopicSummary } from "@/lib/types";
+import { coverImageFor } from "@/lib/cover-image";
+import {
+  corroborationScore,
+  distributeTopics,
+  topTopic,
+  type Distribution,
+  type Row,
+} from "@/lib/triage";
+import type { Rating } from "@/lib/types";
 
-const MONTHS_FULL = [
-  "JANUARY",
-  "FEBRUARY",
-  "MARCH",
-  "APRIL",
-  "MAY",
-  "JUNE",
-  "JULY",
-  "AUGUST",
-  "SEPTEMBER",
-  "OCTOBER",
-  "NOVEMBER",
-  "DECEMBER",
-];
-
-function formatDateline(iso: string): string {
-  const d = new Date(iso);
-  return `${MONTHS_FULL[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-}
-
-function topTopic(topics: TopicSummary[]): TopicSummary | null {
-  if (topics.length === 0) return null;
-  return [...topics].sort(
-    (a, b) => TRIAGE_RANK[a.triage] - TRIAGE_RANK[b.triage],
-  )[0];
-}
-
-function descriptionFor(row: Row): string {
-  const { summary, isError } = row;
-  if (isError || summary?.status === "failed") return "Analysis failed.";
-  if (!summary || summary.status === "processing") return "Awaiting analysis.";
-  if (summary.status === "complete") {
-    const top = topTopic(summary.topics);
-    if (top?.description) return top.description;
-    return "No topics inferred for this case.";
-  }
-  return "Awaiting analysis.";
-}
-
-function titleFor(row: Row): string {
-  const { summary } = row;
-  const top = summary ? topTopic(summary.topics) : null;
-  return top?.title ?? row.entry.displayName;
-}
+const SEGMENT_BG: Record<Rating, string> = {
+  high: "bg.attentionSubtle",
+  medium: "bg.warningSubtle",
+  low: "bg.successSubtle",
+};
 
 function rowMatches(row: Row, query: string): boolean {
   if (query.length === 0) return true;
@@ -63,6 +32,19 @@ function rowMatches(row: Row, query: string): boolean {
   }
   const q = query.toLowerCase();
   return haystack.some((s) => s.toLowerCase().includes(q));
+}
+
+function headlineFor(row: Row): string {
+  const top = row.summary ? topTopic(row.summary.topics) : null;
+  return top?.title ?? row.entry.displayName;
+}
+
+function eyebrowFor(row: Row): string {
+  const { summary, isError } = row;
+  if (isError || summary?.status === "failed") return "Analysis failed";
+  if (!summary || summary.status === "processing") return "Awaiting analysis";
+  const topicCount = summary.topics.length;
+  return `${topicCount} ${topicCount === 1 ? "topic" : "topics"} · ${summary.document_count} ${summary.document_count === 1 ? "document" : "documents"}`;
 }
 
 export function ActiveCases({ rows }: { rows: Row[] }) {
@@ -78,15 +60,14 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
   const showSearch = rows.length > 1;
 
   return (
-    <Stack gap="0" w="full">
+    <Stack gap="6" w="full">
       <HStack
         align="center"
         justify="space-between"
         gap="4"
-        pb="4"
         wrap="wrap"
       >
-        <Eyebrow pl="0" pb="0">
+        <Eyebrow>
           Active cases · {filtered.length}
           {filtered.length !== rows.length ? ` of ${rows.length}` : ""}
         </Eyebrow>
@@ -117,12 +98,9 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
           />
         )}
       </HStack>
+
       {filtered.length === 0 ? (
-        <Box
-          py="8"
-          borderTopWidth="1px"
-          borderColor="border.muted"
-        >
+        <Box py="8" borderTopWidth="1px" borderColor="border.muted">
           <Text
             fontFamily="body"
             fontSize="14px"
@@ -133,23 +111,32 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
           </Text>
         </Box>
       ) : (
-        <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
+        <Box
+          display="grid"
+          gridTemplateColumns={{
+            base: "1fr",
+            md: "repeat(2, 1fr)",
+            lg: "repeat(3, 1fr)",
+          }}
+          gap={{ base: "6", md: "8" }}
+        >
           {filtered.map((row) => (
-            <CaseRow key={row.entry.caseId} row={row} />
+            <CaseCard key={row.entry.caseId} row={row} />
           ))}
-        </Stack>
+        </Box>
       )}
     </Stack>
   );
 }
 
-function CaseRow({ row }: { row: Row }) {
+function CaseCard({ row }: { row: Row }) {
   const router = useRouter();
-  const { entry, summary } = row;
+  const { entry, summary, isError } = row;
+  const href = `/cases/${entry.caseId}`;
 
   const navigate = () => {
     casesStore.touchViewed(entry.caseId);
-    router.push(`/cases/${entry.caseId}`);
+    router.push(href);
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -159,10 +146,9 @@ function CaseRow({ row }: { row: Row }) {
     }
   };
 
+  const isProcessing = !summary || summary.status === "processing";
+  const isFailed = isError || summary?.status === "failed";
   const isComplete = summary?.status === "complete";
-  const triage =
-    summary && isComplete ? topTriage(summary.topics) : null;
-  const score = isComplete ? corroborationScore(entry.caseId) : null;
 
   return (
     <Box
@@ -172,143 +158,228 @@ function CaseRow({ row }: { row: Row }) {
       onKeyDown={onKeyDown}
       aria-label={`Open ${entry.displayName}`}
       cursor="pointer"
-      borderBottomWidth="1px"
+      borderWidth="1px"
       borderColor="border.muted"
-      transition="background-color 120ms"
-      _hover={{ bg: "bg.subtle" }}
+      borderRadius="md"
+      bg="bg"
+      overflow="hidden"
+      transition="background-color 120ms, border-color 120ms"
+      _hover={{ bg: "bg.subtle", borderColor: "border" }}
       _focusVisible={{
         outline: "none",
         boxShadow: "focusRing",
         position: "relative",
         zIndex: 1,
       }}
+      display="flex"
+      flexDirection="column"
     >
-      <HStack
-        align="flex-start"
-        gap={{ base: "6", md: "10" }}
-        py={{ base: "6", md: "8" }}
-      >
-        <Stack flex="1" minW="0" gap="3">
-          <Eyebrow>
+      <CardCover
+        caseId={entry.caseId}
+        coverImageUrl={summary?.cover_image_url}
+        headline={headlineFor(row)}
+        showImage={isComplete && !isFailed}
+        muted={isFailed}
+      />
+
+      <Stack gap="3" px="5" py="5" flex="1">
+        <Eyebrow>{eyebrowFor(row)}</Eyebrow>
+
+        <Text
+          as="h3"
+          fontFamily="heading"
+          fontWeight="500"
+          fontSize={{ base: "22px", md: "26px" }}
+          lineHeight="1.15"
+          letterSpacing="tight"
+          color="fg"
+          lineClamp={3}
+        >
+          {headlineFor(row)}
+        </Text>
+
+        <CardMetricRow row={row} />
+
+        <Box pt="1">
+          <NextLink
+            href={href}
+            style={{ textDecoration: "none" }}
+            onClick={(e) => {
+              // Let the link's default click handle nav so router.push isn't
+              // double-fired by the card-level onClick. casesStore.touchViewed
+              // is harmless to call twice but prefer single nav.
+              e.stopPropagation();
+              casesStore.touchViewed(entry.caseId);
+            }}
+          >
             <Text
               as="span"
-              suppressHydrationWarning
-            >
-              {formatDateline(entry.createdAt)}
-            </Text>
-          </Eyebrow>
-
-          <NextLink
-            href={`/cases/${entry.caseId}`}
-            style={{ textDecoration: "none", color: "inherit" }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Text
-              as="h3"
-              fontFamily="heading"
-              fontWeight="500"
-              fontSize={{ base: "26px", md: "34px" }}
-              lineHeight="1.08"
-              letterSpacing="tight"
+              fontFamily="body"
+              fontSize="13px"
+              lineHeight="16px"
               color="fg"
+              textDecoration="underline"
+              textUnderlineOffset="3px"
+              _hover={{ color: "fg.muted" }}
             >
-              {titleFor(row)}
+              Review the case
             </Text>
           </NextLink>
-
-          <Text
-            as="p"
-            fontFamily="body"
-            fontSize="16px"
-            lineHeight="26px"
-            color="fg.muted"
-            maxW="65ch"
-          >
-            {descriptionFor(row)}
-          </Text>
-        </Stack>
-
-        <ScoreColumn
-          score={score}
-          triage={triage}
-          isProcessing={!summary || summary.status === "processing"}
-          isFailed={!!summary && summary.status === "failed"}
-        />
-      </HStack>
+        </Box>
+      </Stack>
     </Box>
   );
 }
 
-function ScoreColumn({
-  score,
-  triage,
-  isProcessing,
-  isFailed,
+function CardCover({
+  caseId,
+  coverImageUrl,
+  headline,
+  showImage,
+  muted,
 }: {
-  score: number | null;
-  triage: Rating | null;
-  isProcessing: boolean;
-  isFailed: boolean;
+  caseId: number;
+  coverImageUrl: string | undefined;
+  headline: string;
+  showImage: boolean;
+  muted: boolean;
 }) {
-  const tone =
-    triage === "high"
-      ? "fg.attention"
-      : triage === "medium"
-      ? "fg.warning"
-      : triage === "low"
-      ? "fg.success"
-      : "fg";
+  return (
+    <Box
+      position="relative"
+      width="100%"
+      aspectRatio="16 / 9"
+      bg={muted ? "bg.subtle" : "bg.subtle"}
+      overflow="hidden"
+    >
+      {showImage ? (
+        <Image
+          src={coverImageFor(caseId, coverImageUrl)}
+          alt={headline}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          style={{ objectFit: "cover" }}
+          unoptimized
+        />
+      ) : muted ? (
+        <Box
+          width="100%"
+          height="100%"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Text
+            fontFamily="mono"
+            fontSize="11px"
+            letterSpacing="wider"
+            textTransform="uppercase"
+            color="fg.muted"
+            fontWeight="500"
+          >
+            Analysis failed
+          </Text>
+        </Box>
+      ) : (
+        <Skeleton width="100%" height="100%" />
+      )}
+    </Box>
+  );
+}
+
+function CardMetricRow({ row }: { row: Row }) {
+  const { summary, isError, entry } = row;
+
+  if (isError || summary?.status === "failed") {
+    return (
+      <Text fontSize="13px" lineHeight="18px" color="fg.muted">
+        Analysis failed for this case.
+      </Text>
+    );
+  }
+
+  if (!summary || summary.status === "processing") {
+    return (
+      <Stack gap="2">
+        <Skeleton height="6px" borderRadius="sm" width="100%" />
+        <Skeleton height="14px" width="60%" />
+      </Stack>
+    );
+  }
+
+  if (summary.topics.length === 0) {
+    return (
+      <Text fontSize="13px" lineHeight="18px" color="fg.muted">
+        No topics inferred for this case.
+      </Text>
+    );
+  }
+
+  const dist = distributeTopics(summary.topics);
+  const score = corroborationScore(entry.caseId);
 
   return (
-    <Stack
-      align={{ base: "flex-start", md: "flex-end" }}
-      textAlign={{ base: "left", md: "right" }}
-      minW={{ base: "auto", md: "120px" }}
-      flexShrink={0}
-      gap="1"
-      display={{ base: "none", sm: "flex" }}
-    >
-      {score !== null && (
+    <Stack gap="2">
+      <MiniBar distribution={dist} />
+      <HStack gap="2" align="baseline" wrap="wrap">
         <Text
-          fontFamily="heading"
-          fontWeight="500"
-          fontSize={{ base: "32px", md: "44px" }}
-          lineHeight="1"
-          letterSpacing="tight"
-          color={tone}
+          as="span"
+          fontFamily="body"
+          fontSize="13px"
+          lineHeight="16px"
+          color="fg"
+          fontWeight="600"
           fontVariantNumeric="tabular-nums"
         >
-          {score}
+          {score}% corroboration
         </Text>
-      )}
-      <Text
-        fontFamily="mono"
-        fontSize="10px"
-        lineHeight="13px"
-        letterSpacing="wider"
-        textTransform="uppercase"
-        fontWeight="500"
-        color="fg.muted"
-      >
-        {isFailed
-          ? "Analysis failed"
-          : isProcessing
-          ? "Score pending"
-          : "Corroboration score"}
-      </Text>
+        <Text
+          as="span"
+          fontFamily="body"
+          fontSize="13px"
+          lineHeight="16px"
+          color="fg.muted"
+        >
+          · {summary.topics.length}{" "}
+          {summary.topics.length === 1 ? "topic" : "topics"}
+        </Text>
+      </HStack>
     </Stack>
   );
 }
 
-function Eyebrow({
-  children,
-  pl,
-  pb,
-}: {
-  children: React.ReactNode;
-  pl?: string;
-  pb?: string;
-}) {
+function MiniBar({ distribution }: { distribution: Distribution }) {
+  const visible = distribution.ordered.filter((s) => s.count > 0);
+  if (visible.length === 0) {
+    return (
+      <Box height="6px" borderRadius="sm" bg="bg.subtle" width="100%" />
+    );
+  }
+  return (
+    <Box
+      display="flex"
+      height="6px"
+      borderRadius="sm"
+      overflow="hidden"
+      bg="bg.subtle"
+      role="figure"
+      aria-label={`${distribution.headline}`}
+    >
+      {visible.map((seg) => (
+        <Box
+          key={seg.rating}
+          flexBasis={`${seg.pct}%`}
+          flexGrow={0}
+          flexShrink={0}
+          bg={SEGMENT_BG[seg.rating]}
+          title={`${seg.count} ${seg.count === 1 ? "topic" : "topics"} rated ${seg.rating}`}
+        />
+      ))}
+    </Box>
+  );
+}
+
+function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
     <Text
       as="span"
@@ -319,8 +390,6 @@ function Eyebrow({
       textTransform="uppercase"
       fontWeight="500"
       color="fg.muted"
-      pl={pl}
-      pb={pb}
     >
       {children}
     </Text>

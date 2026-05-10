@@ -21,6 +21,9 @@ export interface CaseSummary {
   status: CaseStatus;
   document_count: number;
   topics: TopicSummary[];
+  // Optional cover image URL the backend may attach during analysis. When
+  // absent the frontend falls back to a deterministic placeholder.
+  cover_image_url?: string;
 }
 
 export interface TopicDetail {

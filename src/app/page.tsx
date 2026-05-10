@@ -61,7 +61,7 @@ export default function DashboardPage() {
       </Box>
       {sortedRows.length > 0 && (
         <Box
-          maxW="960px"
+          maxW="1200px"
           mx="auto"
           px="6"
           pb="20"

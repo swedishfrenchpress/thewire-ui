@@ -52,6 +52,22 @@ export function topTriage(topics: TopicSummary[]): Rating | null {
   return best;
 }
 
+export function topTopic(topics: TopicSummary[]): TopicSummary | null {
+  if (topics.length === 0) return null;
+  return [...topics].sort(
+    (a, b) => TRIAGE_RANK[a.triage] - TRIAGE_RANK[b.triage],
+  )[0];
+}
+
+export function distributeTopics(topics: TopicSummary[]): Distribution {
+  return distribute(
+    topics,
+    (t) => t.triage,
+    (t) => t.title,
+    "topics",
+  );
+}
+
 export type SortKey = "topTriage" | "lastViewed" | "created" | "name" | "documents";
 export type SortDir = "asc" | "desc";
 
