@@ -10,11 +10,9 @@ import {
   HStack,
   Heading,
   Input,
-  Portal,
   Skeleton,
   Stack,
   Text,
-  Tooltip,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useParams } from "next/navigation";
@@ -29,6 +27,7 @@ import {
 import { Dialog } from "@/components/Dialog";
 import { HelperText } from "@/components/HelperText";
 import { TriageTag } from "@/components/TriageTag";
+import { InfoTip } from "@/components/shared/InfoTip";
 import {
   CaseCardMenu,
   type CaseMenuAction,
@@ -409,12 +408,24 @@ function AtAGlance({
       >
         <Stat
           label="Highest urgency"
-          tooltip="Highest urgency in this case, taken from its most urgent topic."
+          info={{
+            eyebrow: "URGENCY",
+            measures:
+              "The highest urgency reached across this case's topics.",
+            bands:
+              "Driven by the most urgent topic the analysis surfaced.",
+          }}
           value={top ? <TriageTag rating={top} /> : "—"}
         />
         <Stat
           label="Documents"
-          tooltip="Plain-text and Markdown files in this case."
+          info={{
+            eyebrow: "DOCUMENTS",
+            measures:
+              "Plain-text and Markdown files attached to this case.",
+            bands:
+              "Each is read once and graded against the topics that emerge.",
+          }}
           value={
             <Text
               as="span"
@@ -431,7 +442,12 @@ function AtAGlance({
         />
         <Stat
           label="Top topic"
-          tooltip="The topic with the highest urgency."
+          info={{
+            eyebrow: "TOP TOPIC",
+            measures: "The topic with the highest urgency in this case.",
+            bands:
+              "Listed first in the topics list; click to see its heuristics and documents.",
+          }}
           value={
             <Text
               as="span"
@@ -463,11 +479,11 @@ function topTopicTitle(topics: TopicSummary[]): string | null {
 function Stat({
   label,
   value,
-  tooltip,
+  info,
 }: {
   label: string;
   value: React.ReactNode;
-  tooltip?: string;
+  info?: { eyebrow: string; measures: string; bands: string };
 }) {
   const labelEl = (
     <Text
@@ -485,53 +501,14 @@ function Stat({
   );
   return (
     <Stack gap="1.5" align="flex-start">
-      {tooltip ? (
-        <HStack gap="1" align="center">
+      {info ? (
+        <InfoTip
+          eyebrow={info.eyebrow}
+          measures={info.measures}
+          bands={info.bands}
+        >
           {labelEl}
-          <Tooltip.Root openDelay={120} closeDelay={100}>
-            <Tooltip.Trigger asChild>
-              <Box
-                as="span"
-                display="inline-flex"
-                alignItems="center"
-                color="fg.muted"
-                fontFamily="mono"
-                fontSize="11px"
-                lineHeight="11px"
-                cursor="help"
-                tabIndex={0}
-                aria-label={`${label}: ${tooltip}`}
-                _hover={{ color: "fg" }}
-                _focusVisible={{
-                  outline: "none",
-                  boxShadow: "focusRing",
-                  borderRadius: "xs",
-                }}
-              >
-                ⓘ
-              </Box>
-            </Tooltip.Trigger>
-            <Portal>
-              <Tooltip.Positioner>
-                <Tooltip.Content
-                  bg="bg"
-                  color="fg"
-                  borderWidth="1px"
-                  borderColor="border"
-                  borderRadius="sm"
-                  boxShadow="menu"
-                  px="3"
-                  py="2"
-                  maxW="280px"
-                  fontSize="12px"
-                  lineHeight="16px"
-                >
-                  {tooltip}
-                </Tooltip.Content>
-              </Tooltip.Positioner>
-            </Portal>
-          </Tooltip.Root>
-        </HStack>
+        </InfoTip>
       ) : (
         labelEl
       )}
@@ -837,18 +814,10 @@ function DeleteConfirmDialog({
 function MethodologyFootnote() {
   return (
     <Box borderTopWidth="1px" borderColor="border.muted" pt="6" mt="2">
-      <Text
-        as="p"
-        fontFamily="body"
-        fontSize="13px"
-        lineHeight="20px"
-        color="fg.muted"
-      >
-        New here?{" "}
+      <Text fontFamily="body" fontSize="14px" lineHeight="20px" color="fg.muted">
         <ChakraLink asChild>
-          <NextLink href="/methodology">How the wire scores documents</NextLink>
+          <NextLink href="/methodology">How we score documents</NextLink>
         </ChakraLink>
-        .
       </Text>
     </Box>
   );
