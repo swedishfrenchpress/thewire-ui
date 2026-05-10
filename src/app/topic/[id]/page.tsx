@@ -170,6 +170,7 @@ function DocumentList({
                 <ChakraLink asChild>
                   <NextLink
                     href={`/document/${d.id}?case=${caseId}&topic=${topicId}`}
+                    data-document-row
                   >
                     {d.filename}
                   </NextLink>

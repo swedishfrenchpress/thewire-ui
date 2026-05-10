@@ -642,6 +642,7 @@ function TopicRow({
   return (
     <NextLink
       href={`/topic/${topic.id}?case=${caseId}`}
+      data-topic-row
       style={{ textDecoration: "none", color: "inherit" }}
     >
       <Box
