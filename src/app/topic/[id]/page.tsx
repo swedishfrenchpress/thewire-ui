@@ -237,7 +237,7 @@ function DistributionPanel({ docs }: { docs: DocumentRecord[] }) {
       borderWidth="1px"
       borderColor="border"
       borderRadius="sm"
-      p="4"
+      p="5"
       bg="bg"
     >
       <TriageDistribution
@@ -490,7 +490,7 @@ function TopicContent() {
         </GridItem>
       </Grid>
 
-      <Stack gap="3">
+      <Stack gap="3" borderTopWidth="1px" borderColor="border.muted" pt="4">
         <Text textStyle="eyebrow" color="fg.muted">
           Documents in scope ({t.document_count})
         </Text>

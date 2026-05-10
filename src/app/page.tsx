@@ -56,7 +56,7 @@ export default function DashboardPage() {
   return (
     <>
       <OrbHero />
-      <Box maxW="640px" mx="auto" px="6" pb="16">
+      <Box maxW="640px" mx="auto" px="6" pb="10">
         <TipComposer />
       </Box>
       {sortedRows.length > 0 && (
@@ -67,7 +67,7 @@ export default function DashboardPage() {
           pb="20"
           borderTopWidth="1px"
           borderColor="border.muted"
-          pt="10"
+          pt="8"
         >
           <ActiveCases rows={sortedRows} />
         </Box>

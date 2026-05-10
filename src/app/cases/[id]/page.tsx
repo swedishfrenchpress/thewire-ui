@@ -408,7 +408,7 @@ function AtAGlance({
     >
       <Grid
         templateColumns={{ base: "1fr 1fr", md: "repeat(4, auto)" }}
-        gap={{ base: "4", md: "10" }}
+        gap={{ base: "4", md: "8" }}
         alignItems="center"
       >
         <Stat label="Top triage" value={top ? <TriageTag rating={top} /> : "—"} />

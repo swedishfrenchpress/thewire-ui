@@ -97,7 +97,7 @@ function StatsPanel({ doc }: { doc: DocumentRecord }) {
       borderWidth="1px"
       borderColor="border"
       borderRadius="sm"
-      p="4"
+      p="5"
       bg="bg"
     >
       <Stack gap="3">
@@ -128,7 +128,7 @@ function DistributionPanel({ doc }: { doc: DocumentRecord }) {
       borderWidth="1px"
       borderColor="border"
       borderRadius="sm"
-      p="4"
+      p="5"
       bg="bg"
     >
       <TriageDistribution
