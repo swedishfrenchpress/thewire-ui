@@ -27,6 +27,7 @@ uniform float uTime;
 
 varying vec3 vColor;
 varying float vFresnel;
+varying float vSmoothFresnel;
 
 // Perlin 4D noise
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -205,7 +206,13 @@ void main()
     vec3 viewDirection = normalize(displacedPosition.xyz - cameraPosition);
     float fresnel = uFresnelOffset + (1.0 + dot(viewDirection, computedNormal)) * uFresnelMultiplier;
     fresnel = pow(max(0.0, fresnel), uFresnelPower);
-    
+
+    // Smooth fresnel uses the un-displaced sphere normal so alpha follows the
+    // silhouette cleanly (the noisy `vFresnel` above is fine for color/lighting
+    // but pumps the body opaque if used for alpha).
+    float smoothFresnelRaw = uFresnelOffset + (1.0 + dot(viewDirection, normalize(normal))) * uFresnelMultiplier;
+    vSmoothFresnel = pow(max(0.0, smoothFresnelRaw), uFresnelPower);
+
     // Pass fresnel to fragment shader
     vFresnel = fresnel;
 

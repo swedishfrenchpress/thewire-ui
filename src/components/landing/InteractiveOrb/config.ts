@@ -40,9 +40,9 @@ export const ORB_RANGES = {
 export function makeShaderUniforms() {
   return {
     uTime: { value: 0 },
-    uLightAColor: { value: new THREE.Color("#888888") },
+    uLightAColor: { value: new THREE.Color("#5cb478") },
     uLightAPosition: { value: new THREE.Vector3(1, 1, 0) },
-    uLightAIntensity: { value: 0.6 },
+    uLightAIntensity: { value: 0.7 },
     uLightBColor: { value: new THREE.Color("#000000") },
     uLightBPosition: { value: new THREE.Vector3(-1, -1, 0) },
     uLightBIntensity: { value: 0.3 },
