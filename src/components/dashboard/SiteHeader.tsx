@@ -29,13 +29,17 @@ export function SiteHeader() {
             wrap="wrap"
           >
             <HStack gap="3" align="center">
-              <Box color="fg" display="inline-flex">
-                <Logomark size={18} />
+              <Box
+                color="fg"
+                display="inline-flex"
+                transform="translateY(-2px)"
+              >
+                <Logomark size={20} />
               </Box>
               <Heading
                 as="span"
                 fontFamily="heading"
-                fontWeight="600"
+                fontWeight="400"
                 fontSize={{ base: "26px", md: "32px" }}
                 lineHeight="1"
                 letterSpacing="-0.02em"
