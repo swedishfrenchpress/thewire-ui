@@ -26,7 +26,12 @@ import { ApiRequestError, getTopic, getTopicDocuments } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
 import { polarityFor } from "@/lib/heuristic-polarity";
 import { useCase } from "@/lib/hooks/useCase";
-import { TRIAGE_LABELS, distributeDocuments, documentTriage } from "@/lib/triage";
+import {
+  TRIAGE_LABELS,
+  distributeDocuments,
+  distributeHeuristics,
+  documentTriage,
+} from "@/lib/triage";
 import type {
   DocumentRecord,
   Heuristic,
@@ -243,6 +248,29 @@ function DistributionPanel({ docs }: { docs: DocumentRecord[] }) {
       <TriageDistribution
         eyebrow="Document distribution"
         unit="documents"
+        distribution={dist}
+      />
+    </Box>
+  );
+}
+
+function HeuristicDistributionPanel({
+  heuristics,
+}: {
+  heuristics: Heuristic[];
+}) {
+  const dist = distributeHeuristics(heuristics);
+  return (
+    <Box
+      borderWidth="1px"
+      borderColor="border"
+      borderRadius="sm"
+      p="5"
+      bg="bg"
+    >
+      <TriageDistribution
+        eyebrow="Heuristic distribution"
+        unit="heuristics"
         distribution={dist}
       />
     </Box>
@@ -491,6 +519,9 @@ function TopicContent() {
             {/* The bar restates the StatsPanel when there is only one
                 document; show it only once a real mix exists. */}
             {docs.length > 1 && <DistributionPanel docs={docs} />}
+            {t.heuristics.length > 0 && (
+              <HeuristicDistributionPanel heuristics={t.heuristics} />
+            )}
             <StatsPanel topic={t} docs={docs} />
           </Stack>
         </GridItem>

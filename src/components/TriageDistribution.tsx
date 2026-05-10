@@ -17,17 +17,11 @@ const SHORT_LABEL: Record<Rating, string> = {
   low: "LOW",
 };
 
-function truncate(s: string, max: number) {
-  if (s.length <= max) return s;
-  return `${s.slice(0, max - 1)}…`;
-}
-
 export interface TriageDistributionProps {
   eyebrow: string;
   /** "documents", "heuristics", "topics" — the unit being counted. */
   unit: string;
   distribution: Distribution;
-  maxItemsPerColumn?: number;
   eyebrowTrailing?: ReactNode;
   compact?: boolean;
 }
@@ -36,7 +30,6 @@ export function TriageDistribution({
   eyebrow,
   unit,
   distribution,
-  maxItemsPerColumn = 4,
   eyebrowTrailing,
   compact = false,
 }: TriageDistributionProps) {
@@ -132,53 +125,59 @@ export function TriageDistribution({
         )}
       </Box>
 
-      {/* Item columns under each segment */}
+      {/* Full-width vertical list grouped by rating */}
       {!compact && !empty && (
-        <Box display="flex" gap="2" alignItems="flex-start">
+        <Stack gap="3" pt="1">
           {visible.map((seg) => {
             const style = SEGMENT_STYLE[seg.rating];
-            const overflow = Math.max(0, seg.items.length - maxItemsPerColumn);
-            const shown = seg.items.slice(0, maxItemsPerColumn);
             return (
-              <Stack
-                key={seg.rating}
-                flexBasis={`${seg.pct}%`}
-                flexGrow={0}
-                flexShrink={0}
-                gap="1"
-                minW="0"
-              >
-                {shown.map((label, i) => (
+              <Stack key={seg.rating} gap="1.5">
+                <Box
+                  display="inline-flex"
+                  alignItems="center"
+                  gap="2"
+                  alignSelf="flex-start"
+                >
                   <Box
-                    key={`${seg.rating}-${i}-${label}`}
+                    as="span"
                     bg={style.bg}
                     color={style.color}
                     textStyle="eyebrow.sm"
-                    px="2"
-                    py="1"
+                    fontWeight="600"
+                    px="1.5"
+                    py="0.5"
                     borderRadius="sm"
-                    title={label}
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    whiteSpace="nowrap"
                   >
-                    {truncate(label, 18)}
+                    {SHORT_LABEL[seg.rating]}
                   </Box>
-                ))}
-                {overflow > 0 && (
-                  <Box
+                  <Text
+                    as="span"
                     textStyle="eyebrow.sm"
                     color="fg.muted"
-                    px="2"
-                    py="1"
+                    fontVariantNumeric="tabular-nums"
                   >
-                    +{overflow} MORE
-                  </Box>
-                )}
+                    · {seg.count}
+                  </Text>
+                </Box>
+                <Stack gap="0.5">
+                  {seg.items.map((label, i) => (
+                    <Text
+                      key={`${seg.rating}-${i}-${label}`}
+                      as="span"
+                      fontFamily="mono"
+                      fontSize="13px"
+                      lineHeight="18px"
+                      color="fg"
+                      wordBreak="break-word"
+                    >
+                      {label}
+                    </Text>
+                  ))}
+                </Stack>
               </Stack>
             );
           })}
-        </Box>
+        </Stack>
       )}
     </Stack>
   );

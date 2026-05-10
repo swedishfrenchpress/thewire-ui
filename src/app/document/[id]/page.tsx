@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
-import { Suspense, useState, type ReactNode } from "react";
+import { Suspense, useState } from "react";
 import { HelperText } from "@/components/HelperText";
 import { TriageDistribution } from "@/components/TriageDistribution";
 import { HeuristicChip } from "@/components/shared/HeuristicChip";
@@ -41,81 +41,6 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
         <Text textStyle="body.lg" color="fg">
           {h.description}
         </Text>
-      </Stack>
-    </Box>
-  );
-}
-
-function StatsRow({
-  label,
-  value,
-  indent = false,
-}: {
-  label: string;
-  value: ReactNode;
-  indent?: boolean;
-}) {
-  return (
-    <Box
-      display="flex"
-      alignItems="baseline"
-      justifyContent="space-between"
-      gap="3"
-      py="2"
-      borderBottomWidth="1px"
-      borderColor="border.muted"
-      _last={{ borderBottomWidth: 0 }}
-    >
-      <Text
-        textStyle="eyebrow"
-        color={indent ? "fg.muted" : "fg"}
-        pl={indent ? "3" : "0"}
-      >
-        {label}
-      </Text>
-      <Box
-        fontFamily="mono"
-        fontSize="13px"
-        lineHeight="18px"
-        fontWeight="600"
-        color="fg"
-        fontVariantNumeric="tabular-nums"
-      >
-        {value}
-      </Box>
-    </Box>
-  );
-}
-
-function StatsPanel({ doc }: { doc: DocumentRecord }) {
-  const dist = distributeHeuristics(doc.heuristics);
-  const overall = documentTriage(doc);
-  const lines = doc.content.split("\n").length;
-  const chars = doc.content.length;
-  return (
-    <Box
-      borderWidth="1px"
-      borderColor="border"
-      borderRadius="sm"
-      p="5"
-      bg="bg"
-    >
-      <Stack gap="3">
-        <Text textStyle="eyebrow" color="fg.muted">
-          Document details
-        </Text>
-        <Stack gap="0">
-          <StatsRow label="Heuristics" value={doc.heuristics.length} />
-          <StatsRow label="High" value={dist.segments.high.count} indent />
-          <StatsRow label="Medium" value={dist.segments.medium.count} indent />
-          <StatsRow label="Low" value={dist.segments.low.count} indent />
-          <StatsRow
-            label="Severity"
-            value={<TriageTag rating={overall} />}
-          />
-          <StatsRow label="Lines" value={lines} />
-          <StatsRow label="Chars" value={chars} />
-        </Stack>
       </Stack>
     </Box>
   );
@@ -262,6 +187,8 @@ function DocumentContent() {
   }
 
   const overall = documentTriage(doc);
+  const lines = doc.content.split("\n").length;
+  const chars = doc.content.length;
 
   return (
     <Stack gap="10">
@@ -283,7 +210,8 @@ function DocumentContent() {
         <Text textStyle="eyebrow" color="fg.muted">
           {doc.heuristics.length} heuristic
           {doc.heuristics.length === 1 ? "" : "s"} graded · severity{" "}
-          {TRIAGE_LABELS[overall]}
+          {TRIAGE_LABELS[overall]} · {lines} line{lines === 1 ? "" : "s"} ·{" "}
+          {chars.toLocaleString()} char{chars === 1 ? "" : "s"}
         </Text>
       </Stack>
 
@@ -314,7 +242,6 @@ function DocumentContent() {
         <GridItem>
           <Stack gap="4" position={{ lg: "sticky" }} top={{ lg: "6" }}>
             {doc.heuristics.length > 0 && <DistributionPanel doc={doc} />}
-            <StatsPanel doc={doc} />
           </Stack>
         </GridItem>
       </Grid>
