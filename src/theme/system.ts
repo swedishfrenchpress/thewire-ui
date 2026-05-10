@@ -879,7 +879,7 @@ const config = defineConfig({
             value: { base: "{colors.green.700}", _dark: "{colors.green.300}" },
           },
           warning: {
-            value: { base: "{colors.yellow.600}", _dark: "{colors.yellow.300}" },
+            value: { base: "{colors.orange.700}", _dark: "{colors.orange.300}" },
           },
           attention: {
             value: { base: "{colors.red.700}", _dark: "{colors.red.300}" },
@@ -903,7 +903,7 @@ const config = defineConfig({
             value: { base: "{colors.green.200}", _dark: "{colors.green.800}" },
           },
           warningSubtle: {
-            value: { base: "{colors.yellow.200}", _dark: "{colors.yellow.800}" },
+            value: { base: "{colors.orange.200}", _dark: "{colors.orange.800}" },
           },
           attention: {
             value: { base: "{colors.red.600}", _dark: "{colors.red.500}" },
@@ -933,7 +933,7 @@ const config = defineConfig({
             value: { base: "{colors.green.600}", _dark: "{colors.green.400}" },
           },
           warning: {
-            value: { base: "{colors.yellow.600}", _dark: "{colors.yellow.400}" },
+            value: { base: "{colors.orange.600}", _dark: "{colors.orange.400}" },
           },
         },
         // Button-specific surface colors (Figma BUTTON/* tokens).

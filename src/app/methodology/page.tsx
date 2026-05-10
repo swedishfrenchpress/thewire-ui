@@ -1,5 +1,6 @@
 import { Box, Container, Heading, HStack, Stack, Text } from "@chakra-ui/react";
 import type { Metadata } from "next";
+import { HeuristicChip } from "@/components/shared/HeuristicChip";
 import { TriageBadge } from "@/components/shared/TriageBadge";
 import type { Rating } from "@/lib/types";
 
@@ -180,25 +181,39 @@ export default function MethodologyPage() {
 function HeuristicList() {
   const items: { name: string; rating: Rating; description: string }[] = [
     {
+      name: "consistency",
+      rating: "high",
+      description:
+        "All four submissions agree on the figures and the timeline.",
+    },
+    {
+      name: "references",
+      rating: "high",
+      description:
+        "Two independent FOIA returns and one ministry memo support the same fact pattern.",
+    },
+    {
+      name: "emotive",
+      rating: "low",
+      description:
+        "Language is neutral and procedural. No charged adjectives.",
+    },
+    {
+      name: "ideology",
+      rating: "low",
+      description:
+        "No partisan framing detected. The narrative reads as descriptive.",
+    },
+    {
       name: "sensitivity",
       rating: "high",
       description: "Highest sensitivity level in this topic is 3.",
     },
     {
-      name: "claims",
-      rating: "medium",
-      description: "1 factual claim extracted in this topic.",
-    },
-    {
       name: "claim_supported",
-      rating: "high",
+      rating: "medium",
       description:
         "Atlas lacked a purchase order. Evidence: no PO on file.",
-    },
-    {
-      name: "classification_rationale",
-      rating: "high",
-      description: "The memo discusses vendor approval gaps.",
     },
   ];
 
@@ -232,7 +247,7 @@ function HeuristicList() {
               <Mono>{h.name}</Mono>
             </Box>
             <Box flexShrink={0}>
-              <TriageBadge level={h.rating} />
+              <HeuristicChip name={h.name} rating={h.rating} />
             </Box>
             <Text
               fontFamily="body"

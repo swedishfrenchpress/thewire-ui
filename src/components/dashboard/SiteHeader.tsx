@@ -65,13 +65,13 @@ export function SiteHeader() {
           maxW="1200px"
           mx="auto"
           align="stretch"
+          justify="center"
           borderBottomWidth="1px"
           borderColor="border"
         >
           {NAV_LINKS.map((link) => (
             <NavCell key={link.href} href={link.href} label={link.label} />
           ))}
-          <Box flex="1" borderRightWidth="1px" borderColor="border.muted" />
           <AnalyzeTipCell />
         </HStack>
       </Box>

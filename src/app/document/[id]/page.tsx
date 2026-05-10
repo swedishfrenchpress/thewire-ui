@@ -15,6 +15,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useState, type ReactNode } from "react";
 import { HelperText } from "@/components/HelperText";
 import { TriageDistribution } from "@/components/TriageDistribution";
+import { HeuristicChip } from "@/components/shared/HeuristicChip";
 import { TriageTag } from "@/components/TriageTag";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { getTopic, getTopicDocuments } from "@/lib/api";
@@ -30,7 +31,7 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
   return (
     <Box display="flex" gap="3" alignItems="baseline">
       <Box flexShrink={0} pt="1">
-        <TriageTag rating={h.rating} />
+        <HeuristicChip name={h.name} rating={h.rating} />
       </Box>
       <Stack gap="1" minW="0" flex="1">
         <Text
