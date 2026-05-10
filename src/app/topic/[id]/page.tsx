@@ -15,7 +15,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import NextLink from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef, type ReactNode } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { HelperText } from "@/components/HelperText";
 import { TriageDistribution } from "@/components/TriageDistribution";
 import { HeuristicChip } from "@/components/shared/HeuristicChip";
@@ -27,7 +27,6 @@ import { casesStore } from "@/lib/cases-store";
 import { polarityFor } from "@/lib/heuristic-polarity";
 import { useCase } from "@/lib/hooks/useCase";
 import {
-  TRIAGE_LABELS,
   distributeDocuments,
   distributeHeuristics,
   documentTriage,
@@ -70,166 +69,6 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
         <Text textStyle="body.lg" color="fg">
           {h.description}
         </Text>
-      </Stack>
-    </Box>
-  );
-}
-
-function StatsRow({
-  label,
-  value,
-  indent = false,
-}: {
-  label: string;
-  value: ReactNode;
-  indent?: boolean;
-}) {
-  return (
-    <Box
-      display="flex"
-      alignItems="baseline"
-      justifyContent="space-between"
-      gap="3"
-      py="2"
-      borderBottomWidth="1px"
-      borderColor="border.muted"
-      _last={{ borderBottomWidth: 0 }}
-    >
-      <Text
-        textStyle="eyebrow"
-        color={indent ? "fg.muted" : "fg"}
-        pl={indent ? "3" : "0"}
-      >
-        {label}
-      </Text>
-      <Box
-        fontFamily="mono"
-        fontSize="13px"
-        lineHeight="18px"
-        fontWeight="600"
-        color="fg"
-        fontVariantNumeric="tabular-nums"
-      >
-        {value}
-      </Box>
-    </Box>
-  );
-}
-
-const TRIAGE_TONE: Record<Rating, { bg: string; color: string }> = {
-  high: { bg: "bg.attentionSubtle", color: "fg.attention" },
-  medium: { bg: "bg.warningSubtle", color: "fg.warning" },
-  low: { bg: "bg.successSubtle", color: "fg.success" },
-};
-
-const SHORT_LABEL: Record<Rating, string> = {
-  high: "HIGH",
-  medium: "MED",
-  low: "LOW",
-};
-
-function SeverityChip({ rating }: { rating: Rating }) {
-  const tone = TRIAGE_TONE[rating];
-  return (
-    <Box
-      as="span"
-      display="inline-flex"
-      alignItems="center"
-      px="3"
-      py="1.5"
-      bg={tone.bg}
-      color={tone.color}
-      fontFamily="mono"
-      fontSize="13px"
-      lineHeight="16px"
-      fontWeight="600"
-      textTransform="uppercase"
-      letterSpacing="wide"
-      borderRadius="sm"
-    >
-      {rating}
-    </Box>
-  );
-}
-
-function DocumentMixBar({ docs }: { docs: DocumentRecord[] }) {
-  const dist = distributeDocuments(docs);
-  if (dist.total === 0) return null;
-  const visible = dist.ordered.filter((s) => s.count > 0);
-  return (
-    <Box
-      display="flex"
-      h="6"
-      borderRadius="sm"
-      overflow="hidden"
-      bg="bg.subtle"
-      role="figure"
-      aria-label={`Document mix: ${visible
-        .map((s) => `${TRIAGE_LABELS[s.rating]} ${s.pct.toFixed(0)}% (${s.count})`)
-        .join(", ")}`}
-    >
-      {visible.map((seg) => {
-        const tone = TRIAGE_TONE[seg.rating];
-        return (
-          <Box
-            key={seg.rating}
-            flexBasis={`${seg.pct}%`}
-            flexGrow={0}
-            flexShrink={0}
-            bg={tone.bg}
-            color={tone.color}
-            display="flex"
-            alignItems="center"
-            px="2"
-            textStyle="eyebrow.sm"
-            fontWeight="600"
-            whiteSpace="nowrap"
-            overflow="hidden"
-            title={`${TRIAGE_LABELS[seg.rating]} ${seg.pct.toFixed(0)}% (${seg.count})`}
-          >
-            {SHORT_LABEL[seg.rating]} {seg.pct.toFixed(0)}%
-          </Box>
-        );
-      })}
-    </Box>
-  );
-}
-
-function StatsPanel({
-  topic,
-  docs,
-}: {
-  topic: TopicDetail;
-  docs: DocumentRecord[];
-}) {
-  return (
-    <Box
-      borderWidth="1px"
-      borderColor="border"
-      borderRadius="sm"
-      p="5"
-      bg="bg"
-    >
-      <Stack gap="5">
-        <Stack gap="3">
-          <Text textStyle="eyebrow" color="fg.muted">
-            Severity
-          </Text>
-          <Box>
-            <SeverityChip rating={topic.triage} />
-          </Box>
-        </Stack>
-
-        <Box borderTopWidth="1px" borderColor="border.muted" />
-
-        <Stack gap="3">
-          <StatsRow label="Documents" value={topic.document_count} />
-          {docs.length > 0 && <DocumentMixBar docs={docs} />}
-        </Stack>
-
-        <Box borderTopWidth="1px" borderColor="border.muted" />
-
-        <StatsRow label="Heuristics" value={topic.heuristics.length} />
       </Stack>
     </Box>
   );
@@ -516,13 +355,12 @@ function TopicContent() {
         </GridItem>
         <GridItem>
           <Stack gap="4" position={{ lg: "sticky" }} top={{ lg: "6" }}>
-            {/* The bar restates the StatsPanel when there is only one
-                document; show it only once a real mix exists. */}
+            {/* With a single doc the bar is trivially 100%; only show
+                the document mix once a real distribution exists. */}
             {docs.length > 1 && <DistributionPanel docs={docs} />}
             {t.heuristics.length > 0 && (
               <HeuristicDistributionPanel heuristics={t.heuristics} />
             )}
-            <StatsPanel topic={t} docs={docs} />
           </Stack>
         </GridItem>
       </Grid>
