@@ -1,7 +1,16 @@
 "use client";
 
 import { Box, Heading, Stack } from "@chakra-ui/react";
+import dynamic from "next/dynamic";
 import { GridBackground } from "./GridBackground";
+
+const InteractiveOrb = dynamic(
+  () => import("./InteractiveOrb").then((m) => m.InteractiveOrb),
+  {
+    ssr: false,
+    loading: () => <Box width="100%" height="220px" />,
+  },
+);
 
 export function OrbHero() {
   return (
@@ -25,6 +34,10 @@ export function OrbHero() {
         align="center"
         textAlign="center"
       >
+        <Box width="100%" maxW="320px">
+          <InteractiveOrb height="220px" />
+        </Box>
+
         <Heading
           as="h1"
           fontFamily="heading"
