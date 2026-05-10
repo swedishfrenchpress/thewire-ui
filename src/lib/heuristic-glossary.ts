@@ -43,6 +43,12 @@ const REGISTRY: Record<string, HeuristicDefinition> = {
     bands:
       "Light reads as opinion or context. Moderate is worth a look. Heavy carries specific allegations of wrongdoing or risk.",
   },
+  impact: {
+    measures:
+      "The agent's plain-language judgment of why this topic matters editorially.",
+    bands:
+      "Light reads as opinion or context. Moderate is worth a look. Heavy carries specific allegations of wrongdoing or risk.",
+  },
   evidence_quality: {
     measures:
       "Quality of the underlying evidence: sourcing, specificity, corroboration.",

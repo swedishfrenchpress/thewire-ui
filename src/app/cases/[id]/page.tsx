@@ -742,7 +742,10 @@ function TopicRow({
         borderTopWidth={isFirst ? "0" : "1px"}
         borderColor="border.muted"
         transition="background-color 120ms"
-        _hover={{ bg: "bg.subtle" }}
+        _hover={{
+          bg: "bg.subtle",
+          "& [data-topic-cta]": { color: "fg" },
+        }}
         _focusVisible={{
           outline: "none",
           boxShadow: "focusRing",
@@ -787,6 +790,16 @@ function TopicRow({
                 lineClamp={2}
               >
                 {topic.description}
+              </Text>
+              <Text
+                as="span"
+                data-topic-cta
+                textStyle="eyebrow.sm"
+                color="fg.muted"
+                alignSelf="flex-end"
+                transition="color 120ms"
+              >
+                View topic →
               </Text>
             </Stack>
           </GridItem>

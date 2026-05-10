@@ -379,14 +379,21 @@ function TopicContent() {
               </Text>
             )}
             <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
-              <Text
-                textStyle="eyebrow"
-                color="fg.muted"
+              <Box
                 pt="4"
                 pb="3"
+                display="flex"
+                alignItems="baseline"
+                gap="2"
+                flexWrap="wrap"
               >
-                Signals across this topic
-              </Text>
+                <Text as="span" textStyle="eyebrow" color="fg.muted">
+                  Signals across this topic
+                </Text>
+                <Text as="span" textStyle="eyebrow.sm" color="fg.muted">
+                  · hover any name for its definition
+                </Text>
+              </Box>
               {t.heuristics.length === 0 ? (
                 <Text color="fg.muted">The agent did not emit heuristics here.</Text>
               ) : (
