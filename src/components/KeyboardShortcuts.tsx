@@ -20,7 +20,7 @@ const SHORTCUTS: Shortcut[] = [
   { keys: ["k"], label: "Previous case", scope: "home" },
   { keys: ["Enter"], label: "Open focused case", scope: "home" },
   { keys: ["Esc"], label: "Clear search and focus", scope: "home" },
-  { keys: ["g", "d"], label: "Go to dashboard", scope: "global" },
+  { keys: ["g", "h"], label: "Go to home", scope: "global" },
   { keys: ["?"], label: "Show shortcuts", scope: "global" },
 ];
 
@@ -92,7 +92,7 @@ export function KeyboardShortcuts() {
       }
 
       if (
-        e.key === "d" &&
+        e.key === "h" &&
         gPressedAtRef.current !== null &&
         Date.now() - gPressedAtRef.current < G_PREFIX_TIMEOUT_MS
       ) {
@@ -157,7 +157,7 @@ function CheatOverlay({
                 <Row key={s.keys.join("+")} keys={s.keys} label={s.label} />
               ))}
             </Section>
-            <Section title="Dashboard">
+            <Section title="Home">
               {SHORTCUTS.filter((s) => s.scope === "home").map((s) => (
                 <Row key={s.keys.join("+")} keys={s.keys} label={s.label} />
               ))}

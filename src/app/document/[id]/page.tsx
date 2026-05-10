@@ -198,8 +198,8 @@ function DocumentContent() {
           <Heading
             as="h1"
             fontFamily="mono"
-            fontWeight="500"
-            letterSpacing="wide"
+            fontWeight="400"
+            letterSpacing="normal"
             fontSize={{ base: "20px", md: "26px" }}
             lineHeight="1.2"
             wordBreak="break-all"

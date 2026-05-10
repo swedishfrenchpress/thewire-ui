@@ -2,6 +2,7 @@
 
 import { Box, Grid, Text } from "@chakra-ui/react";
 import { formatRelative } from "@/lib/format";
+import { NULL_DASH } from "@/lib/null-state";
 import type { Row } from "@/lib/triage";
 import { MetricColumn } from "./MetricColumn";
 import { SectionHeader } from "./SectionHeader";
@@ -65,7 +66,7 @@ export function OverviewPanel({ rows }: { rows: Row[] }) {
             color="fg"
             fontVariantNumeric="tabular-nums"
           >
-            {lastCreatedIso ? formatRelative(lastCreatedIso) : "—"}
+            {lastCreatedIso ? formatRelative(lastCreatedIso) : NULL_DASH}
           </Text>
         </MetricColumn>
       </Grid>

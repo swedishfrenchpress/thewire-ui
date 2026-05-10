@@ -20,7 +20,7 @@ export function FileUploadArea({
   multiple = true,
   disabled = false,
   maxFiles = 10,
-  hint = "PDF, JPEG or PNG less than 5MB",
+  hint = "Plain text or Markdown",
 }: Props) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [dragging, setDragging] = useState(false);

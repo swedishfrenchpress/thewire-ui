@@ -4,6 +4,8 @@ import { Box, HStack, Text } from "@chakra-ui/react";
 import { TriageBadge } from "@/components/shared/TriageBadge";
 import { TriageMix } from "@/components/shared/TriageMix";
 import { formatRelative } from "@/lib/format";
+import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
+import { NULL_DASH } from "@/lib/null-state";
 import { topTriage, triageMix, type Row } from "@/lib/triage";
 import { MetricColumn } from "./MetricColumn";
 
@@ -86,6 +88,7 @@ function BigMono({
   children: React.ReactNode;
   pulse?: boolean;
 }) {
+  const reducedMotion = useReducedMotion();
   return (
     <Box
       as="span"
@@ -95,7 +98,9 @@ function BigMono({
       fontWeight="500"
       color="fg"
       fontVariantNumeric="tabular-nums"
-      animation={pulse ? "wirePulse 2s ease-in-out infinite" : undefined}
+      animation={
+        pulse && !reducedMotion ? "wirePulse 2s ease-in-out infinite" : undefined
+      }
     >
       {children}
     </Box>
@@ -111,12 +116,13 @@ function Dash() {
       lineHeight="22px"
       color="fg.disabled"
     >
-      —
+      {NULL_DASH}
     </Box>
   );
 }
 
 function Analyzing() {
+  const reducedMotion = useReducedMotion();
   return (
     <Box
       as="span"
@@ -125,7 +131,9 @@ function Analyzing() {
       lineHeight="16px"
       color="fg.muted"
       fontStyle="italic"
-      animation="wirePulse 2s ease-in-out infinite"
+      animation={
+        reducedMotion ? undefined : "wirePulse 2s ease-in-out infinite"
+      }
     >
       Analyzing…
     </Box>

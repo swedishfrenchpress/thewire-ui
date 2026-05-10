@@ -1,6 +1,7 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
+import { NULL_DASH } from "@/lib/null-state";
 import type { Rating } from "@/lib/types";
 
 const STYLES: Record<Rating, { bg: string; color: string; label: string }> = {
@@ -22,7 +23,7 @@ export function TriageBadge({ level }: { level: Rating | null }) {
         textAlign="center"
         minW="64px"
       >
-        —
+        {NULL_DASH}
       </Box>
     );
   }

@@ -1,106 +1,105 @@
 "use client";
 
-import { Box } from "@chakra-ui/react";
-import { useQueries } from "@tanstack/react-query";
+import { Box, HStack, Text } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
 import { ActiveCases } from "@/components/dashboard/ActiveCases";
 import { OrbHero } from "@/components/landing/OrbHero";
 import { TipComposer } from "@/components/landing/TipComposer";
-import { getCase } from "@/lib/api";
-import { compareCases, type Row } from "@/lib/triage";
-import type { CaseSummary } from "@/lib/types";
-import { useCases } from "@/lib/use-cases";
+import { formatRelative } from "@/lib/format";
+import { NULL_DASH } from "@/lib/null-state";
+import { useDeskSignalRows } from "@/lib/use-desk-signal";
 
-export default function DashboardPage() {
+export default function HomePage() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const entries = useCases();
-
-  const queries = useQueries({
-    queries: entries.map((e) => ({
-      queryKey: ["case", e.caseId] as const,
-      queryFn: () => getCase(e.caseId),
-      refetchInterval: (q: { state: { data?: CaseSummary } }) =>
-        q.state.data?.status === "processing" ? 5000 : false,
-      staleTime: 30_000,
-      retry: 2,
-    })),
-  });
-
-  const rows: Row[] = useMemo(
-    () =>
-      entries.map((entry, i) => {
-        const q = queries[i];
-        return {
-          entry,
-          summary: q?.data,
-          isLoading: q?.isLoading ?? false,
-          isError: q?.isError ?? false,
-          refetch: () => {
-            q?.refetch();
-          },
-        };
-      }),
-    [entries, queries],
-  );
-
-  const sortedRows = useMemo(() => sortRows(rows), [rows]);
-
-  if (!mounted) {
-    return <Box minH="60vh" />;
-  }
+  const { rows, signal } = useDeskSignalRows();
 
   return (
     <>
-      <OrbHero />
+      <OrbHero signal={signal} />
+
       <Box maxW="640px" mx="auto" px="6" pb="10">
         <TipComposer />
       </Box>
-      {sortedRows.length > 0 && (
-        <Box
-          maxW="1200px"
-          mx="auto"
-          px="6"
-          pb="20"
-          borderTopWidth="1px"
-          borderColor="border.muted"
-          pt="8"
-        >
-          <ActiveCases rows={sortedRows} />
+
+      {mounted && rows.length > 0 && (
+        <Box maxW="1100px" mx="auto" px="6" pb="20">
+          <DatelineStrip
+            activeCount={signal.activeCount}
+            lastFilingAgeMs={signal.lastFilingAgeMs}
+          />
+          <Box pt="6">
+            <ActiveCases rows={rows} />
+          </Box>
         </Box>
       )}
     </>
   );
 }
 
-function sortRows(rows: Row[]): Row[] {
-  const active: Row[] = [];
-  const processing: Row[] = [];
-  const failed: Row[] = [];
+function DatelineStrip({
+  activeCount,
+  lastFilingAgeMs,
+}: {
+  activeCount: number;
+  lastFilingAgeMs: number;
+}) {
+  const lastUpdated = useMemo(() => {
+    if (!Number.isFinite(lastFilingAgeMs)) return NULL_DASH;
+    const isoNow = Date.now() - lastFilingAgeMs;
+    return formatRelative(new Date(isoNow).toISOString());
+  }, [lastFilingAgeMs]);
 
-  for (const r of rows) {
-    const status = r.summary?.status;
-    if (status === "processing" || (r.isLoading && !r.summary)) {
-      processing.push(r);
-    } else if (status === "failed" || r.isError) {
-      failed.push(r);
-    } else {
-      active.push(r);
-    }
-  }
+  return (
+    <HStack
+      gap="6"
+      wrap="wrap"
+      borderTopWidth="1px"
+      borderBottomWidth="1px"
+      borderColor="border.muted"
+      py="2.5"
+      aria-hidden
+    >
+      <Datum
+        label="Active cases"
+        value={String(activeCount).padStart(2, "0")}
+      />
+      <Datum label="Last filing" value={lastUpdated} />
+    </HStack>
+  );
+}
 
-  active.sort((a, b) => {
-    if (a.entry.pinned !== b.entry.pinned) return a.entry.pinned ? -1 : 1;
-    const triageCmp = compareCases(a, b, "topTriage", "desc");
-    if (triageCmp !== 0) return triageCmp;
-    return compareCases(a, b, "lastViewed", "desc");
-  });
-
-  processing.sort((a, b) => compareCases(a, b, "lastViewed", "desc"));
-  failed.sort((a, b) => compareCases(a, b, "created", "desc"));
-
-  return [...active, ...processing, ...failed];
+function Datum({ label, value }: { label: string; value: string }) {
+  return (
+    <HStack gap="2" align="baseline">
+      <Text
+        as="span"
+        fontFamily="mono"
+        fontSize="11px"
+        lineHeight="13px"
+        letterSpacing="wider"
+        textTransform="uppercase"
+        fontWeight="500"
+        color="fg.muted"
+      >
+        {label}
+      </Text>
+      <Text
+        as="span"
+        fontFamily="mono"
+        fontSize="11px"
+        lineHeight="13px"
+        letterSpacing="wide"
+        textTransform="uppercase"
+        fontWeight="500"
+        color="fg"
+        fontVariantNumeric="tabular-nums"
+      >
+        {value}
+      </Text>
+    </HStack>
+  );
 }

@@ -2,6 +2,7 @@
 
 import { Box, Heading, Stack } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
+import type { DeskSignal } from "@/lib/use-desk-signal";
 import { GridBackground } from "./GridBackground";
 
 const InteractiveOrb = dynamic(
@@ -12,7 +13,7 @@ const InteractiveOrb = dynamic(
   },
 );
 
-export function OrbHero() {
+export function OrbHero({ signal }: { signal?: DeskSignal }) {
   return (
     <Box
       as="section"
@@ -35,7 +36,7 @@ export function OrbHero() {
         textAlign="center"
       >
         <Box width="100%" maxW="320px">
-          <InteractiveOrb height="220px" />
+          <InteractiveOrb height="220px" signal={signal} />
         </Box>
 
         <Heading

@@ -1,6 +1,7 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
+import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import type { CaseStatus } from "@/lib/types";
 
 const STYLES: Record<
@@ -14,6 +15,7 @@ const STYLES: Record<
 
 export function StatusBadge({ status }: { status: CaseStatus }) {
   const s = STYLES[status];
+  const reducedMotion = useReducedMotion();
   return (
     <Box
       as="span"
@@ -32,7 +34,7 @@ export function StatusBadge({ status }: { status: CaseStatus }) {
       minH="19px"
       minW="84px"
       animation={
-        status === "processing"
+        status === "processing" && !reducedMotion
           ? "wirePulse 2s ease-in-out infinite"
           : undefined
       }

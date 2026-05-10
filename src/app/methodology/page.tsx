@@ -12,12 +12,12 @@ export default function MethodologyPage() {
   return (
     <Container maxW="3xl" pb="20">
       <Stack gap="0" pt={{ base: "8", md: "12" }}>
-        <RedEyebrow>How we verify</RedEyebrow>
+        <Eyebrow>How we verify</Eyebrow>
 
         <Heading
           as="h1"
           textStyle={{ base: "display.md", md: "display.lg" }}
-          fontWeight="600"
+          fontWeight="400"
           color="fg"
           pt="3"
         >
@@ -59,12 +59,12 @@ export default function MethodologyPage() {
         <Section eyebrow="Topics">
           <Prose>
             A topic is a reusable theme the agent infers from the
-            submitted documents (for example, &ldquo;Procurement,&rdquo;
-            &ldquo;Communications messaging,&rdquo; &ldquo;Sanctions
-            evasion&rdquo;). Each document belongs to exactly one topic.
-            When a new case shares a theme with an older case, the agent
-            assigns it to the existing topic; when no existing topic fits,
-            the agent names a new one.
+            submitted documents (for example, "Procurement,"
+            "Communications messaging," "Sanctions evasion"). Each
+            document belongs to exactly one topic. When a new case shares
+            a theme with an older case, the agent assigns it to the
+            existing topic; when no existing topic fits, the agent names
+            a new one.
           </Prose>
           <Prose>
             Topic identity is global across the platform, so two
@@ -358,14 +358,6 @@ function Section({
       <Eyebrow>{eyebrow}</Eyebrow>
       <Stack gap="4">{children}</Stack>
     </Stack>
-  );
-}
-
-function RedEyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <Text as="span" textStyle="eyebrow" fontWeight="600" color="fg.attention">
-      {children}
-    </Text>
   );
 }
 

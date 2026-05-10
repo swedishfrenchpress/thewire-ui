@@ -9,13 +9,13 @@ export default function AboutPage() {
   return (
     <Container maxW="3xl" pb="20">
       <Stack gap="0" pt={{ base: "8", md: "12" }}>
-        <RedEyebrow>About</RedEyebrow>
+        <Eyebrow>About</Eyebrow>
 
         <Heading
           as="h1"
           fontFamily="heading"
-          fontWeight="600"
-          letterSpacing="-0.01em"
+          fontWeight="400"
+          letterSpacing="-0.02em"
           fontSize={{ base: "44px", md: "60px" }}
           lineHeight="1"
           color="fg"
@@ -148,23 +148,6 @@ function Section({
       <Eyebrow>{eyebrow}</Eyebrow>
       <Stack gap="4">{children}</Stack>
     </Stack>
-  );
-}
-
-function RedEyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <Text
-      as="span"
-      fontFamily="mono"
-      fontSize="11px"
-      lineHeight="13px"
-      letterSpacing="wider"
-      textTransform="uppercase"
-      fontWeight="600"
-      color="fg.attention"
-    >
-      {children}
-    </Text>
   );
 }
 

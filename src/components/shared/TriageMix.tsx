@@ -1,6 +1,7 @@
 "use client";
 
 import { Box } from "@chakra-ui/react";
+import { NULL_DASH } from "@/lib/null-state";
 import type { TriageMixCounts } from "@/lib/triage";
 
 export function TriageMix({ mix }: { mix: TriageMixCounts }) {
@@ -13,7 +14,7 @@ export function TriageMix({ mix }: { mix: TriageMixCounts }) {
         fontSize="13px"
         lineHeight="16px"
       >
-        —
+        {NULL_DASH}
       </Box>
     );
   }
