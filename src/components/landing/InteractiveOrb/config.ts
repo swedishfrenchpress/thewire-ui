@@ -15,13 +15,13 @@ export const SPHERE_CONFIG = {
 
 export const SHADER_UNIFORMS = {
   uTime: { value: 0 },
-  uLightAColor: { value: new THREE.Color("#f7f7f7") },
+  uLightAColor: { value: new THREE.Color("#888888") },
   uLightAPosition: { value: new THREE.Vector3(1, 1, 0) },
-  uLightAIntensity: { value: 2.0 },
-  uLightBColor: { value: new THREE.Color("#a5a5a5") },
+  uLightAIntensity: { value: 0.6 },
+  uLightBColor: { value: new THREE.Color("#000000") },
   uLightBPosition: { value: new THREE.Vector3(-1, -1, 0) },
-  uLightBIntensity: { value: 1.8 },
-  uBaseColor: { value: new THREE.Color("#191919") },
+  uLightBIntensity: { value: 0.3 },
+  uBaseColor: { value: new THREE.Color("#1a1a1a") },
   uSubdivision: { value: new THREE.Vector2(64, 64) },
   uOffset: { value: new THREE.Vector3(0, 0, 0) },
   uDistortionFrequency: { value: 0.8 },

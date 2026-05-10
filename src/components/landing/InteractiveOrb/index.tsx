@@ -6,7 +6,6 @@ import { useRef } from "react";
 import type { Group } from "three";
 import { ShaderSphere } from "./ShaderSphere";
 import { SPHERE_CONFIG } from "./config";
-import { useIsDark } from "./useIsDark";
 
 interface InteractiveOrbProps {
   width?: string;
@@ -35,12 +34,9 @@ export function InteractiveOrb({
   height = "240px",
   segments,
 }: InteractiveOrbProps) {
-  const isDark = useIsDark();
-
   return (
     <Box width={width} height={height}>
       <Canvas
-        key={isDark ? "dark" : "light"}
         camera={{
           position: SPHERE_CONFIG.cameraPosition,
           fov: SPHERE_CONFIG.cameraFov,
@@ -59,7 +55,7 @@ export function InteractiveOrb({
         }}
       >
         <RotatingGroup>
-          <ShaderSphere segments={segments} isDark={isDark} />
+          <ShaderSphere segments={segments} />
         </RotatingGroup>
       </Canvas>
     </Box>
