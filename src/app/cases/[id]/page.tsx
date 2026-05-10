@@ -160,7 +160,7 @@ function CaseDetail() {
       )}
 
       {isProcessing && sorted.length < 3 ? (
-        <TopicSkeletonList />
+        <TopicSkeletonList progress={{ topicsInferred: data.topics.length }} />
       ) : sorted.length === 0 ? (
         data.status === "complete" && (
           <Box
@@ -827,29 +827,70 @@ function ProcessingBanner({
   );
 }
 
-function TopicSkeletonList() {
+function TopicSkeletonList({
+  progress,
+}: {
+  progress?: { topicsInferred: number };
+}) {
   return (
-    <Stack gap="0">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <Box
-          key={i}
-          py="4"
-          borderTopWidth={i === 0 ? "0" : "1px"}
-          borderColor="border.muted"
-        >
-          <Grid templateColumns={{ base: "auto 1fr", md: "80px 1fr" }} gap="5">
-            <GridItem>
-              <Skeleton height="16px" width="56px" />
-            </GridItem>
-            <GridItem>
-              <Stack gap="2">
-                <Skeleton height="20px" width="40%" />
-                <Skeleton height="16px" width="80%" />
-              </Stack>
-            </GridItem>
-          </Grid>
-        </Box>
-      ))}
+    <Stack gap="3">
+      {progress ? (
+        <HStack gap="2" align="baseline">
+          <Text
+            as="span"
+            fontFamily="mono"
+            fontSize="11px"
+            lineHeight="13px"
+            letterSpacing="wider"
+            textTransform="uppercase"
+            fontWeight="500"
+            color="fg.muted"
+          >
+            Analyzing ·{" "}
+            <Box
+              as="span"
+              color="fg"
+              fontVariantNumeric="tabular-nums"
+            >
+              {progress.topicsInferred}
+            </Box>{" "}
+            {progress.topicsInferred === 1 ? "topic" : "topics"} inferred
+          </Text>
+          <Box
+            as="span"
+            color="fg.muted"
+            animation="wirePulse 1.4s var(--chakra-easings-emphatic) infinite"
+            aria-hidden
+          >
+            ⋯
+          </Box>
+        </HStack>
+      ) : null}
+      <Stack
+        gap="0"
+        animation="wirePulse 2s var(--chakra-easings-emphatic) infinite"
+      >
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Box
+            key={i}
+            py="4"
+            borderTopWidth={i === 0 ? "0" : "1px"}
+            borderColor="border.muted"
+          >
+            <Grid templateColumns={{ base: "auto 1fr", md: "80px 1fr" }} gap="5">
+              <GridItem>
+                <Skeleton height="16px" width="56px" />
+              </GridItem>
+              <GridItem>
+                <Stack gap="2">
+                  <Skeleton height="20px" width="40%" />
+                  <Skeleton height="16px" width="80%" />
+                </Stack>
+              </GridItem>
+            </Grid>
+          </Box>
+        ))}
+      </Stack>
     </Stack>
   );
 }
