@@ -1227,11 +1227,13 @@ const config = defineConfig({
           DEFAULT: {
             value: { base: "{colors.neutral.200}", _dark: "{colors.neutral.700}" },
           },
-          // working-grey (#8f8f8f) keeps the label legible against the
-          // neutral.200 disabled bg. The previous value (neutral.400 / #e0e0e0)
-          // was below AA contrast and read as nearly invisible.
+          // desk-graphite (#616161) on the neutral.200 disabled bg gives ~6.4:1
+          // contrast — the label reads at the same legibility as muted body
+          // prose. Combined with the column-rule border (see button recipe
+          // _disabled), the disabled state has three structural cues without
+          // looking interactive.
           fg: {
-            value: { base: "{colors.neutral.500}", _dark: "{colors.neutral.500}" },
+            value: { base: "{colors.neutral.600}", _dark: "{colors.neutral.400}" },
           },
         },
       },
@@ -1277,7 +1279,10 @@ const config = defineConfig({
             cursor: "not-allowed",
             bg: "buttonDisabled",
             color: "buttonDisabled.fg",
-            borderColor: "border.muted",
+            // border (column-rule) is one step darker than the disabled bg,
+            // so the button reads as a defined surface instead of fading
+            // into the page.
+            borderColor: "border",
           },
         },
         variants: {
@@ -1309,6 +1314,10 @@ const config = defineConfig({
             solid: {
               bg: "buttonPrimary",
               color: "buttonPrimary.fg",
+              // Transparent 1px baseline so toggling enabled→disabled doesn't
+              // shift the box (the _disabled rule swaps the color visible).
+              borderWidth: "1px",
+              borderColor: "transparent",
               _hover: { bg: "neutral.700" },
               _active: { bg: "neutral.600" },
             },
