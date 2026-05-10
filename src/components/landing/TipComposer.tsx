@@ -52,8 +52,8 @@ export function TipComposer() {
       setReportText("");
       setFiles([]);
       if (inputRef.current) inputRef.current.value = "";
-      toast.success("Case created", {
-        description: `${displayName}, ${count} document${count === 1 ? "" : "s"}`,
+      toast.success(`Analyzing ${displayName}`, {
+        description: `Case #${result.case_id} · ${count} document${count === 1 ? "" : "s"} · processing`,
       });
     },
   });

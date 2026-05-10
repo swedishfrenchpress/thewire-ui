@@ -1,22 +1,24 @@
 "use client";
 
 import {
+  Button,
   Container,
+  HStack,
   Heading,
   Link as ChakraLink,
+  Skeleton,
   Stack,
   Table,
   Text,
 } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
 import NextLink from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { HelperText } from "@/components/HelperText";
 import { TriageTag } from "@/components/TriageTag";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
-import { getCase } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
+import { formatElapsed, useCase } from "@/lib/hooks/useCase";
 import type { Rating } from "@/lib/types";
 
 const TRIAGE_ORDER: Record<Rating, number> = { high: 0, medium: 1, low: 2 };
@@ -27,13 +29,8 @@ function DashboardContent() {
   const caseId = caseParam !== null ? Number(caseParam) : null;
   const caseIdValid = caseId !== null && Number.isFinite(caseId);
 
-  const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["case", caseId],
-    queryFn: () => getCase(caseId as number),
-    enabled: caseIdValid,
-    refetchInterval: (query) =>
-      query.state.data?.status === "processing" ? 2000 : false,
-  });
+  const { query, elapsedMs, cappedOut, isProcessing } = useCase(caseId);
+  const { data, isLoading, isError, error, refetch, isFetching } = query;
 
   if (caseId === null) {
     return (
@@ -52,11 +49,17 @@ function DashboardContent() {
   if (data.status === "failed") {
     return (
       <Stack gap="4">
-        <Text color="fg.muted" fontSize="14px">
-          Case {data.case_id} — {data.document_count} documents — created{" "}
-          {data.created_at}
-        </Text>
-        <HelperText tone="error">Analysis failed for this case.</HelperText>
+        <CaseMetaLine
+          caseId={data.case_id}
+          documentCount={data.document_count}
+          createdAt={data.created_at}
+        />
+        <HelperText tone="error">
+          Analysis failed for case #{data.case_id}.
+        </HelperText>
+        <Button asChild variant="solid" size="sm" alignSelf="flex-start">
+          <NextLink href="/">Start a new case</NextLink>
+        </Button>
       </Stack>
     );
   }
@@ -67,21 +70,36 @@ function DashboardContent() {
 
   return (
     <Stack gap="6">
-      <Text color="fg.muted" fontSize="14px">
-        Case {data.case_id} — {data.document_count} documents — created{" "}
-        {data.created_at}
-      </Text>
+      <CaseMetaLine
+        caseId={data.case_id}
+        documentCount={data.document_count}
+        createdAt={data.created_at}
+      />
 
-      {data.status === "processing" && (
-        <HelperText>
-          Analyzing documents…
-          {data.topics.length > 0
-            ? ` ${data.topics.length} topic${data.topics.length === 1 ? "" : "s"} available so far.`
-            : ""}
-        </HelperText>
+      {isProcessing && !cappedOut && (
+        <ProcessingBanner caseId={data.case_id} elapsedMs={elapsedMs} />
       )}
 
-      {sorted.length === 0 ? (
+      {isProcessing && cappedOut && (
+        <Stack gap="3">
+          <HelperText tone="warning">
+            Still processing — refresh to check again.
+          </HelperText>
+          <Button
+            variant="outline"
+            size="sm"
+            alignSelf="flex-start"
+            loading={isFetching}
+            onClick={() => refetch()}
+          >
+            Refresh
+          </Button>
+        </Stack>
+      )}
+
+      {isProcessing && sorted.length < 3 ? (
+        <TopicSkeletonRows />
+      ) : sorted.length === 0 ? (
         data.status === "complete" && (
           <Text>No topics were inferred for this case.</Text>
         )
@@ -114,6 +132,99 @@ function DashboardContent() {
         </Table.Root>
       )}
     </Stack>
+  );
+}
+
+function CaseMetaLine({
+  caseId,
+  documentCount,
+  createdAt,
+}: {
+  caseId: number;
+  documentCount: number;
+  createdAt: string;
+}) {
+  return (
+    <Text color="fg.muted" fontSize="14px">
+      Case {caseId} — {documentCount} documents — created {createdAt}
+    </Text>
+  );
+}
+
+function ProcessingBanner({
+  caseId,
+  elapsedMs,
+}: {
+  caseId: number;
+  elapsedMs: number;
+}) {
+  return (
+    <Stack
+      gap="2"
+      px="4"
+      py="3"
+      borderWidth="1px"
+      borderColor="border.muted"
+      borderRadius="sm"
+      bg="bg.subtle"
+    >
+      <HStack align="center" justify="space-between" gap="3" flexWrap="wrap">
+        <Text fontSize="14px" color="fg">
+          Analyzing case #{caseId}…
+        </Text>
+        <Text
+          fontFamily="mono"
+          fontSize="12px"
+          color="fg.muted"
+          fontVariantNumeric="tabular-nums"
+          aria-label="elapsed time"
+        >
+          {formatElapsed(elapsedMs)}
+        </Text>
+      </HStack>
+      <ProgressIndicator />
+    </Stack>
+  );
+}
+
+function ProgressIndicator() {
+  return (
+    <Skeleton
+      height="2px"
+      width="100%"
+      borderRadius="sm"
+      aria-hidden
+      role="presentation"
+    />
+  );
+}
+
+function TopicSkeletonRows() {
+  return (
+    <Table.Root>
+      <Table.Header>
+        <Table.Row>
+          <Table.ColumnHeader>Triage</Table.ColumnHeader>
+          <Table.ColumnHeader>Title</Table.ColumnHeader>
+          <Table.ColumnHeader>Description</Table.ColumnHeader>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Table.Row key={i}>
+            <Table.Cell>
+              <Skeleton height="16px" width="56px" />
+            </Table.Cell>
+            <Table.Cell>
+              <Skeleton height="16px" width="40%" />
+            </Table.Cell>
+            <Table.Cell>
+              <Skeleton height="16px" width="80%" />
+            </Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table.Root>
   );
 }
 

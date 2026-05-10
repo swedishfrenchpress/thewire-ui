@@ -2,6 +2,7 @@
 
 import {
   Box,
+  Button,
   Container,
   Grid,
   GridItem,
@@ -14,14 +15,15 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import NextLink from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
-import { Suspense, type ReactNode } from "react";
+import { Suspense, useEffect, useRef, type ReactNode } from "react";
 import { HelperText } from "@/components/HelperText";
 import { TriageDistribution } from "@/components/TriageDistribution";
 import { HeuristicChip } from "@/components/shared/HeuristicChip";
 import { TriageTag } from "@/components/TriageTag";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
-import { getTopic, getTopicDocuments } from "@/lib/api";
+import { ApiRequestError, getTopic, getTopicDocuments } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
+import { useCase } from "@/lib/hooks/useCase";
 import { distributeDocuments, documentTriage } from "@/lib/triage";
 import type {
   DocumentRecord,
@@ -286,13 +288,41 @@ function TopicContent() {
     queryKey: ["topic", caseId, topicId],
     queryFn: () => getTopic(caseId as number, topicId),
     enabled: idsValid,
+    retry: (failureCount, err) => {
+      if (err instanceof ApiRequestError && err.status === 404) return false;
+      return failureCount < 2;
+    },
   });
 
   const docsQuery = useQuery({
     queryKey: ["topic-documents", caseId, topicId],
     queryFn: () => getTopicDocuments(caseId as number, topicId),
-    enabled: idsValid,
+    enabled: idsValid && !detail.isError,
+    retry: (failureCount, err) => {
+      if (err instanceof ApiRequestError && err.status === 404) return false;
+      return failureCount < 2;
+    },
   });
+
+  const topicNotFound =
+    detail.error instanceof ApiRequestError && detail.error.status === 404;
+
+  // When the topic 404s, poll the parent case so we can detect when analysis
+  // finishes. Same cadence as the dashboard.
+  const caseQuery = useCase(caseId, { enabled: idsValid && topicNotFound });
+  const caseStatus = caseQuery.query.data?.status;
+
+  // Re-fetch the topic the moment the case becomes complete.
+  const lastSeenStatusRef = useRef<typeof caseStatus>(undefined);
+  useEffect(() => {
+    if (
+      lastSeenStatusRef.current === "processing" &&
+      caseStatus === "complete"
+    ) {
+      detail.refetch();
+    }
+    lastSeenStatusRef.current = caseStatus;
+  }, [caseStatus, detail]);
 
   if (caseId === null) {
     return <HelperText tone="warning">Missing ?case= query param.</HelperText>;
@@ -300,6 +330,17 @@ function TopicContent() {
   if (!idsValid) {
     return <HelperText tone="error">Invalid ids.</HelperText>;
   }
+
+  if (topicNotFound) {
+    return (
+      <TopicPendingState
+        caseId={caseId as number}
+        caseStatus={caseStatus}
+        caseError={caseQuery.query.error}
+      />
+    );
+  }
+
   if (detail.isLoading) return <HelperText>Loading…</HelperText>;
   if (detail.isError)
     return <HelperText tone="error">Error: {String(detail.error)}</HelperText>;
@@ -416,6 +457,70 @@ function TopicContent() {
   );
 }
 
+function TopicPendingState({
+  caseId,
+  caseStatus,
+  caseError,
+}: {
+  caseId: number;
+  caseStatus: "processing" | "complete" | "failed" | undefined;
+  caseError: unknown;
+}) {
+  const backHref = `/dashboard?case=${caseId}`;
+
+  if (caseError instanceof ApiRequestError && caseError.status === 404) {
+    return (
+      <Stack gap="4">
+        <HelperText tone="error">
+          Case #{caseId} was not found.
+        </HelperText>
+        <Button asChild variant="outline" size="sm" alignSelf="flex-start">
+          <NextLink href="/">Back to dashboard</NextLink>
+        </Button>
+      </Stack>
+    );
+  }
+
+  if (caseStatus === "failed") {
+    return (
+      <Stack gap="4">
+        <HelperText tone="error">
+          Analysis failed for case #{caseId}.
+        </HelperText>
+        <Button asChild variant="outline" size="sm" alignSelf="flex-start">
+          <NextLink href={backHref}>Back to case</NextLink>
+        </Button>
+      </Stack>
+    );
+  }
+
+  if (caseStatus === "complete") {
+    // Case is done but the topic still 404s — it isn't part of this case.
+    return (
+      <Stack gap="4">
+        <HelperText tone="warning">
+          This topic is not part of case #{caseId}.
+        </HelperText>
+        <Button asChild variant="outline" size="sm" alignSelf="flex-start">
+          <NextLink href={backHref}>Back to case</NextLink>
+        </Button>
+      </Stack>
+    );
+  }
+
+  // Default: case is still processing (or we haven't gotten its status yet).
+  return (
+    <Stack gap="4">
+      <HelperText>
+        This topic is not yet available — the case is still processing.
+      </HelperText>
+      <Button asChild variant="outline" size="sm" alignSelf="flex-start">
+        <NextLink href={backHref}>Back to case</NextLink>
+      </Button>
+    </Stack>
+  );
+}
+
 function TopicHeaderCrumbs() {
   const { id } = useParams<{ id: string }>();
   const searchParams = useSearchParams();
@@ -428,6 +533,10 @@ function TopicHeaderCrumbs() {
     queryKey: ["topic", caseId, topicId],
     queryFn: () => getTopic(caseId as number, topicId),
     enabled: idsValid,
+    retry: (failureCount, err) => {
+      if (err instanceof ApiRequestError && err.status === 404) return false;
+      return failureCount < 2;
+    },
   });
   return (
     <TopicCrumbs caseId={caseId} topicTitle={detail.data?.topic.title} />
