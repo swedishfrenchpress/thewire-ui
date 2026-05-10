@@ -46,6 +46,19 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
   );
 }
 
+function FactBullet({ fact }: { fact: string }) {
+  return (
+    <Box as="li" display="flex" gap="3" alignItems="baseline">
+      <Box flexShrink={0} color="fg.muted" aria-hidden>
+        •
+      </Box>
+      <Text textStyle="body.lg" color="fg" minW="0" flex="1">
+        {fact}
+      </Text>
+    </Box>
+  );
+}
+
 function DistributionPanel({ doc }: { doc: DocumentRecord }) {
   const dist = distributeHeuristics(doc.heuristics);
   return (
@@ -189,6 +202,7 @@ function DocumentContent() {
   const overall = documentTriage(doc);
   const lines = doc.content.split("\n").length;
   const chars = doc.content.length;
+  const facts = doc.facts_to_verify ?? [];
 
   return (
     <Stack gap="10">
@@ -222,6 +236,25 @@ function DocumentContent() {
       >
         <GridItem>
           <Stack gap="6">
+            {facts.length > 0 && (
+              <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
+                <Text textStyle="eyebrow" color="fg.muted" pt="4" pb="2">
+                  Facts to verify
+                </Text>
+                <Stack
+                  as="ul"
+                  gap="2"
+                  pt="2"
+                  pl="0"
+                  maxW="65ch"
+                  listStyleType="none"
+                >
+                  {facts.map((f, i) => (
+                    <FactBullet key={i} fact={f} />
+                  ))}
+                </Stack>
+              </Stack>
+            )}
             <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
               <Text textStyle="eyebrow" color="fg.muted" pt="4" pb="2">
                 Signals from this document
