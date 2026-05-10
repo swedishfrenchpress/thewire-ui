@@ -16,6 +16,11 @@ import { useQuery } from "@tanstack/react-query";
 import NextLink from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
+import {
+  BureauLine,
+  BureauNum,
+  BureauSep,
+} from "@/components/BureauLine";
 import { HeuristicBreakdownView } from "@/components/HeuristicBreakdownView";
 import { HelperText } from "@/components/HelperText";
 import {
@@ -424,7 +429,67 @@ function TopicContent() {
           />
         )}
       </Stack>
+
+      <TopicBureauLine
+        caseId={detail.data.case_id}
+        topicId={t.id}
+        triage={t.triage}
+        docCount={t.document_count}
+        docs={docs}
+      />
     </Stack>
+  );
+}
+
+function TopicBureauLine({
+  caseId,
+  topicId,
+  triage,
+  docCount,
+  docs,
+}: {
+  caseId: number;
+  topicId: number;
+  triage: Rating;
+  docCount: number;
+  docs: DocumentRecord[];
+}) {
+  const verdictCounts = { concerning: 0, mixed: 0, healthy: 0 };
+  for (const d of docs) verdictCounts[documentVerdict(d)]++;
+  const haveVerdicts = docs.length > 0;
+  return (
+    <BureauLine
+      left={
+        <>
+          <Box as="span">
+            <BureauNum>{docCount}</BureauNum> {docCount === 1 ? "doc" : "docs"}
+          </Box>
+          {haveVerdicts ? (
+            <>
+              <BureauSep />
+              <Box as="span">
+                <BureauNum>{verdictCounts.concerning}</BureauNum> Concerning{" "}
+                <BureauNum>{verdictCounts.mixed}</BureauNum> Mixed{" "}
+                <BureauNum>{verdictCounts.healthy}</BureauNum> Healthy
+              </Box>
+            </>
+          ) : null}
+        </>
+      }
+      right={
+        <>
+          <Box as="span">
+            Topic <BureauNum>#{String(topicId).padStart(5, "0")}</BureauNum>
+          </Box>
+          <BureauSep />
+          <Box as="span">
+            Case <BureauNum>#{String(caseId).padStart(5, "0")}</BureauNum>
+          </Box>
+          <BureauSep />
+          <Box as="span">{triage} priority</Box>
+        </>
+      }
+    />
   );
 }
 
@@ -516,7 +581,7 @@ function TopicHeaderCrumbs() {
 
 export default function TopicPage() {
   return (
-    <Container maxW="6xl" pb="12">
+    <Container maxW="6xl" pb={{ base: "12", md: "20" }}>
       <Suspense fallback={null}>
         <TopicHeaderCrumbs />
       </Suspense>

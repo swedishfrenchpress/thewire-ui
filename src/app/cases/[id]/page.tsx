@@ -28,6 +28,11 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  BureauLine,
+  BureauNum,
+  BureauSep,
+} from "@/components/BureauLine";
 import { Dialog } from "@/components/Dialog";
 import { HelperText } from "@/components/HelperText";
 import { TriageTag } from "@/components/TriageTag";
@@ -40,7 +45,7 @@ import {
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { type CaseEntry, casesStore } from "@/lib/cases-store";
 import { formatElapsed, useCase } from "@/lib/hooks/useCase";
-import { TRIAGE_RANK, topTriage } from "@/lib/triage";
+import { TRIAGE_RANK, topTriage, triageMix } from "@/lib/triage";
 import type { CaseSummary, Rating, TopicSummary } from "@/lib/types";
 
 const STATUS_LABEL: Record<CaseSummary["status"], string> = {
@@ -177,7 +182,46 @@ function CaseDetail() {
       )}
 
       {data.status === "complete" && <MethodologyFootnote />}
+
+      <CaseBureauLine data={data} />
     </Stack>
+  );
+}
+
+function CaseBureauLine({ data }: { data: CaseSummary }) {
+  const mix = triageMix(data.topics);
+  const docCount = data.document_count;
+  return (
+    <BureauLine
+      left={
+        <>
+          <Box as="span">
+            <BureauNum>{docCount}</BureauNum> {docCount === 1 ? "doc" : "docs"}
+          </Box>
+          <BureauSep />
+          <Box as="span">
+            <BureauNum>{mix.high}</BureauNum>H{" "}
+            <BureauNum>{mix.medium}</BureauNum>M{" "}
+            <BureauNum>{mix.low}</BureauNum>L
+          </Box>
+        </>
+      }
+      right={
+        <>
+          <Box as="span">
+            Case <BureauNum>#{String(data.case_id).padStart(5, "0")}</BureauNum>
+          </Box>
+          <BureauSep />
+          <Box as="span" color={data.status === "failed" ? "fg.attention" : "fg"}>
+            {STATUS_LABEL[data.status]}
+          </Box>
+          <BureauSep />
+          <Box as="span">
+            <WireTime iso={data.created_at} eyebrow="Filed" />
+          </Box>
+        </>
+      }
+    />
   );
 }
 
@@ -887,7 +931,7 @@ function CaseCrumbs() {
 
 export default function CasePage() {
   return (
-    <Container maxW="5xl" pb="12">
+    <Container maxW="5xl" pb={{ base: "12", md: "20" }}>
       <Suspense fallback={null}>
         <CaseCrumbs />
       </Suspense>
