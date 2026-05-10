@@ -1,15 +1,14 @@
 "use client";
 
-import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box, Heading, Stack } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
-import { uploadDialogStore } from "@/lib/upload-dialog-store";
 import { GridBackground } from "./GridBackground";
 
 const InteractiveOrb = dynamic(
   () => import("./InteractiveOrb").then((m) => m.InteractiveOrb),
   {
     ssr: false,
-    loading: () => <Box width="100%" height="300px" />,
+    loading: () => <Box width="100%" height="240px" />,
   },
 );
 
@@ -21,7 +20,7 @@ export function OrbHero() {
       width="100%"
       overflow="hidden"
       pt="6"
-      pb="10"
+      pb="6"
     >
       <GridBackground />
 
@@ -31,45 +30,25 @@ export function OrbHero() {
         maxW="640px"
         mx="auto"
         px="6"
-        gap="6"
+        gap="3"
         align="center"
         textAlign="center"
       >
-        <Box width="100%" maxW="440px">
-          <InteractiveOrb height="300px" />
+        <Box width="100%" maxW="360px">
+          <InteractiveOrb height="240px" />
         </Box>
 
-        <Stack gap="2" align="center">
-          <Heading
-            as="h1"
-            fontFamily="heading"
-            fontWeight="400"
-            fontSize="clamp(2rem, 4.5vw, 3rem)"
-            lineHeight="1.05"
-            letterSpacing="tight"
-            color="fg"
-          >
-            Start a new case
-          </Heading>
-          <Text
-            fontFamily="body"
-            fontSize="15px"
-            lineHeight="22px"
-            color="fg.muted"
-            maxW="44ch"
-          >
-            Drop a document and we&apos;ll triage it for you.
-          </Text>
-        </Stack>
-
-        <Button
-          size="lg"
-          variant="solid"
-          onClick={() => uploadDialogStore.openDialog()}
-          minW="220px"
+        <Heading
+          as="h1"
+          fontFamily="heading"
+          fontWeight="400"
+          fontSize="clamp(1.75rem, 3.6vw, 2.5rem)"
+          lineHeight="1.05"
+          letterSpacing="tight"
+          color="fg"
         >
-          + New case
-        </Button>
+          Submit a tip
+        </Heading>
       </Stack>
     </Box>
   );

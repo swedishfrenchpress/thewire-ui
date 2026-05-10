@@ -4,11 +4,6 @@ import { Box, HStack, Spacer, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { UploadModal } from "@/components/UploadModal";
-import {
-  uploadDialogStore,
-  useUploadDialog,
-} from "@/lib/upload-dialog-store";
 import { Logomark } from "./Logomark";
 
 const MONTHS = [
@@ -31,7 +26,6 @@ function formatDateline(date: Date): string {
 }
 
 export function TopBar() {
-  const dialog = useUploadDialog();
   const [dateline, setDateline] = useState<string | null>(null);
 
   useEffect(() => {
@@ -130,11 +124,6 @@ export function TopBar() {
           {dateline ?? " "}
         </Text>
       </HStack>
-      <UploadModal
-        open={dialog.open}
-        initialFiles={dialog.initialFiles}
-        onClose={() => uploadDialogStore.closeDialog()}
-      />
     </Box>
   );
 }

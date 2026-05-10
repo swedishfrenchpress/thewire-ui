@@ -3,8 +3,9 @@
 import { Box } from "@chakra-ui/react";
 import { useQueries } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { ActiveCasesTable } from "@/components/dashboard/ActiveCasesTable";
+import { ActiveCases } from "@/components/dashboard/ActiveCases";
 import { OrbHero } from "@/components/landing/OrbHero";
+import { TipComposer } from "@/components/landing/TipComposer";
 import { getCase } from "@/lib/api";
 import { compareCases, type Row } from "@/lib/triage";
 import type { CaseSummary } from "@/lib/types";
@@ -55,9 +56,20 @@ export default function DashboardPage() {
   return (
     <>
       <OrbHero />
+      <Box maxW="640px" mx="auto" px="6" pb="16">
+        <TipComposer />
+      </Box>
       {sortedRows.length > 0 && (
-        <Box maxW="1080px" mx="auto" px="6" pb="20">
-          <ActiveCasesTable rows={sortedRows} />
+        <Box
+          maxW="960px"
+          mx="auto"
+          px="6"
+          pb="20"
+          borderTopWidth="1px"
+          borderColor="border.muted"
+          pt="10"
+        >
+          <ActiveCases rows={sortedRows} />
         </Box>
       )}
     </>
