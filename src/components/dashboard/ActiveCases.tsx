@@ -1,6 +1,14 @@
 "use client";
 
-import { Box, HStack, Input, Skeleton, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  HStack,
+  Input,
+  SegmentGroup,
+  Skeleton,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,6 +30,56 @@ const SEGMENT_BG: Record<Rating, string> = {
   low: "bg.successSubtle",
 };
 
+const MONTHS_FULL = [
+  "JANUARY",
+  "FEBRUARY",
+  "MARCH",
+  "APRIL",
+  "MAY",
+  "JUNE",
+  "JULY",
+  "AUGUST",
+  "SEPTEMBER",
+  "OCTOBER",
+  "NOVEMBER",
+  "DECEMBER",
+];
+
+function formatDateline(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${MONTHS_FULL[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+type DateFilter = "all" | "today" | "7d" | "30d";
+
+const DATE_FILTERS: { value: DateFilter; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "today", label: "Today" },
+  { value: "7d", label: "7 days" },
+  { value: "30d", label: "30 days" },
+];
+
+function dateFilterCutoff(filter: DateFilter, now: number): number | null {
+  if (filter === "all") return null;
+  const day = 24 * 60 * 60 * 1000;
+  if (filter === "today") {
+    const d = new Date(now);
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
+  if (filter === "7d") return now - 7 * day;
+  if (filter === "30d") return now - 30 * day;
+  return null;
+}
+
+function dateMatches(row: Row, cutoff: number | null): boolean {
+  if (cutoff === null) return true;
+  const created = Date.parse(row.entry.createdAt);
+  if (Number.isNaN(created)) return true;
+  return created >= cutoff;
+}
+
 function rowMatches(row: Row, query: string): boolean {
   if (query.length === 0) return true;
   const haystack: string[] = [row.entry.displayName];
@@ -40,63 +98,85 @@ function headlineFor(row: Row): string {
 }
 
 function eyebrowFor(row: Row): string {
+  const date = formatDateline(row.entry.createdAt);
   const { summary, isError } = row;
-  if (isError || summary?.status === "failed") return "Analysis failed";
-  if (!summary || summary.status === "processing") return "Awaiting analysis";
-  const topicCount = summary.topics.length;
-  return `${topicCount} ${topicCount === 1 ? "topic" : "topics"} · ${summary.document_count} ${summary.document_count === 1 ? "document" : "documents"}`;
+  const left = (() => {
+    if (isError || summary?.status === "failed") return "Analysis failed";
+    if (!summary || summary.status === "processing") return "Awaiting analysis";
+    const t = summary.topics.length;
+    const d = summary.document_count;
+    return `${t} ${t === 1 ? "topic" : "topics"} · ${d} ${d === 1 ? "document" : "documents"}`;
+  })();
+  return date ? `${left} · ${date}` : left;
 }
 
 export function ActiveCases({ rows }: { rows: Row[] }) {
   const [query, setQuery] = useState("");
+  const [dateFilter, setDateFilter] = useState<DateFilter>("all");
 
-  const filtered = useMemo(
-    () => rows.filter((row) => rowMatches(row, query.trim())),
-    [rows, query],
-  );
+  const filtered = useMemo(() => {
+    const cutoff = dateFilterCutoff(dateFilter, Date.now());
+    const q = query.trim();
+    return rows.filter(
+      (row) => dateMatches(row, cutoff) && rowMatches(row, q),
+    );
+  }, [rows, query, dateFilter]);
 
   if (rows.length === 0) return null;
 
-  const showSearch = rows.length > 1;
+  const emptyReason =
+    query.trim().length > 0
+      ? `No cases match "${query}".`
+      : dateFilter !== "all"
+      ? "No cases in this date range."
+      : "No cases match.";
 
   return (
-    <Stack gap="6" w="full">
+    <Stack gap="5" w="full">
+      <Eyebrow>
+        Active cases · {filtered.length}
+        {filtered.length !== rows.length ? ` of ${rows.length}` : ""}
+      </Eyebrow>
+
       <HStack
         align="center"
         justify="space-between"
-        gap="4"
+        gap="3"
         wrap="wrap"
       >
-        <Eyebrow>
-          Active cases · {filtered.length}
-          {filtered.length !== rows.length ? ` of ${rows.length}` : ""}
-        </Eyebrow>
-        {showSearch && (
-          <Input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search cases"
-            size="sm"
-            maxW="280px"
-            fontFamily="body"
-            fontSize="13px"
-            lineHeight="15px"
-            px="3"
-            borderWidth="1px"
-            borderColor="border"
-            borderRadius="lg"
-            bg="bg"
-            color="fg"
-            _placeholder={{ color: "fg.muted" }}
-            _hover={{ bg: "bg.subtle" }}
-            _focusVisible={{
-              outline: "none",
-              bg: "bg",
-              borderColor: "border.strong",
-            }}
-            aria-label="Search cases"
-          />
-        )}
+        <SegmentGroup.Root
+          value={dateFilter}
+          onValueChange={(d) => setDateFilter((d.value ?? "all") as DateFilter)}
+          size="sm"
+        >
+          <SegmentGroup.Indicator />
+          <SegmentGroup.Items items={DATE_FILTERS} />
+        </SegmentGroup.Root>
+
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search cases"
+          size="sm"
+          maxW="280px"
+          fontFamily="body"
+          fontSize="13px"
+          lineHeight="15px"
+          px="3"
+          borderWidth="1px"
+          borderColor="border"
+          borderRadius="lg"
+          bg="bg"
+          color="fg"
+          _placeholder={{ color: "fg.muted" }}
+          _hover={{ bg: "bg.subtle" }}
+          _focusVisible={{
+            outline: "none",
+            bg: "bg",
+            borderColor: "border.strong",
+          }}
+          aria-label="Search cases"
+        />
       </HStack>
 
       {filtered.length === 0 ? (
@@ -107,7 +187,7 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
             lineHeight="20px"
             color="fg.muted"
           >
-            No cases match &ldquo;{query}&rdquo;.
+            {emptyReason}
           </Text>
         </Box>
       ) : (
