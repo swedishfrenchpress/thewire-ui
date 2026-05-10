@@ -3,6 +3,9 @@ import path from "node:path";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
+  experimental: {
+    optimizePackageImports: ["@chakra-ui/react"],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "picsum.photos" },
