@@ -21,7 +21,7 @@ export default function AboutPage() {
           color="fg"
           pt="3"
         >
-          About Palantir for the People
+          About the Project
         </Heading>
 
         <Text
@@ -34,10 +34,7 @@ export default function AboutPage() {
           pb="6"
           maxW="62ch"
         >
-          Palantir for the People is a verification tool for newsrooms. It
-          helps journalists assess whistleblower claims and source documents
-          using a transparent agent that grades evidence and surfaces the
-          strongest leads first.
+          Whistleblowers protect our freedom, we protect their truth.
         </Text>
 
         <Box
@@ -49,71 +46,77 @@ export default function AboutPage() {
 
         <Stack gap="6" maxW="62ch">
           <Prose>
-            Authoritarian regimes, captured institutions, and corrupt private
-            actors depend on opacity to function. The people closest to
-            wrongdoing (civil servants, contractors, NGO staff, family
-            members) usually know what is happening before any journalist
-            does. Few of them come forward, and the few who do arrive at
-            newsrooms with folders of unstructured material that overworked
-            desks rarely have the time to read in full.
+            Whistleblowers are essential to democracy. They expose
+            corruption, abuse, and the stories powerful institutions would
+            rather keep hidden.
+          </Prose>
+          <Prose>
+            But whistleblowing systems are increasingly vulnerable to spam,
+            fabricated evidence, and contradictory claims that bury credible
+            reports under noise. As generative AI lowers the cost of
+            producing convincing fake material at scale, that problem will
+            only intensify.
+          </Prose>
+          <Prose>
+            Palantir for the People equips journalists and investigators
+            with the tools to defend against this new wave of information
+            warfare — helping them verify evidence, detect inconsistencies,
+            and surface credible stories before the truth is drowned out.
           </Prose>
           <Prose fontWeight="600" color="fg">
-            Palantir for the People is the verification layer between the
-            source and the desk.
-          </Prose>
+            Palantir for the People surfaces signal in the face of noise.
+	  </Prose>
         </Stack>
 
         <Section eyebrow="What we do">
           <Prose>
-            Journalists upload documents, transcripts, leaked memos, and
-            notes. The agent reads each document, assigns it to a topic, and
-            grades it against an open set of heuristics: sensitivity, claim
-            support, classification rationale, and others that the model
-            generates as it goes. Every grading carries a short description
-            so the reporter can see, in plain language, what the heuristic
-            measured and how the agent graded it.
-          </Prose>
-          <Prose>
-            Topics roll up to a case. The case lands on the dashboard ranked
-            fastest first: high severity at the top, low severity at the
-            bottom. The reporter walks the queue and stops where the
-            evidence stops being defensible.
+            We classify, grade, and filter large document dumps so reporters
+            can find the documents that matter. The agent processes the full
+            corpus, prioritizes the sub-groups most worth a reporter&rsquo;s
+            time, and ranks individual documents on how readily their claims
+            can be externally verified. Documents that contradict themselves
+            are filtered out.
           </Prose>
         </Section>
 
         <Section eyebrow="What we produce">
           <Prose>
-            Triaged topics, graded documents, and named heuristics with
-            descriptions. We do not write, summarize, or recommend. We
-            grade. The reporter is the editor.
+            A triaged corpus. Documents are grouped by topic, ordered by
+            significance, and graded for verifiability. Self-contradicting
+            material is set aside. We do not write, summarize, or recommend.
+            We grade. The reporter is the editor.
           </Prose>
         </Section>
 
         <Section eyebrow="What this is not">
           <Prose>
-            Not a tip line for anonymous submitters. Not a publication. Not
-            a substitute for reporting, calling sources, or verifying
-            documents in the field. A high triage is the start of the work,
-            not the end of it. A low triage is the back of the queue, not a
-            clearance.
+            Not a secure submission platform. Several well-considered open
+            source projects are dedicated to that problem.
           </Prose>
           <Prose>
-            We are also not the model. The model is a working part of the
-            grading pipeline. It is replaceable, auditable, and does not
-            speak for the product.
+            Not a truth oracle. LLMs are weak at identifying facts outside
+            their training data, and the information in tips is, by
+            definition, outside the public domain. If you could google it,
+            it would not need to be whistleblown.
+          </Prose>
+          <Prose>
+            Not a replacement for good journalism.
           </Prose>
         </Section>
 
-        <Section eyebrow="Governance">
+        <Section eyebrow="Methodology">
           <Prose>
-            Palantir for the People is built as an independent project. The
-            grading methodology is documented on the{" "}
-            <InlineLink href="/methodology">methodology page</InlineLink> and
-            the codebase is open to inspection.
+            We run several rounds of LLM-driven classification. Case
+            analysis processes the entire document dump to identify the
+            high-level topics the documents belong to. Topic analysis
+            processes all the documents within a single topic to
+            characterize the case being made. Per-document analysis grades
+            individual documents to surface red flags and information-rich
+            characteristics.
           </Prose>
           <Prose>
-            We accept no advertising, no government contracts, and no
-            donations from named subjects of submitted documents.
+            For the full breakdown, see the{" "}
+            <InlineLink href="/methodology">methodology page</InlineLink>.
           </Prose>
         </Section>
 
