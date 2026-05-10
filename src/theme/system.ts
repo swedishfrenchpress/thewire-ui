@@ -1227,8 +1227,11 @@ const config = defineConfig({
           DEFAULT: {
             value: { base: "{colors.neutral.200}", _dark: "{colors.neutral.700}" },
           },
+          // working-grey (#8f8f8f) keeps the label legible against the
+          // neutral.200 disabled bg. The previous value (neutral.400 / #e0e0e0)
+          // was below AA contrast and read as nearly invisible.
           fg: {
-            value: { base: "{colors.neutral.400}", _dark: "{colors.neutral.500}" },
+            value: { base: "{colors.neutral.500}", _dark: "{colors.neutral.500}" },
           },
         },
       },

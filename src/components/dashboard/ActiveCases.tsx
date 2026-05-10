@@ -13,7 +13,7 @@ import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, type KeyboardEvent } from "react";
-import { TriageMix } from "@/components/shared/TriageMix";
+import { TriageMixBar } from "@/components/shared/TriageMixBar";
 import { casesStore } from "@/lib/cases-store";
 import { coverImageFor } from "@/lib/cover-image";
 import {
@@ -421,15 +421,9 @@ function CardMetricRow({ row }: { row: Row }) {
   const score = corroborationScore(entry.caseId);
 
   return (
-    <HStack gap="3" align="baseline" wrap="wrap">
-      <TriageMix mix={mix} />
-      <Text
-        as="span"
-        fontFamily="body"
-        fontSize="13px"
-        lineHeight="16px"
-        color="fg.muted"
-      >
+    <HStack gap="3" align="center" wrap="wrap">
+      <TriageMixBar mix={mix} />
+      <Text as="span" textStyle="body.sm" color="fg.muted">
         · {score}% corroboration
       </Text>
     </HStack>
