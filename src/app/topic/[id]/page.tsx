@@ -62,7 +62,7 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
         <Box>
           <HeuristicName name={h.name} />
         </Box>
-        <Text fontSize="15px" lineHeight="22px" color="fg">
+        <Text textStyle="body.lg" color="fg">
           {h.description}
         </Text>
       </Stack>
@@ -91,12 +91,8 @@ function StatsRow({
       _last={{ borderBottomWidth: 0 }}
     >
       <Text
-        fontFamily="mono"
-        fontSize="11px"
-        letterSpacing="wider"
-        textTransform="uppercase"
+        textStyle="eyebrow"
         color={indent ? "fg.muted" : "fg"}
-        fontWeight="500"
         pl={indent ? "3" : "0"}
       >
         {label}
@@ -104,6 +100,7 @@ function StatsRow({
       <Box
         fontFamily="mono"
         fontSize="13px"
+        lineHeight="18px"
         fontWeight="600"
         color="fg"
         fontVariantNumeric="tabular-nums"
@@ -142,7 +139,7 @@ function SeverityChip({ rating }: { rating: Rating }) {
       lineHeight="16px"
       fontWeight="600"
       textTransform="uppercase"
-      letterSpacing="0.05em"
+      letterSpacing="wide"
       borderRadius="sm"
     >
       {rating}
@@ -179,11 +176,8 @@ function DocumentMixBar({ docs }: { docs: DocumentRecord[] }) {
             display="flex"
             alignItems="center"
             px="2"
-            fontFamily="mono"
+            textStyle="eyebrow.sm"
             fontWeight="600"
-            fontSize="10px"
-            letterSpacing="wide"
-            textTransform="uppercase"
             whiteSpace="nowrap"
             overflow="hidden"
             title={`${TRIAGE_LABELS[seg.rating]} ${seg.pct.toFixed(0)}% (${seg.count})`}
@@ -213,14 +207,7 @@ function StatsPanel({
     >
       <Stack gap="5">
         <Stack gap="3">
-          <Text
-            fontFamily="mono"
-            fontSize="11px"
-            letterSpacing="wider"
-            textTransform="uppercase"
-            color="fg.muted"
-            fontWeight="500"
-          >
+          <Text textStyle="eyebrow" color="fg.muted">
             Severity
           </Text>
           <Box>
@@ -310,12 +297,8 @@ function DocumentList({
               <Table.Cell>
                 <Box display="inline-flex" alignItems="center" gap="2">
                   <Text
-                    fontFamily="mono"
-                    fontSize="11px"
-                    letterSpacing="wider"
-                    textTransform="uppercase"
+                    textStyle="eyebrow"
                     color="fg.muted"
-                    fontWeight="500"
                     fontVariantNumeric="tabular-nums"
                   >
                     {d.heuristics.length} fired
@@ -325,11 +308,8 @@ function DocumentList({
                       as="span"
                       bg="bg.attentionSubtle"
                       color="fg.attention"
-                      fontFamily="mono"
-                      fontSize="10px"
+                      textStyle="eyebrow.sm"
                       fontWeight="600"
-                      letterSpacing="wide"
-                      textTransform="uppercase"
                       px="1.5"
                       py="0.5"
                       borderRadius="sm"
@@ -455,23 +435,12 @@ function TopicContent() {
           <TriageTag rating={t.triage} />
           <Heading
             as="h1"
-            fontFamily="heading"
-            fontWeight="400"
-            letterSpacing="tight"
-            fontSize={{ base: "28px", md: "36px" }}
-            lineHeight="1.05"
+            textStyle={{ base: "heading.lg", md: "display.sm" }}
           >
             {t.title}
           </Heading>
         </Box>
-        <Text
-          fontFamily="mono"
-          fontSize="11px"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          color="fg.muted"
-          fontWeight="500"
-        >
+        <Text textStyle="eyebrow" color="fg.muted">
           {t.document_count} document{t.document_count === 1 ? "" : "s"} ·{" "}
           {t.heuristics.length} heuristic
           {t.heuristics.length === 1 ? "" : "s"}
@@ -486,24 +455,14 @@ function TopicContent() {
         <GridItem>
           <Stack gap="6">
             {t.description && (
-              <Text
-                fontFamily="body"
-                fontSize="16px"
-                lineHeight="26px"
-                color="fg"
-                maxW="65ch"
-              >
+              <Text textStyle="body.lg" color="fg" maxW="65ch">
                 {t.description}
               </Text>
             )}
             <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
               <Text
-                fontFamily="mono"
-                fontSize="11px"
-                letterSpacing="wider"
-                textTransform="uppercase"
+                textStyle="eyebrow"
                 color="fg.muted"
-                fontWeight="500"
                 pt="4"
                 pb="3"
               >
@@ -532,14 +491,7 @@ function TopicContent() {
       </Grid>
 
       <Stack gap="3">
-        <Text
-          fontFamily="mono"
-          fontSize="11px"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          color="fg.muted"
-          fontWeight="500"
-        >
+        <Text textStyle="eyebrow" color="fg.muted">
           Documents in scope ({t.document_count})
         </Text>
         {docsQuery.isLoading && <HelperText>Loading documents…</HelperText>}

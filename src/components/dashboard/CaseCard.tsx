@@ -204,12 +204,7 @@ function MetaRow({
               alignItems="center"
               gap="1.5"
               color="fg"
-              fontFamily="mono"
-              fontSize="10px"
-              lineHeight="12px"
-              letterSpacing="wide"
-              textTransform="uppercase"
-              fontWeight="500"
+              textStyle="eyebrow.sm"
             >
               <PinFilledIcon />
               Pinned
@@ -243,13 +238,7 @@ function Subline({
 }) {
   if (isError) {
     return (
-      <Text
-        mt="1"
-        fontFamily="body"
-        fontSize="13px"
-        lineHeight="16px"
-        color="fg.muted"
-      >
+      <Text mt="1" textStyle="body.sm" color="fg.muted">
         The summary could not be fetched.
       </Text>
     );
@@ -305,16 +294,7 @@ function ErrorInline({
 }) {
   return (
     <HStack gap="2" align="center">
-      <Text
-        as="span"
-        fontFamily="mono"
-        fontSize="11px"
-        lineHeight="13px"
-        fontWeight="500"
-        letterSpacing="wide"
-        textTransform="uppercase"
-        color="fg.attention"
-      >
+      <Text as="span" textStyle="eyebrow" color="fg.attention">
         Unable to load
       </Text>
       <InlineIconButton

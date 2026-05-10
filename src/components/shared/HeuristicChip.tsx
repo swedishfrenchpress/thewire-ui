@@ -41,12 +41,8 @@ export function HeuristicChip({ name, rating }: Props) {
       py="1"
       bg={tone.bg}
       color={tone.color}
-      fontFamily="mono"
-      fontSize="10px"
-      lineHeight="11px"
+      textStyle="eyebrow.sm"
       fontWeight="600"
-      textTransform="uppercase"
-      letterSpacing="0.05em"
       borderRadius="sm"
     >
       {rating}

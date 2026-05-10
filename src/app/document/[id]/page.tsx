@@ -38,7 +38,7 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
         <Box>
           <HeuristicName name={h.name} />
         </Box>
-        <Text fontSize="15px" lineHeight="22px" color="fg">
+        <Text textStyle="body.lg" color="fg">
           {h.description}
         </Text>
       </Stack>
@@ -67,12 +67,8 @@ function StatsRow({
       _last={{ borderBottomWidth: 0 }}
     >
       <Text
-        fontFamily="mono"
-        fontSize="11px"
-        letterSpacing="wider"
-        textTransform="uppercase"
+        textStyle="eyebrow"
         color={indent ? "fg.muted" : "fg"}
-        fontWeight="500"
         pl={indent ? "3" : "0"}
       >
         {label}
@@ -80,6 +76,7 @@ function StatsRow({
       <Box
         fontFamily="mono"
         fontSize="13px"
+        lineHeight="18px"
         fontWeight="600"
         color="fg"
         fontVariantNumeric="tabular-nums"
@@ -104,14 +101,7 @@ function StatsPanel({ doc }: { doc: DocumentRecord }) {
       bg="bg"
     >
       <Stack gap="3">
-        <Text
-          fontFamily="mono"
-          fontSize="11px"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          color="fg.muted"
-          fontWeight="500"
-        >
+        <Text textStyle="eyebrow" color="fg.muted">
           Document details
         </Text>
         <Stack gap="0">
@@ -290,14 +280,7 @@ function DocumentContent() {
             {doc.filename}
           </Heading>
         </Box>
-        <Text
-          fontFamily="mono"
-          fontSize="11px"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          color="fg.muted"
-          fontWeight="500"
-        >
+        <Text textStyle="eyebrow" color="fg.muted">
           {doc.heuristics.length} heuristic
           {doc.heuristics.length === 1 ? "" : "s"} fired · severity{" "}
           {TRIAGE_LABELS[overall]}
@@ -312,16 +295,7 @@ function DocumentContent() {
         <GridItem>
           <Stack gap="6">
             <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
-              <Text
-                fontFamily="mono"
-                fontSize="11px"
-                letterSpacing="wider"
-                textTransform="uppercase"
-                color="fg.muted"
-                fontWeight="500"
-                pt="4"
-                pb="2"
-              >
+              <Text textStyle="eyebrow" color="fg.muted" pt="4" pb="2">
                 What this document fires on
               </Text>
               {doc.heuristics.length === 0 ? (

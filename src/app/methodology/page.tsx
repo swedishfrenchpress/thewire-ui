@@ -16,11 +16,8 @@ export default function MethodologyPage() {
 
         <Heading
           as="h1"
-          fontFamily="heading"
+          textStyle={{ base: "display.md", md: "display.lg" }}
           fontWeight="600"
-          letterSpacing="-0.01em"
-          fontSize={{ base: "44px", md: "60px" }}
-          lineHeight="1"
           color="fg"
           pt="3"
         >
@@ -161,13 +158,7 @@ export default function MethodologyPage() {
         </Section>
 
         <Box pt="14" mt="10" borderTopWidth="1px" borderColor="border.muted">
-          <Text
-            fontFamily="body"
-            fontSize="13px"
-            lineHeight="20px"
-            color="fg.muted"
-            maxW="62ch"
-          >
+          <Text textStyle="body.sm" color="fg.muted" maxW="62ch">
             The grading pipeline is open to inspection. We invite security
             researchers, journalists, and adversarial red-teamers to audit,
             critique, and propose improvements.
@@ -219,14 +210,7 @@ function HeuristicList() {
 
   return (
     <Box pt="2">
-      <Text
-        as="p"
-        fontFamily="body"
-        fontSize="14px"
-        lineHeight="20px"
-        color="fg.muted"
-        pb="3"
-      >
+      <Text as="p" textStyle="body.md" color="fg.muted" pb="3">
         Examples the agent has emitted in production:
       </Text>
       <Stack
@@ -249,13 +233,7 @@ function HeuristicList() {
             <Box flexShrink={0}>
               <HeuristicChip name={h.name} rating={h.rating} />
             </Box>
-            <Text
-              fontFamily="body"
-              fontSize="14px"
-              lineHeight="20px"
-              color="fg"
-              flex="1"
-            >
+            <Text textStyle="body.md" color="fg" flex="1">
               {h.description}
             </Text>
           </HStack>
@@ -312,13 +290,7 @@ function SensitivityTable() {
           <Box minW="80px" flexShrink={0}>
             <TriageBadge level={r.rating} />
           </Box>
-          <Text
-            fontFamily="body"
-            fontSize="14px"
-            lineHeight="20px"
-            color="fg.muted"
-            flex="1"
-          >
+          <Text textStyle="body.md" color="fg.muted" flex="1">
             {r.meaning}
           </Text>
         </HStack>
@@ -358,13 +330,7 @@ function TriageTable() {
           <Box minW="80px" flexShrink={0}>
             <TriageBadge level={r.rating} />
           </Box>
-          <Text
-            fontFamily="body"
-            fontSize="15px"
-            lineHeight="22px"
-            color="fg"
-            flex="1"
-          >
+          <Text textStyle="body.lg" color="fg" flex="1">
             {r.meaning}
           </Text>
         </HStack>
@@ -397,16 +363,7 @@ function Section({
 
 function RedEyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <Text
-      as="span"
-      fontFamily="mono"
-      fontSize="11px"
-      lineHeight="13px"
-      letterSpacing="wider"
-      textTransform="uppercase"
-      fontWeight="600"
-      color="fg.attention"
-    >
+    <Text as="span" textStyle="eyebrow" fontWeight="600" color="fg.attention">
       {children}
     </Text>
   );
@@ -414,16 +371,7 @@ function RedEyebrow({ children }: { children: React.ReactNode }) {
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
-    <Text
-      as="span"
-      fontFamily="mono"
-      fontSize="11px"
-      lineHeight="13px"
-      letterSpacing="wider"
-      textTransform="uppercase"
-      fontWeight="600"
-      color="fg"
-    >
+    <Text as="span" textStyle="eyebrow" fontWeight="600" color="fg">
       {children}
     </Text>
   );
@@ -439,14 +387,7 @@ function Prose({
   color?: string;
 }) {
   return (
-    <Text
-      as="p"
-      fontFamily="body"
-      fontSize="16px"
-      lineHeight="26px"
-      color={color}
-      fontWeight={fontWeight}
-    >
+    <Text as="p" textStyle="body.lg" color={color} fontWeight={fontWeight}>
       {children}
     </Text>
   );

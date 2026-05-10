@@ -20,12 +20,8 @@ export function TriageTag({ rating }: { rating: Rating }) {
       py="1"
       bg={s.bg}
       color={s.color}
-      fontFamily="mono"
-      fontSize="10px"
-      lineHeight="11px"
+      textStyle="eyebrow.sm"
       fontWeight="600"
-      textTransform="uppercase"
-      letterSpacing="0.05em"
       borderRadius="sm"
     >
       {rating}

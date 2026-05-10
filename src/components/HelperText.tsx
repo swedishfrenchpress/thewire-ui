@@ -29,10 +29,7 @@ export function HelperText({
       py="2"
       bg={s.bg}
       color={s.color}
-      fontFamily="body"
-      fontSize="13px"
-      lineHeight="16px"
-      fontWeight="400"
+      textStyle="body.sm"
       borderRadius="sm"
       role={tone === "error" ? "alert" : undefined}
     >

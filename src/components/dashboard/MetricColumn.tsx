@@ -12,15 +12,7 @@ type Props = {
 export function MetricColumn({ label, children, align = "start" }: Props) {
   return (
     <Stack gap="2" align={align === "end" ? "flex-end" : "flex-start"} minW="0">
-      <Text
-        as="span"
-        fontFamily="mono"
-        fontSize="10px"
-        lineHeight="12px"
-        letterSpacing="wide"
-        textTransform="uppercase"
-        color="fg.muted"
-      >
+      <Text as="span" textStyle="eyebrow.sm" color="fg.muted">
         {label}
       </Text>
       <Box

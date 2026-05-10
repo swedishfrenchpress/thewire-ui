@@ -17,15 +17,7 @@ interface Props {
 export function HeuristicName({ name }: Props) {
   const def = definitionFor(name);
   const label = (
-    <Text
-      as="span"
-      fontFamily="mono"
-      fontSize="11px"
-      letterSpacing="wider"
-      textTransform="uppercase"
-      color="fg.muted"
-      fontWeight="500"
-    >
+    <Text as="span" textStyle="eyebrow" color="fg.muted">
       {displayHeuristicName(name)}
     </Text>
   );

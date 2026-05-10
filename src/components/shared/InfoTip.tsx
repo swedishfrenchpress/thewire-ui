@@ -65,31 +65,17 @@ export function InfoTip({ eyebrow, measures, bands, children }: InfoTipProps) {
             // Subtle opacity-only transition keeps it on-brand.
           >
             <Text
-              fontFamily="mono"
-              fontSize="10px"
+              textStyle="eyebrow.sm"
               fontWeight="600"
-              letterSpacing="wider"
-              textTransform="uppercase"
               color="fg.muted"
               pb="2"
             >
               {eyebrow}
             </Text>
-            <Text
-              fontFamily="body"
-              fontSize="13px"
-              lineHeight="19px"
-              color="fg"
-              pb="2"
-            >
+            <Text textStyle="body.sm" color="fg" pb="2">
               {measures}
             </Text>
-            <Text
-              fontFamily="body"
-              fontSize="12px"
-              lineHeight="18px"
-              color="fg.muted"
-            >
+            <Text textStyle="body.sm" color="fg.muted">
               {bands}
             </Text>
           </Tooltip.Content>

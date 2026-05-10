@@ -57,21 +57,14 @@ export function TriageDistribution({
         justifyContent="space-between"
         gap="3"
       >
-        <Text
-          fontFamily="mono"
-          fontSize="11px"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          color="fg.muted"
-          fontWeight="500"
-        >
+        <Text textStyle="eyebrow" color="fg.muted">
           {eyebrow}
         </Text>
         {eyebrowTrailing}
       </Box>
 
       {!compact && (
-        <Text fontSize="14px" lineHeight="20px" color="fg.muted">
+        <Text textStyle="body.md" color="fg.muted">
           {empty || !dominant || !dominantSeg ? (
             headline
           ) : (
@@ -89,11 +82,8 @@ export function TriageDistribution({
                 as="span"
                 bg={SEGMENT_STYLE[dominant].bg}
                 color={SEGMENT_STYLE[dominant].color}
-                fontFamily="mono"
+                textStyle="eyebrow"
                 fontWeight="600"
-                fontSize="11px"
-                letterSpacing="wide"
-                textTransform="uppercase"
                 px="1.5"
                 py="0.5"
                 borderRadius="sm"
@@ -129,11 +119,8 @@ export function TriageDistribution({
                 display="flex"
                 alignItems="center"
                 px="2"
-                fontFamily="mono"
+                textStyle={compact ? "eyebrow.sm" : "eyebrow"}
                 fontWeight="600"
-                fontSize={compact ? "10px" : "11px"}
-                letterSpacing="wide"
-                textTransform="uppercase"
                 whiteSpace="nowrap"
                 overflow="hidden"
                 title={`${TRIAGE_LABELS[seg.rating]} ${seg.pct.toFixed(0)}% (${seg.count})`}
@@ -166,12 +153,7 @@ export function TriageDistribution({
                     key={`${seg.rating}-${i}-${label}`}
                     bg={style.bg}
                     color={style.color}
-                    fontFamily="mono"
-                    fontSize="10px"
-                    lineHeight="11px"
-                    fontWeight="500"
-                    letterSpacing="wide"
-                    textTransform="uppercase"
+                    textStyle="eyebrow.sm"
                     px="2"
                     py="1"
                     borderRadius="sm"
@@ -185,12 +167,7 @@ export function TriageDistribution({
                 ))}
                 {overflow > 0 && (
                   <Box
-                    fontFamily="mono"
-                    fontSize="10px"
-                    lineHeight="11px"
-                    fontWeight="500"
-                    letterSpacing="wide"
-                    textTransform="uppercase"
+                    textStyle="eyebrow.sm"
                     color="fg.muted"
                     px="2"
                     py="1"

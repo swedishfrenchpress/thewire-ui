@@ -1006,6 +1006,132 @@ const config = defineConfig({
         },
       },
     },
+    // Canonical type scale.
+    //
+    // Three families, three jobs: Newsreader (display + heading), Geist (body),
+    // Departure Mono (label). Pages compose these styles by name instead of
+    // declaring fontFamily/fontSize/lineHeight/letterSpacing inline. Color
+    // stays per-instance because the same role appears at fg, fg.muted, or
+    // fg.attention depending on context.
+    //
+    // Usage: <Text textStyle="eyebrow">SEVERITY</Text>
+    textStyles: {
+      // Display — Newsreader, page heroes only. Use sparingly.
+      "display.lg": {
+        value: {
+          fontFamily: "heading",
+          fontWeight: "400",
+          fontSize: "60px",
+          lineHeight: "1",
+          letterSpacing: "tight",
+        },
+      },
+      "display.md": {
+        value: {
+          fontFamily: "heading",
+          fontWeight: "400",
+          fontSize: "44px",
+          lineHeight: "1.05",
+          letterSpacing: "tight",
+        },
+      },
+      "display.sm": {
+        value: {
+          fontFamily: "heading",
+          fontWeight: "400",
+          fontSize: "36px",
+          lineHeight: "1.05",
+          letterSpacing: "tight",
+        },
+      },
+      // Heading — Newsreader, section titles inside pages.
+      "heading.lg": {
+        value: {
+          fontFamily: "heading",
+          fontWeight: "400",
+          fontSize: "28px",
+          lineHeight: "1.1",
+          letterSpacing: "tight",
+        },
+      },
+      "heading.md": {
+        value: {
+          fontFamily: "heading",
+          fontWeight: "400",
+          fontSize: "22px",
+          lineHeight: "1.2",
+          letterSpacing: "tight",
+        },
+      },
+      "heading.sm": {
+        value: {
+          fontFamily: "heading",
+          fontWeight: "400",
+          fontSize: "18px",
+          lineHeight: "1.25",
+          letterSpacing: "tight",
+        },
+      },
+      // Body — Geist. Prose width is the writer's responsibility (cap with maxW="65ch").
+      "body.lg": {
+        value: {
+          fontFamily: "body",
+          fontWeight: "400",
+          fontSize: "16px",
+          lineHeight: "26px",
+        },
+      },
+      "body.md": {
+        value: {
+          fontFamily: "body",
+          fontWeight: "400",
+          fontSize: "14px",
+          lineHeight: "20px",
+        },
+      },
+      "body.sm": {
+        value: {
+          fontFamily: "body",
+          fontWeight: "400",
+          fontSize: "13px",
+          lineHeight: "18px",
+        },
+      },
+      // Eyebrow — Departure Mono uppercase, +0.05em tracking.
+      // The brand's machine register: section headers, slugs, metadata.
+      eyebrow: {
+        value: {
+          fontFamily: "mono",
+          fontWeight: "500",
+          fontSize: "11px",
+          lineHeight: "13px",
+          letterSpacing: "wide",
+          textTransform: "uppercase",
+        },
+      },
+      "eyebrow.sm": {
+        value: {
+          fontFamily: "mono",
+          fontWeight: "500",
+          fontSize: "10px",
+          lineHeight: "12px",
+          letterSpacing: "wide",
+          textTransform: "uppercase",
+        },
+      },
+      // Link — Departure Mono, wider tracking for nav and prose links that
+      // need extra breathing room.
+      link: {
+        value: {
+          fontFamily: "mono",
+          fontWeight: "500",
+          fontSize: "12px",
+          lineHeight: "18px",
+          letterSpacing: "wider",
+          textTransform: "uppercase",
+        },
+      },
+    },
     semanticTokens: {
       colors: {
         fg: {

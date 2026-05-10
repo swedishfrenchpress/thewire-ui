@@ -40,16 +40,7 @@ export function SectionHeader({ icon, label, tone, count }: Props) {
       >
         {icon}
       </Box>
-      <Text
-        as="span"
-        fontFamily="mono"
-        fontSize="11px"
-        lineHeight="13px"
-        letterSpacing="wide"
-        fontWeight="500"
-        textTransform="uppercase"
-        color="fg.muted"
-      >
+      <Text as="span" textStyle="eyebrow" color="fg.muted">
         {label}
         {typeof count === "number" && (
           <Box as="span" ml="2" color="fg.disabled">

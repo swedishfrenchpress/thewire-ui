@@ -33,11 +33,9 @@ export function SiteHeader() {
             </Box>
             <Heading
               as="span"
-              fontFamily="heading"
+              textStyle={{ base: "display.sm", md: "display.md" }}
               fontWeight="600"
-              fontSize={{ base: "32px", md: "44px" }}
               lineHeight="1"
-              letterSpacing="-0.01em"
               color="fg"
             >
               Palantir for the People
@@ -47,12 +45,8 @@ export function SiteHeader() {
 
         <Text
           as="span"
-          fontFamily="mono"
-          fontSize="11px"
-          lineHeight="14px"
+          textStyle="eyebrow"
           letterSpacing="wider"
-          textTransform="uppercase"
-          fontWeight="500"
           color="fg.muted"
         >
           Documents · Scored · Defensible
@@ -102,11 +96,7 @@ function NavCell({ href, label }: { href: string; label: string }) {
       >
         <Text
           as="span"
-          fontFamily="mono"
-          fontSize="12px"
-          lineHeight="14px"
-          letterSpacing="wider"
-          textTransform="uppercase"
+          textStyle="link"
           fontWeight={isActive ? "600" : "500"}
           color={isActive ? "fg" : "fg.muted"}
           transition="color 120ms"
@@ -138,16 +128,7 @@ function AnalyzeTipCell() {
         transition="background-color 120ms"
         _hover={{ bg: "neutral.700" }}
       >
-        <Text
-          as="span"
-          fontFamily="mono"
-          fontSize="12px"
-          lineHeight="14px"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          fontWeight="600"
-          color="bg"
-        >
+        <Text as="span" textStyle="link" fontWeight="600" color="bg">
           Analyze tip
         </Text>
       </Box>

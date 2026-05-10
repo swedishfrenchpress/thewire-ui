@@ -67,12 +67,7 @@ function CrumbLabel({
   return (
     <Text
       as="span"
-      fontFamily="mono"
-      fontSize="11px"
-      lineHeight="13px"
-      letterSpacing="wide"
-      textTransform="uppercase"
-      fontWeight="500"
+      textStyle="eyebrow"
       color={current ? "fg" : "fg.muted"}
       maxW="40ch"
       overflow="hidden"
@@ -93,11 +88,9 @@ function Separator() {
       as="span"
       role="presentation"
       aria-hidden
-      fontFamily="mono"
-      fontSize="11px"
-      lineHeight="13px"
+      textStyle="eyebrow"
+      fontWeight="400"
       color="fg.disabled"
-      letterSpacing="wide"
     >
       /
     </Box>
