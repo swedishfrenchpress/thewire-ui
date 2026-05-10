@@ -91,6 +91,52 @@ const REGISTRY: Record<string, HeuristicDefinition> = {
     bands:
       "Backed means corroborated by independent sources. Unbacked means contradicted or unverifiable.",
   },
+
+  // --- Group heuristics (model-derived, cross-document) ---
+  // Run only after per-document filtering; topics with fewer than two
+  // unfiltered documents skip this pass.
+  corroboration: {
+    measures:
+      "Whether documents in this topic describe overlapping events, parties, or claims with consistent details.",
+    bands:
+      "Corroborated means independent documents reinforce each other. Conflicting means details don't line up across the corpus.",
+  },
+  shared_references: {
+    measures:
+      "Whether concrete references (names, dates, document numbers, transactions) recur across documents, enabling cross-checking.",
+    bands:
+      "Cross-referenced means specifics appear in more than one document. Disjoint means each document is its own island.",
+  },
+  coordinated_framing: {
+    measures:
+      "Whether documents share suspiciously coordinated emotional framing or repeated rhetoric.",
+    bands:
+      "Synced means polemic phrasing recurs in a way that suggests coordination. Independent means each document writes in its own voice.",
+  },
+  shared_agenda: {
+    measures:
+      "Whether documents collectively appear to advance the same agenda, incentive, or vendetta rather than independent reporting.",
+    bands:
+      "Aligned means the corpus pushes one narrative. Diverse means independent perspectives.",
+  },
+  contested_narrative: {
+    measures:
+      "Whether documents contain competing accounts of the same core event, where one account may be framed to discredit another. Review-salience signal — does not affect document filtering.",
+    bands:
+      "Contested means multiple competing accounts worth comparing. Single means one consistent account across the corpus.",
+  },
+  timeline_coherence: {
+    measures:
+      "Whether dates, time ranges, and event ordering form a plausible sequence across documents.",
+    bands:
+      "Coherent means dates and ordering line up. Inconsistent means contradictory timestamps or impossible sequences.",
+  },
+  temporal_scope: {
+    measures:
+      "Whether the alleged conduct appears isolated, short-lived, or sustained over time. Review context — does not affect document filtering.",
+    bands:
+      "Sustained means a recurring pattern. Isolated means a one-off or short-lived incident.",
+  },
 };
 
 export function definitionFor(name: string): HeuristicDefinition | null {

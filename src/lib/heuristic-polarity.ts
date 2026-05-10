@@ -33,6 +33,18 @@ const REGISTRY: Record<string, Polarity> = {
   // evidence_quality caps the triage: HIGH evidence is good for the journalist.
   evidence_quality: "positive",
   // claims and validation are count metrics, not directional. Leave neutral.
+
+  // Group heuristics (model-derived, cross-document) — see API.md.
+  corroboration: "positive",
+  shared_references: "positive",
+  timeline_coherence: "positive",
+  // The API marks contested_narrative and temporal_scope as positive even
+  // though their descriptions call them review-context signals; we honor the
+  // API's tag.
+  contested_narrative: "positive",
+  temporal_scope: "positive",
+  coordinated_framing: "negative",
+  shared_agenda: "negative",
 };
 
 export function polarityFor(name: string): Polarity {

@@ -32,14 +32,6 @@ export const TRIAGE_LABELS: Record<Rating, string> = {
   low: "LOW",
 };
 
-// Compact label used inside chips and the distribution bar segments where
-// "MEDIUM" would crowd the layout.
-export const RATING_SHORT_LABEL: Record<Rating, string> = {
-  high: "HIGH",
-  medium: "MED",
-  low: "LOW",
-};
-
 export interface TriageMixCounts {
   high: number;
   medium: number;
@@ -78,15 +70,6 @@ export function topTopic(topics: TopicSummary[]): TopicSummary | null {
   return [...topics].sort(
     (a, b) => TRIAGE_RANK[a.triage] - TRIAGE_RANK[b.triage],
   )[0];
-}
-
-export function distributeTopics(topics: TopicSummary[]): Distribution {
-  return distribute(
-    topics,
-    (t) => t.triage,
-    (t) => t.title,
-    "topics",
-  );
 }
 
 export type SortKey = "topTriage" | "lastViewed" | "created" | "name" | "documents";
@@ -177,64 +160,73 @@ export function documentVerdict(doc: { heuristics: Heuristic[] }): Verdict {
   return bad > good ? "concerning" : "mixed";
 }
 
-const VERDICT_TO_RATING: Record<Verdict, Rating> = {
-  healthy: "low",
-  mixed: "medium",
-  concerning: "high",
-};
+// --- Verdict-keyed distribution (per-heuristic and per-document) ---
 
-// Rating-shaped projection of the verdict, kept for the distribution machinery
-// (which buckets documents into high/medium/low). The numeric severity rank
-// mirrors the verdict scale: concerning > mixed > healthy.
-export function documentTriage(doc: { heuristics: Heuristic[] }): Rating {
-  return VERDICT_TO_RATING[documentVerdict(doc)];
+// Per-heuristic verdict. Mirrors documentVerdict but for a single heuristic:
+// negative-HIGH or positive-LOW reads concerning; the inverse reads healthy;
+// medium ratings and unknown-polarity heuristics are mixed.
+export function heuristicVerdict(h: Heuristic): Verdict {
+  if (h.rating === "medium") return "mixed";
+  const polarity = polarityFor(h.name);
+  if (polarity === "unknown") return "mixed";
+  const isGood =
+    (polarity === "positive" && h.rating === "high") ||
+    (polarity === "negative" && h.rating === "low");
+  return isGood ? "healthy" : "concerning";
 }
 
-export interface DistributionSegment {
-  rating: Rating;
+export interface VerdictDistributionSegment {
+  verdict: Verdict;
   count: number;
   pct: number;
   items: string[];
 }
 
-export interface Distribution {
+export interface VerdictDistribution {
   total: number;
-  segments: Record<Rating, DistributionSegment>;
-  ordered: DistributionSegment[];
-  dominant: Rating | null;
+  segments: Record<Verdict, VerdictDistributionSegment>;
+  ordered: VerdictDistributionSegment[];
+  dominant: Verdict | null;
   headline: string;
 }
 
-const ORDER: Rating[] = ["high", "medium", "low"];
+// Bar order matches the chip color ramp: red → orange → green.
+const VERDICT_ORDER: Verdict[] = ["concerning", "mixed", "healthy"];
 
-export function distribute<T>(
+const HEADLINE_VERB: Record<Verdict, string> = {
+  concerning: "concerning",
+  mixed: "mixed",
+  healthy: "healthy",
+};
+
+export function distributeByVerdict<T>(
   items: T[],
-  getRating: (item: T) => Rating,
+  getVerdict: (item: T) => Verdict,
   getLabel: (item: T) => string,
   unitLabel: string,
-): Distribution {
-  const segments: Record<Rating, DistributionSegment> = {
-    high: { rating: "high", count: 0, pct: 0, items: [] },
-    medium: { rating: "medium", count: 0, pct: 0, items: [] },
-    low: { rating: "low", count: 0, pct: 0, items: [] },
+): VerdictDistribution {
+  const segments: Record<Verdict, VerdictDistributionSegment> = {
+    concerning: { verdict: "concerning", count: 0, pct: 0, items: [] },
+    mixed: { verdict: "mixed", count: 0, pct: 0, items: [] },
+    healthy: { verdict: "healthy", count: 0, pct: 0, items: [] },
   };
 
   for (const it of items) {
-    const r = getRating(it);
-    segments[r].count += 1;
-    segments[r].items.push(getLabel(it));
+    const v = getVerdict(it);
+    segments[v].count += 1;
+    segments[v].items.push(getLabel(it));
   }
 
   const total = items.length;
-  for (const r of ORDER) {
-    segments[r].pct = total === 0 ? 0 : (segments[r].count / total) * 100;
+  for (const v of VERDICT_ORDER) {
+    segments[v].pct = total === 0 ? 0 : (segments[v].count / total) * 100;
   }
 
-  let dominant: Rating | null = null;
+  let dominant: Verdict | null = null;
   if (total > 0) {
-    dominant = ORDER.reduce<Rating>(
-      (acc, r) => (segments[r].count > segments[acc].count ? r : acc),
-      "low",
+    dominant = VERDICT_ORDER.reduce<Verdict>(
+      (acc, v) => (segments[v].count > segments[acc].count ? v : acc),
+      "healthy",
     );
     if (segments[dominant].count === 0) dominant = null;
   }
@@ -242,31 +234,35 @@ export function distribute<T>(
   const headline =
     dominant === null
       ? `No ${unitLabel} to score.`
-      : `${segments[dominant].count} of ${total} ${unitLabel} rate ${TRIAGE_LABELS[dominant]}.`;
+      : `${segments[dominant].count} of ${total} ${unitLabel} read as ${HEADLINE_VERB[dominant]}.`;
 
   return {
     total,
     segments,
-    ordered: ORDER.map((r) => segments[r]),
+    ordered: VERDICT_ORDER.map((v) => segments[v]),
     dominant,
     headline,
   };
 }
 
-export function distributeDocuments(docs: DocumentRecord[]): Distribution {
-  return distribute(
-    docs,
-    (d) => documentTriage(d),
-    (d) => d.filename,
-    "documents",
+export function distributeHeuristicsByVerdict(
+  heuristics: Heuristic[],
+): VerdictDistribution {
+  return distributeByVerdict(
+    heuristics,
+    (h) => heuristicVerdict(h),
+    (h) => h.name,
+    "signals",
   );
 }
 
-export function distributeHeuristics(heuristics: Heuristic[]): Distribution {
-  return distribute(
-    heuristics,
-    (h) => h.rating,
-    (h) => h.name,
-    "heuristics",
+export function distributeDocumentsByVerdict(
+  docs: DocumentRecord[],
+): VerdictDistribution {
+  return distributeByVerdict(
+    docs,
+    (d) => documentVerdict(d),
+    (d) => d.filename,
+    "documents",
   );
 }

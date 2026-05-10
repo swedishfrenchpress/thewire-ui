@@ -17,7 +17,7 @@ import NextLink from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
 import { HelperText } from "@/components/HelperText";
-import { TriageDistribution } from "@/components/TriageDistribution";
+import { VerdictDistributionView } from "@/components/VerdictDistribution";
 import { HeuristicChip } from "@/components/shared/HeuristicChip";
 import { HeuristicName } from "@/components/shared/HeuristicName";
 import { TriageTag } from "@/components/TriageTag";
@@ -28,8 +28,8 @@ import { casesStore } from "@/lib/cases-store";
 import { polarityFor } from "@/lib/heuristic-polarity";
 import { useCase } from "@/lib/hooks/useCase";
 import {
-  distributeDocuments,
-  distributeHeuristics,
+  distributeDocumentsByVerdict,
+  distributeHeuristicsByVerdict,
   documentVerdict,
 } from "@/lib/triage";
 import type { DocumentRecord, Heuristic } from "@/lib/types";
@@ -71,7 +71,7 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
 }
 
 function DistributionPanel({ docs }: { docs: DocumentRecord[] }) {
-  const dist = distributeDocuments(docs);
+  const dist = distributeDocumentsByVerdict(docs);
   return (
     <Box
       borderWidth="1px"
@@ -80,7 +80,7 @@ function DistributionPanel({ docs }: { docs: DocumentRecord[] }) {
       p="5"
       bg="bg"
     >
-      <TriageDistribution
+      <VerdictDistributionView
         eyebrow="Document distribution"
         unit="documents"
         distribution={dist}
@@ -94,7 +94,7 @@ function HeuristicDistributionPanel({
 }: {
   heuristics: Heuristic[];
 }) {
-  const dist = distributeHeuristics(heuristics);
+  const dist = distributeHeuristicsByVerdict(heuristics);
   return (
     <Box
       borderWidth="1px"
@@ -103,9 +103,9 @@ function HeuristicDistributionPanel({
       p="5"
       bg="bg"
     >
-      <TriageDistribution
+      <VerdictDistributionView
         eyebrow="Signal mix across this topic"
-        unit="heuristics"
+        unit="signals"
         distribution={dist}
       />
     </Box>

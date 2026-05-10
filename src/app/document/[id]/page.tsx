@@ -14,7 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { HelperText } from "@/components/HelperText";
-import { TriageDistribution } from "@/components/TriageDistribution";
+import { VerdictDistributionView } from "@/components/VerdictDistribution";
 import { HeuristicChip } from "@/components/shared/HeuristicChip";
 import { HeuristicName } from "@/components/shared/HeuristicName";
 import { VerdictTag } from "@/components/VerdictTag";
@@ -23,7 +23,7 @@ import { getTopic, getTopicDocuments } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
 import {
   VERDICT_LABELS,
-  distributeHeuristics,
+  distributeHeuristicsByVerdict,
   documentVerdict,
 } from "@/lib/triage";
 import type { DocumentRecord, Heuristic } from "@/lib/types";
@@ -60,7 +60,7 @@ function FactBullet({ fact }: { fact: string }) {
 }
 
 function DistributionPanel({ doc }: { doc: DocumentRecord }) {
-  const dist = distributeHeuristics(doc.heuristics);
+  const dist = distributeHeuristicsByVerdict(doc.heuristics);
   return (
     <Box
       borderWidth="1px"
@@ -69,9 +69,9 @@ function DistributionPanel({ doc }: { doc: DocumentRecord }) {
       p="5"
       bg="bg"
     >
-      <TriageDistribution
-        eyebrow="Heuristic distribution"
-        unit="heuristics"
+      <VerdictDistributionView
+        eyebrow="Signal mix in this document"
+        unit="signals"
         distribution={dist}
       />
     </Box>

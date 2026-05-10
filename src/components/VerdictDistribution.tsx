@@ -2,35 +2,36 @@
 
 import { Box, Stack, Text } from "@chakra-ui/react";
 import type { ReactNode } from "react";
-import {
-  RATING_SHORT_LABEL,
-  TRIAGE_LABELS,
-  type Distribution,
-} from "@/lib/triage";
-import type { Rating } from "@/lib/types";
+import { VERDICT_LABELS, type Verdict, type VerdictDistribution } from "@/lib/triage";
 
-const SEGMENT_STYLE: Record<Rating, { bg: string; color: string }> = {
-  high: { bg: "bg.attentionSubtle", color: "fg.attention" },
-  medium: { bg: "bg.warningSubtle", color: "fg.warning" },
-  low: { bg: "bg.successSubtle", color: "fg.success" },
+const SEGMENT_STYLE: Record<Verdict, { bg: string; color: string }> = {
+  concerning: { bg: "bg.attentionSubtle", color: "fg.attention" },
+  mixed: { bg: "bg.warningSubtle", color: "fg.warning" },
+  healthy: { bg: "bg.successSubtle", color: "fg.success" },
 };
 
-export interface TriageDistributionProps {
+const HEADLINE_VERB: Record<Verdict, string> = {
+  concerning: "concerning",
+  mixed: "mixed",
+  healthy: "healthy",
+};
+
+export interface VerdictDistributionProps {
   eyebrow: string;
-  /** "documents", "heuristics", "topics" — the unit being counted. */
+  /** "documents", "signals" — the unit being counted. */
   unit: string;
-  distribution: Distribution;
+  distribution: VerdictDistribution;
   eyebrowTrailing?: ReactNode;
   compact?: boolean;
 }
 
-export function TriageDistribution({
+export function VerdictDistributionView({
   eyebrow,
   unit,
   distribution,
   eyebrowTrailing,
   compact = false,
-}: TriageDistributionProps) {
+}: VerdictDistributionProps) {
   const { total, ordered, dominant } = distribution;
   const visible = ordered.filter((s) => s.count > 0);
   const empty = total === 0;
@@ -38,7 +39,7 @@ export function TriageDistribution({
   const headline =
     empty || !dominant || !dominantSeg
       ? `No ${unit} to score.`
-      : `${dominantSeg.pct.toFixed(0)}% of ${unit} rate ${TRIAGE_LABELS[dominant]}`;
+      : `${dominantSeg.pct.toFixed(0)}% of ${unit} read as ${HEADLINE_VERB[dominant]}`;
 
   return (
     <Stack gap={compact ? "2" : "3"} role="figure" aria-label={headline}>
@@ -68,7 +69,7 @@ export function TriageDistribution({
               >
                 {dominantSeg.pct.toFixed(0)}%
               </Box>{" "}
-              of {total} {unit} rate{" "}
+              of {total} {unit} read as{" "}
               <Box
                 as="span"
                 bg={SEGMENT_STYLE[dominant].bg}
@@ -79,7 +80,7 @@ export function TriageDistribution({
                 py="0.5"
                 borderRadius="sm"
               >
-                {TRIAGE_LABELS[dominant]}
+                {VERDICT_LABELS[dominant]}
               </Box>
             </>
           )}
@@ -98,10 +99,10 @@ export function TriageDistribution({
           <Box flex="1" />
         ) : (
           visible.map((seg) => {
-            const style = SEGMENT_STYLE[seg.rating];
+            const style = SEGMENT_STYLE[seg.verdict];
             return (
               <Box
-                key={seg.rating}
+                key={seg.verdict}
                 flexBasis={`${seg.pct}%`}
                 flexGrow={0}
                 flexShrink={0}
@@ -114,22 +115,22 @@ export function TriageDistribution({
                 fontWeight="600"
                 whiteSpace="nowrap"
                 overflow="hidden"
-                title={`${TRIAGE_LABELS[seg.rating]} ${seg.pct.toFixed(0)}% (${seg.count})`}
+                title={`${VERDICT_LABELS[seg.verdict]} ${seg.pct.toFixed(0)}% (${seg.count})`}
               >
-                {RATING_SHORT_LABEL[seg.rating]} {seg.pct.toFixed(0)}%
+                {VERDICT_LABELS[seg.verdict]} {seg.pct.toFixed(0)}%
               </Box>
             );
           })
         )}
       </Box>
 
-      {/* Full-width vertical list grouped by rating */}
+      {/* Full-width vertical list grouped by verdict */}
       {!compact && !empty && (
         <Stack gap="3" pt="1">
           {visible.map((seg) => {
-            const style = SEGMENT_STYLE[seg.rating];
+            const style = SEGMENT_STYLE[seg.verdict];
             return (
-              <Stack key={seg.rating} gap="1.5">
+              <Stack key={seg.verdict} gap="1.5">
                 <Box
                   display="inline-flex"
                   alignItems="center"
@@ -146,7 +147,7 @@ export function TriageDistribution({
                     py="0.5"
                     borderRadius="sm"
                   >
-                    {RATING_SHORT_LABEL[seg.rating]}
+                    {VERDICT_LABELS[seg.verdict]}
                   </Box>
                   <Text
                     as="span"
@@ -160,7 +161,7 @@ export function TriageDistribution({
                 <Stack gap="0.5">
                   {seg.items.map((label, i) => (
                     <Text
-                      key={`${seg.rating}-${i}-${label}`}
+                      key={`${seg.verdict}-${i}-${label}`}
                       as="span"
                       fontFamily="mono"
                       fontSize="13px"

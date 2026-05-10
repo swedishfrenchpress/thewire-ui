@@ -24,6 +24,31 @@ const VOCABULARY: Record<string, Record<Rating, string>> = {
   references: { high: "Sourced", medium: "Light", low: "Unsourced" },
   claim_supported: { high: "Backed", medium: "Partial", low: "Unbacked" },
   evidence_quality: { high: "Strong", medium: "Adequate", low: "Weak" },
+
+  // Group heuristics (cross-document, topic-level).
+  corroboration: { high: "Corroborated", medium: "Partial", low: "Conflicting" },
+  shared_references: {
+    high: "Cross-referenced",
+    medium: "Some overlap",
+    low: "Disjoint",
+  },
+  timeline_coherence: {
+    high: "Coherent",
+    medium: "Patchy",
+    low: "Inconsistent",
+  },
+  contested_narrative: {
+    high: "Contested",
+    medium: "Partial",
+    low: "Single",
+  },
+  temporal_scope: { high: "Sustained", medium: "Episodic", low: "Isolated" },
+  coordinated_framing: {
+    high: "Synced",
+    medium: "Mixed",
+    low: "Independent",
+  },
+  shared_agenda: { high: "Aligned", medium: "Partial", low: "Diverse" },
 };
 
 const FALLBACK: Record<Rating, string> = {
