@@ -16,6 +16,7 @@ import { Suspense, useState, type ReactNode } from "react";
 import { HelperText } from "@/components/HelperText";
 import { TriageDistribution } from "@/components/TriageDistribution";
 import { HeuristicChip } from "@/components/shared/HeuristicChip";
+import { HeuristicName } from "@/components/shared/HeuristicName";
 import { TriageTag } from "@/components/TriageTag";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { getTopic, getTopicDocuments } from "@/lib/api";
@@ -33,17 +34,10 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
       <Box flexShrink={0} pt="1">
         <HeuristicChip name={h.name} rating={h.rating} />
       </Box>
-      <Stack gap="1" minW="0" flex="1">
-        <Text
-          fontFamily="mono"
-          fontSize="11px"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          color="fg.muted"
-          fontWeight="500"
-        >
-          {h.name}
-        </Text>
+      <Stack gap="1.5" minW="0" flex="1">
+        <Box>
+          <HeuristicName name={h.name} />
+        </Box>
         <Text fontSize="15px" lineHeight="22px" color="fg">
           {h.description}
         </Text>

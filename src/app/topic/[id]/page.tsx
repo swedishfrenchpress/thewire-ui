@@ -19,10 +19,12 @@ import { Suspense, useEffect, useRef, type ReactNode } from "react";
 import { HelperText } from "@/components/HelperText";
 import { TriageDistribution } from "@/components/TriageDistribution";
 import { HeuristicChip } from "@/components/shared/HeuristicChip";
+import { HeuristicName } from "@/components/shared/HeuristicName";
 import { TriageTag } from "@/components/TriageTag";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { ApiRequestError, getTopic, getTopicDocuments } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
+import { polarityFor } from "@/lib/heuristic-polarity";
 import { useCase } from "@/lib/hooks/useCase";
 import { distributeDocuments, documentTriage } from "@/lib/triage";
 import type {
@@ -32,23 +34,34 @@ import type {
   TopicDetail,
 } from "@/lib/types";
 
+// Order heuristics by how much attention they warrant for the journalist.
+// A negative-polarity HIGH ("sensitivity HIGH") and a positive-polarity LOW
+// ("evidence_quality LOW") both signal a problem; they should lead. Plain
+// counts (claims, validation) sit in the middle. Clean signals trail.
+function concernRank(h: Heuristic): number {
+  const polarity = polarityFor(h.name);
+  if (polarity === "unknown") return h.rating === "medium" ? 1 : 2;
+  if (h.rating === "medium") return 1;
+  const isGood =
+    (polarity === "positive" && h.rating === "high") ||
+    (polarity === "negative" && h.rating === "low");
+  return isGood ? 3 : 0;
+}
+
+function sortHeuristics(heuristics: Heuristic[]): Heuristic[] {
+  return [...heuristics].sort((a, b) => concernRank(a) - concernRank(b));
+}
+
 function HeuristicBullet({ h }: { h: Heuristic }) {
   return (
     <Box display="flex" gap="3" alignItems="baseline">
       <Box flexShrink={0} pt="1">
         <HeuristicChip name={h.name} rating={h.rating} />
       </Box>
-      <Stack gap="1" minW="0" flex="1">
-        <Text
-          fontFamily="mono"
-          fontSize="11px"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          color="fg.muted"
-          fontWeight="500"
-        >
-          {h.name}
-        </Text>
+      <Stack gap="1.5" minW="0" flex="1">
+        <Box>
+          <HeuristicName name={h.name} />
+        </Box>
         <Text fontSize="15px" lineHeight="22px" color="fg">
           {h.description}
         </Text>
@@ -398,23 +411,40 @@ function TopicContent() {
               </Text>
             )}
             <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
-              <Text
-                fontFamily="mono"
-                fontSize="11px"
-                letterSpacing="wider"
-                textTransform="uppercase"
-                color="fg.muted"
-                fontWeight="500"
+              <Box
+                display="flex"
+                alignItems="baseline"
+                justifyContent="space-between"
+                gap="3"
                 pt="4"
-                pb="2"
+                pb="3"
               >
-                What this topic fires on
-              </Text>
+                <Text
+                  fontFamily="mono"
+                  fontSize="11px"
+                  letterSpacing="wider"
+                  textTransform="uppercase"
+                  color="fg.muted"
+                  fontWeight="500"
+                >
+                  What this topic fires on
+                </Text>
+                {t.heuristics.length > 0 && (
+                  <Text
+                    fontFamily="body"
+                    fontSize="12px"
+                    lineHeight="16px"
+                    color="fg.muted"
+                  >
+                    Hover a name for what it measures.
+                  </Text>
+                )}
+              </Box>
               {t.heuristics.length === 0 ? (
                 <Text color="fg.muted">No heuristics returned.</Text>
               ) : (
-                <Stack gap="5" pt="2" maxW="65ch">
-                  {t.heuristics.map((h) => (
+                <Stack gap="5" pt="1" maxW="65ch">
+                  {sortHeuristics(t.heuristics).map((h) => (
                     <HeuristicBullet key={h.name} h={h} />
                   ))}
                 </Stack>
@@ -424,7 +454,9 @@ function TopicContent() {
         </GridItem>
         <GridItem>
           <Stack gap="4" position={{ lg: "sticky" }} top={{ lg: "6" }}>
-            {docs.length > 0 && <DistributionPanel docs={docs} />}
+            {/* The bar restates the StatsPanel when there is only one
+                document; show it only once a real mix exists. */}
+            {docs.length > 1 && <DistributionPanel docs={docs} />}
             <StatsPanel topic={t} docs={docs} />
           </Stack>
         </GridItem>
