@@ -10,15 +10,19 @@ import { useShaderAnimation } from "./useShaderAnimation";
 
 interface ShaderSphereProps {
   segments?: number;
+  reducedMotion?: boolean;
 }
 
-export function ShaderSphere({ segments }: ShaderSphereProps) {
+export function ShaderSphere({
+  segments,
+  reducedMotion = false,
+}: ShaderSphereProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.ShaderMaterial>(null);
 
   const geometry = useSphereGeometry(segments);
 
-  useShaderAnimation(materialRef);
+  useShaderAnimation(materialRef, reducedMotion);
 
   return (
     <mesh ref={meshRef} geometry={geometry}>

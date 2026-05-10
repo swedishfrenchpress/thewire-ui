@@ -4,6 +4,7 @@ import { Box } from "@chakra-ui/react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import type { Group } from "three";
+import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
 import { ShaderSphere } from "./ShaderSphere";
 import { SPHERE_CONFIG } from "./config";
 
@@ -13,10 +14,17 @@ interface InteractiveOrbProps {
   segments?: number;
 }
 
-function RotatingGroup({ children }: { children: React.ReactNode }) {
+function RotatingGroup({
+  reducedMotion,
+  children,
+}: {
+  reducedMotion: boolean;
+  children: React.ReactNode;
+}) {
   const groupRef = useRef<Group>(null);
 
   useFrame((_, delta) => {
+    if (reducedMotion) return;
     if (groupRef.current) {
       groupRef.current.rotation.y += SPHERE_CONFIG.rotationSpeed * delta;
     }
@@ -34,6 +42,7 @@ export function InteractiveOrb({
   height = "240px",
   segments,
 }: InteractiveOrbProps) {
+  const reducedMotion = useReducedMotion();
   return (
     <Box width={width} height={height}>
       <Canvas
@@ -47,6 +56,7 @@ export function InteractiveOrb({
           powerPreference: "high-performance",
         }}
         dpr={[1, 2]}
+        frameloop={reducedMotion ? "demand" : "always"}
         style={{
           background: "transparent",
           width: "100%",
@@ -54,8 +64,8 @@ export function InteractiveOrb({
           display: "block",
         }}
       >
-        <RotatingGroup>
-          <ShaderSphere segments={segments} />
+        <RotatingGroup reducedMotion={reducedMotion}>
+          <ShaderSphere reducedMotion={reducedMotion} segments={segments} />
         </RotatingGroup>
       </Canvas>
     </Box>

@@ -2,6 +2,7 @@
 
 import {
   Box,
+  Button,
   HStack,
   Input,
   Stack,
@@ -17,6 +18,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { Dialog } from "@/components/Dialog";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { casesStore } from "@/lib/cases-store";
 import type { Row } from "@/lib/triage";
@@ -41,6 +43,7 @@ export function CaseCard({ row, variant = "default" }: Props) {
 
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(entry.displayName);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -56,12 +59,12 @@ export function CaseCard({ row, variant = "default" }: Props) {
   };
 
   const onCardClick = () => {
-    if (editing) return;
+    if (editing || confirmingDelete) return;
     navigate();
   };
 
   const onCardKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (editing) return;
+    if (editing || confirmingDelete) return;
     if (e.key === "Enter") {
       e.preventDefault();
       navigate();
@@ -77,13 +80,19 @@ export function CaseCard({ row, variant = "default" }: Props) {
   };
   const cancelRename = () => setEditing(false);
 
+  const requestDelete = () => setConfirmingDelete(true);
+  const confirmDelete = () => {
+    casesStore.removeCase(entry.caseId);
+    setConfirmingDelete(false);
+  };
+
   const handleMenuSelect = (action: CaseMenuAction) => {
     if (action === "rename") {
       setEditing(true);
     } else if (action === "pin") {
       casesStore.pinCase(entry.caseId, !entry.pinned);
     } else if (action === "delete") {
-      casesStore.removeCase(entry.caseId);
+      requestDelete();
     }
   };
 
@@ -111,7 +120,14 @@ export function CaseCard({ row, variant = "default" }: Props) {
         isError={isError}
         onMenuSelect={handleMenuSelect}
         onRetry={refetch}
-        onRemove={() => casesStore.removeCase(entry.caseId)}
+        onRemove={requestDelete}
+      />
+
+      <DeleteConfirmDialog
+        open={confirmingDelete}
+        onOpenChange={(open) => setConfirmingDelete(open)}
+        caseName={entry.displayName}
+        onConfirm={confirmDelete}
       />
 
       {editing ? (
@@ -437,5 +453,52 @@ function CloseIcon() {
     >
       <path d="M5 5l14 14M19 5L5 19" />
     </svg>
+  );
+}
+
+function DeleteConfirmDialog({
+  open,
+  onOpenChange,
+  caseName,
+  onConfirm,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  caseName: string;
+  onConfirm: () => void;
+}) {
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(details) => onOpenChange(details.open)}
+    >
+      <Dialog.Content>
+        <Dialog.Header>
+          <Dialog.Title>Remove this case?</Dialog.Title>
+          <Dialog.Description>
+            {caseName} will be cleared from this index. The underlying analysis
+            on the server is unaffected.
+          </Dialog.Description>
+        </Dialog.Header>
+        <Dialog.Footer>
+          <Dialog.ActionTrigger asChild>
+            <Button variant="outline" flex="1">
+              Cancel
+            </Button>
+          </Dialog.ActionTrigger>
+          <Button
+            variant="solid"
+            colorPalette="red"
+            flex="1"
+            onClick={(e) => {
+              e.stopPropagation();
+              onConfirm();
+            }}
+          >
+            Remove
+          </Button>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog>
   );
 }

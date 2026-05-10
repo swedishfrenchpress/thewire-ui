@@ -222,7 +222,7 @@ function DocumentCrumbs({
         { label: "Dashboard", href: "/" },
         {
           label: caseLabel,
-          href: caseId !== null ? `/dashboard?case=${caseId}` : undefined,
+          href: caseId !== null ? `/cases/${caseId}` : undefined,
         },
         {
           label: topicTitle ?? "Topic",
@@ -267,9 +267,7 @@ function DocumentContent() {
   }
   if (docsQuery.isLoading) return <HelperText>Loading…</HelperText>;
   if (docsQuery.isError)
-    return (
-      <HelperText tone="error">Error: {String(docsQuery.error)}</HelperText>
-    );
+    return <HelperText tone="error">Could not load this document.</HelperText>;
   if (!docsQuery.data) return null;
 
   const doc = docsQuery.data.documents.find((d) => d.id === documentId);

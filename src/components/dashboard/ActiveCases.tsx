@@ -13,22 +13,15 @@ import Image from "next/image";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, type KeyboardEvent } from "react";
+import { TriageMix } from "@/components/shared/TriageMix";
 import { casesStore } from "@/lib/cases-store";
 import { coverImageFor } from "@/lib/cover-image";
 import {
   corroborationScore,
-  distributeTopics,
   topTopic,
-  type Distribution,
+  triageMix,
   type Row,
 } from "@/lib/triage";
-import type { Rating } from "@/lib/types";
-
-const SEGMENT_BG: Record<Rating, string> = {
-  high: "bg.attentionSubtle",
-  medium: "bg.warningSubtle",
-  low: "bg.successSubtle",
-};
 
 const MONTHS_FULL = [
   "JANUARY",
@@ -170,7 +163,19 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search cases"
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                e.preventDefault();
+                if (query.length > 0) {
+                  setQuery("");
+                } else if (dateFilter !== "all") {
+                  setDateFilter("all");
+                } else {
+                  (e.target as HTMLInputElement).blur();
+                }
+              }
+            }}
+            placeholder="Search cases  (press / to focus)"
             size="sm"
             fontFamily="body"
             fontSize="13px"
@@ -190,6 +195,7 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
               borderColor: "border.strong",
             }}
             aria-label="Search cases"
+            data-shortcut="search"
           />
         </Box>
       </HStack>
@@ -268,6 +274,7 @@ function CaseCard({ row }: { row: Row }) {
       }}
       display="flex"
       flexDirection="column"
+      data-case-card
     >
       <CardCover
         caseId={entry.caseId}
@@ -410,67 +417,22 @@ function CardMetricRow({ row }: { row: Row }) {
     );
   }
 
-  const dist = distributeTopics(summary.topics);
+  const mix = triageMix(summary.topics);
   const score = corroborationScore(entry.caseId);
 
   return (
-    <Stack gap="2">
-      <MiniBar distribution={dist} />
-      <HStack gap="2" align="baseline" wrap="wrap">
-        <Text
-          as="span"
-          fontFamily="body"
-          fontSize="13px"
-          lineHeight="16px"
-          color="fg"
-          fontWeight="600"
-          fontVariantNumeric="tabular-nums"
-        >
-          {score}% corroboration
-        </Text>
-        <Text
-          as="span"
-          fontFamily="body"
-          fontSize="13px"
-          lineHeight="16px"
-          color="fg.muted"
-        >
-          · {summary.topics.length}{" "}
-          {summary.topics.length === 1 ? "topic" : "topics"}
-        </Text>
-      </HStack>
-    </Stack>
-  );
-}
-
-function MiniBar({ distribution }: { distribution: Distribution }) {
-  const visible = distribution.ordered.filter((s) => s.count > 0);
-  if (visible.length === 0) {
-    return (
-      <Box height="6px" borderRadius="sm" bg="bg.subtle" width="100%" />
-    );
-  }
-  return (
-    <Box
-      display="flex"
-      height="6px"
-      borderRadius="sm"
-      overflow="hidden"
-      bg="bg.subtle"
-      role="figure"
-      aria-label={`${distribution.headline}`}
-    >
-      {visible.map((seg) => (
-        <Box
-          key={seg.rating}
-          flexBasis={`${seg.pct}%`}
-          flexGrow={0}
-          flexShrink={0}
-          bg={SEGMENT_BG[seg.rating]}
-          title={`${seg.count} ${seg.count === 1 ? "topic" : "topics"} rated ${seg.rating}`}
-        />
-      ))}
-    </Box>
+    <HStack gap="3" align="baseline" wrap="wrap">
+      <TriageMix mix={mix} />
+      <Text
+        as="span"
+        fontFamily="body"
+        fontSize="13px"
+        lineHeight="16px"
+        color="fg.muted"
+      >
+        · {score}% corroboration
+      </Text>
+    </HStack>
   );
 }
 

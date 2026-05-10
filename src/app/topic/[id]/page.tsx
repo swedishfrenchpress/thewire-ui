@@ -267,7 +267,7 @@ function TopicCrumbs({
         { label: "Dashboard", href: "/" },
         {
           label: caseLabel,
-          href: caseId !== null ? `/dashboard?case=${caseId}` : undefined,
+          href: caseId !== null ? `/cases/${caseId}` : undefined,
         },
         { label: topicTitle ?? "Topic" },
       ]}
@@ -343,7 +343,7 @@ function TopicContent() {
 
   if (detail.isLoading) return <HelperText>Loading…</HelperText>;
   if (detail.isError)
-    return <HelperText tone="error">Error: {String(detail.error)}</HelperText>;
+    return <HelperText tone="error">Could not load this topic.</HelperText>;
   if (!detail.data) return null;
 
   const t = detail.data.topic;
@@ -443,7 +443,9 @@ function TopicContent() {
         </Text>
         {docsQuery.isLoading && <HelperText>Loading documents…</HelperText>}
         {docsQuery.isError && (
-          <HelperText tone="error">Error: {String(docsQuery.error)}</HelperText>
+          <HelperText tone="error">
+            Could not load documents for this topic.
+          </HelperText>
         )}
         {docsQuery.data && (
           <DocumentList
@@ -466,7 +468,7 @@ function TopicPendingState({
   caseStatus: "processing" | "complete" | "failed" | undefined;
   caseError: unknown;
 }) {
-  const backHref = `/dashboard?case=${caseId}`;
+  const backHref = `/cases/${caseId}`;
 
   if (caseError instanceof ApiRequestError && caseError.status === 404) {
     return (
@@ -512,7 +514,7 @@ function TopicPendingState({
   return (
     <Stack gap="4">
       <HelperText>
-        This topic is not yet available — the case is still processing.
+        This topic is not yet available. The case is still processing.
       </HelperText>
       <Button asChild variant="outline" size="sm" alignSelf="flex-start">
         <NextLink href={backHref}>Back to case</NextLink>
