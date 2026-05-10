@@ -257,7 +257,7 @@ function TopicContent() {
   const docsQuery = useQuery({
     queryKey: ["topic-documents", caseId, topicId],
     queryFn: () => getTopicDocuments(caseId as number, topicId),
-    enabled: idsValid && !detail.isError,
+    enabled: idsValid,
     retry: (failureCount, err) => {
       if (err instanceof ApiRequestError && err.status === 404) return false;
       return failureCount < 2;
