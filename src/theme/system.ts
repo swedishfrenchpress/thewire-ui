@@ -1162,6 +1162,15 @@ const config = defineConfig({
           attention: {
             value: { base: "{colors.red.700}", _dark: "{colors.red.300}" },
           },
+          priorityHigh: {
+            value: { base: "{colors.blue.700}", _dark: "{colors.blue.300}" },
+          },
+          priorityMedium: {
+            value: { base: "{colors.yellow.700}", _dark: "{colors.yellow.300}" },
+          },
+          priorityLow: {
+            value: { base: "{colors.neutral.700}", _dark: "{colors.neutral.300}" },
+          },
         },
         bg: {
           DEFAULT: {
@@ -1188,6 +1197,15 @@ const config = defineConfig({
           },
           attentionSubtle: {
             value: { base: "{colors.red.200}", _dark: "{colors.red.800}" },
+          },
+          priorityHighSubtle: {
+            value: { base: "{colors.blue.200}", _dark: "{colors.blue.800}" },
+          },
+          priorityMediumSubtle: {
+            value: { base: "{colors.yellow.200}", _dark: "{colors.yellow.800}" },
+          },
+          priorityLowSubtle: {
+            value: { base: "{colors.neutral.300}", _dark: "{colors.neutral.700}" },
           },
         },
         border: {

@@ -35,7 +35,7 @@ export default function MethodologyPage() {
           maxW="62ch"
         >
           The grading pipeline is the central editorial instrument of the
-          platform. Every triage decision is traceable to a heuristic, and
+          platform. Every priority decision is traceable to a heuristic, and
           every heuristic carries a plain-language description.
         </Text>
 
@@ -51,7 +51,7 @@ export default function MethodologyPage() {
             below.
           </Prose>
           <Prose fontWeight="600" color="fg">
-            Topics, heuristics, and triage are the three primitives. Nothing
+            Topics, heuristics, and priority are the three primitives. Nothing
             else in the system carries editorial weight.
           </Prose>
         </Stack>
@@ -93,27 +93,27 @@ export default function MethodologyPage() {
           <HeuristicList />
         </Section>
 
-        <Section eyebrow="Sensitivity and topic triage">
+        <Section eyebrow="Sensitivity and topic priority">
           <Prose>
             Every topic carries a sensitivity level on a four-point scale.
             Sensitivity is derived from the highest-sensitivity heuristic
             the agent returned for any document in that topic, for that case.
-            The mapping to a triage rating is fixed:
+            The mapping to a priority rating is fixed:
           </Prose>
           <SensitivityTable />
         </Section>
 
-        <Section eyebrow="Case triage">
+        <Section eyebrow="Case priority">
           <Prose>
-            A case takes its triage from its most severe topic. When the
+            A case takes its priority from its most severe topic. When the
             cases list orders rows on the dashboard, it sorts by case
-            triage first (high, then medium, then low) and then by
+            priority first (high, then medium, then low) and then by
             recency. The case that lands at the top of the list is the
             next thing the journalist should read.
           </Prose>
         </Section>
 
-        <Section eyebrow="The three triage states">
+        <Section eyebrow="The three priority levels">
           <TriageTable />
         </Section>
 

@@ -407,11 +407,11 @@ function AtAGlance({
         alignItems="center"
       >
         <Stat
-          label="Highest urgency"
+          label="Priority"
           info={{
-            eyebrow: "URGENCY",
+            eyebrow: "PRIORITY",
             measures:
-              "The highest urgency reached across this case's topics.",
+              "The highest priority across this case's topics.",
             bands:
               "Driven by the most urgent topic the analysis surfaced.",
           }}
@@ -444,7 +444,7 @@ function AtAGlance({
           label="Top topic"
           info={{
             eyebrow: "TOP TOPIC",
-            measures: "The topic with the highest urgency in this case.",
+            measures: "The topic with the highest priority in this case.",
             bands:
               "Listed first in the topics list; click to see its heuristics and documents.",
           }}

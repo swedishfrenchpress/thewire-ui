@@ -3,10 +3,22 @@
 import { Box } from "@chakra-ui/react";
 import type { Rating } from "@/lib/types";
 
-const STYLES: Record<Rating, { bg: string; color: string }> = {
-  high: { bg: "bg.attentionSubtle", color: "fg.attention" },
-  medium: { bg: "bg.warningSubtle", color: "fg.warning" },
-  low: { bg: "bg.successSubtle", color: "fg.success" },
+const STYLES: Record<Rating, { bg: string; color: string; label: string }> = {
+  high: {
+    bg: "bg.priorityHighSubtle",
+    color: "fg.priorityHigh",
+    label: "HIGH PRIORITY",
+  },
+  medium: {
+    bg: "bg.priorityMediumSubtle",
+    color: "fg.priorityMedium",
+    label: "MEDIUM PRIORITY",
+  },
+  low: {
+    bg: "bg.priorityLowSubtle",
+    color: "fg.priorityLow",
+    label: "LOW PRIORITY",
+  },
 };
 
 export function TriageTag({ rating }: { rating: Rating }) {
@@ -24,7 +36,7 @@ export function TriageTag({ rating }: { rating: Rating }) {
       fontWeight="600"
       borderRadius="sm"
     >
-      {rating}
+      {s.label}
     </Box>
   );
 }

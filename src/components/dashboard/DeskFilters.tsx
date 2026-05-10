@@ -14,7 +14,7 @@ const DATE_FILTERS: { value: DateFilter; label: string }[] = [
 ];
 
 const SORT_OPTIONS: { value: DeskSort; label: string }[] = [
-  { value: "topTriage", label: "Triage" },
+  { value: "topTriage", label: "Priority" },
   { value: "created", label: "Filed" },
   { value: "lastViewed", label: "Viewed" },
 ];
@@ -114,7 +114,7 @@ function SortToggle({
   const onSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     onChange(e.target.value as DeskSort);
   };
-  const label = SORT_OPTIONS.find((o) => o.value === sort)?.label ?? "Triage";
+  const label = SORT_OPTIONS.find((o) => o.value === sort)?.label ?? "Priority";
 
   return (
     <Box position="relative" display="inline-flex" alignItems="center">

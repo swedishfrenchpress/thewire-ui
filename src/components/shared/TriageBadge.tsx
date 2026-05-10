@@ -5,9 +5,21 @@ import { NULL_DASH } from "@/lib/null-state";
 import type { Rating } from "@/lib/types";
 
 const STYLES: Record<Rating, { bg: string; color: string; label: string }> = {
-  high: { bg: "bg.attentionSubtle", color: "fg.attention", label: "High" },
-  medium: { bg: "bg.warningSubtle", color: "fg.warning", label: "Medium" },
-  low: { bg: "bg.successSubtle", color: "fg.success", label: "Low" },
+  high: {
+    bg: "bg.priorityHighSubtle",
+    color: "fg.priorityHigh",
+    label: "High Priority",
+  },
+  medium: {
+    bg: "bg.priorityMediumSubtle",
+    color: "fg.priorityMedium",
+    label: "Medium Priority",
+  },
+  low: {
+    bg: "bg.priorityLowSubtle",
+    color: "fg.priorityLow",
+    label: "Low Priority",
+  },
 };
 
 export function TriageBadge({ level }: { level: Rating | null }) {
@@ -21,7 +33,7 @@ export function TriageBadge({ level }: { level: Rating | null }) {
         fontSize="13px"
         lineHeight="18px"
         textAlign="center"
-        minW="64px"
+        minW="112px"
       >
         {NULL_DASH}
       </Box>
@@ -44,7 +56,7 @@ export function TriageBadge({ level }: { level: Rating | null }) {
       py="0.5"
       borderRadius="md"
       minH="19px"
-      minW="64px"
+      minW="112px"
     >
       {s.label}
     </Box>
