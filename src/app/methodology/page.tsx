@@ -1,6 +1,5 @@
 import { Box, Container, Heading, HStack, Stack, Text } from "@chakra-ui/react";
 import type { Metadata } from "next";
-import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { TriageBadge } from "@/components/shared/TriageBadge";
 import type { Rating } from "@/lib/types";
 
@@ -10,165 +9,352 @@ export const metadata: Metadata = {
 
 export default function MethodologyPage() {
   return (
-    <Container maxW="6xl" pb="20">
-      <Breadcrumbs
-        items={[
-          { label: "Dashboard", href: "/" },
-          { label: "Methodology" },
-        ]}
-      />
-      <Stack gap="10" pt="2">
-        <Stack gap="3">
-          <Heading
-            as="h1"
-            fontFamily="heading"
-            fontWeight="400"
-            letterSpacing="tight"
-            fontSize={{ base: "32px", md: "44px" }}
-            lineHeight="1.05"
-          >
-            How triage works
-          </Heading>
-          <Eyebrow>The rules behind the ranking</Eyebrow>
+    <Container maxW="3xl" pb="20">
+      <Stack gap="0" pt={{ base: "8", md: "12" }}>
+        <RedEyebrow>How we verify</RedEyebrow>
+
+        <Heading
+          as="h1"
+          fontFamily="heading"
+          fontWeight="600"
+          letterSpacing="-0.01em"
+          fontSize={{ base: "44px", md: "60px" }}
+          lineHeight="1"
+          color="fg"
+          pt="3"
+        >
+          Methodology
+        </Heading>
+
+        <Text
+          as="p"
+          fontFamily="body"
+          fontSize={{ base: "18px", md: "20px" }}
+          lineHeight="30px"
+          color="fg.muted"
+          pt="4"
+          pb="6"
+          maxW="62ch"
+        >
+          The grading pipeline is the central editorial instrument of the
+          platform. Every triage decision is traceable to a heuristic, and
+          every heuristic carries a plain-language description.
+        </Text>
+
+        <Box borderTopWidth="3px" borderColor="fg" mt="2" mb="10" />
+
+        <Stack gap="6" maxW="62ch">
+          <Prose>
+            A case is a folder of documents the journalist has uploaded. The
+            agent reads every document, assigns it to a topic, generates a
+            graded signal for each topic and each document, and rolls the
+            most severe signal up to the case. The journalist reads the
+            case fastest first: highest severity on top, the rest in order
+            below.
+          </Prose>
+          <Prose fontWeight="600" color="fg">
+            Topics, heuristics, and triage are the three primitives. Nothing
+            else in the system carries editorial weight.
+          </Prose>
         </Stack>
 
-        <Section eyebrow="The chain">
+        <Section eyebrow="Topics">
           <Prose>
-            A case is a folder of documents the user has uploaded. Each
-            document is read against a curated set of heuristics. Every
-            heuristic that fires carries a rating: high, medium, or low.
-            Heuristics group into topics; topics roll up into the case. The
-            dashboard sorts cases fastest first, so the first thing on screen
-            is the next thing to read.
+            A topic is a reusable theme the agent infers from the
+            submitted documents (for example, &ldquo;Procurement,&rdquo;
+            &ldquo;Communications messaging,&rdquo; &ldquo;Sanctions
+            evasion&rdquo;). Each document belongs to exactly one topic.
+            When a new case shares a theme with an older case, the agent
+            assigns it to the existing topic; when no existing topic fits,
+            the agent names a new one.
           </Prose>
           <Prose>
-            Four layers, one direction:
-            documents, heuristics, topics, case.
+            Topic identity is global across the platform, so two
+            independent leaks about the same procurement scheme will land
+            in the same topic and become directly comparable.
           </Prose>
         </Section>
 
         <Section eyebrow="Heuristics">
           <Prose>
-            A heuristic is a named rule that fires on a document when a
-            specific signal is present. Each one has a short description so
-            its reasoning is legible, and a rating that reflects how serious
-            its presence usually is. The set is editorial, not learned. New
-            rules ship as live cases reveal patterns the existing set
-            misses.
+            A heuristic is a named, graded signal the agent emits while
+            reading a document. Each heuristic has three fields: a name
+            (for example, <Mono>sensitivity</Mono>,{" "}
+            <Mono>claim_supported</Mono>), a rating in{" "}
+            <Mono>high / medium / low</Mono>, and a description that
+            explains in plain language why it fired.
           </Prose>
           <Prose>
-            On a topic page, the heuristics that fired are listed verbatim,
-            attributed to the documents they fired on. A reader can follow a
-            triage decision from the case all the way down to the sentence
-            that triggered it.
+            The heuristic set is open: the agent generates the names it
+            needs for the document in front of it. We do not maintain a
+            closed taxonomy. The benefit is fidelity to the actual
+            evidence; the cost is that two cases will not always have
+            identical heuristic sets, and cross-case comparison happens
+            through topics rather than through fixed metrics.
           </Prose>
+          <HeuristicList />
         </Section>
 
-        <Section eyebrow="Topic triage">
+        <Section eyebrow="Sensitivity and topic triage">
           <Prose>
-            A topic is the cluster of documents in a case that share a
-            theme. Its triage is the maximum severity among the heuristics
-            that fired on its documents. A topic with even one
-            high-rated heuristic is high. The rule is intentionally
-            pessimistic: triage exists to make sure nothing severe is
-            buried.
+            Every topic carries a sensitivity level on a four-point scale.
+            Sensitivity is derived from the highest-sensitivity heuristic
+            the agent fired on any document in that topic, for that case.
+            The mapping to a triage rating is fixed:
           </Prose>
+          <SensitivityTable />
         </Section>
 
         <Section eyebrow="Case triage">
           <Prose>
-            A case takes its triage from its most severe topic. Cases on the
-            dashboard are ordered high, then medium, then low; ties break by
-            recency. The intent is simple: the first row is the one to look
-            at first.
+            A case takes its triage from its most severe topic. When the
+            cases list orders rows on the dashboard, it sorts by case
+            triage first (high, then medium, then low) and then by
+            recency. The case that lands at the top of the list is the
+            next thing the journalist should read.
           </Prose>
         </Section>
 
-        <Section eyebrow="The three states">
-          <RatingTable />
+        <Section eyebrow="The three triage states">
+          <TriageTable />
         </Section>
 
-        <Section eyebrow="What this will not do">
+        <Section eyebrow="What the grading does not measure">
           <Prose>
-            Heuristics flag patterns. They do not establish facts. A high
-            triage is not a finding. A low triage is not a clearance. The
-            wire improves the order of the user&apos;s reading; it does not
-            replace the reading.
+            The grading is a measurement of evidence the agent can see in
+            the documents the journalist uploaded. It is not a probability
+            of truth. A topic graded high means the agent found heuristics
+            of high severity in the documents that landed in it; it does
+            not mean the underlying allegation is more or less likely to
+            be true.
           </Prose>
           <Prose>
-            Heuristics also do not weight each other inside a topic. Two
-            mediums do not become a high. The maximum rating in the topic is
-            the topic&apos;s rating, full stop. This avoids the false
-            confidence of arithmetic over signals that were never numeric to
-            begin with.
+            The grading also does not measure legal admissibility, public
+            interest, or the editorial gravity of a finding. Those
+            judgments are made by reporters and editors after the grading
+            is computed.
+          </Prose>
+          <Prose>
+            Heuristics also do not weight against each other inside a
+            topic. Two medium-rated heuristics do not become a high. The
+            severity of the topic is the maximum severity it contains,
+            full stop. This avoids the false confidence of arithmetic over
+            signals that were never numeric to begin with.
           </Prose>
         </Section>
 
         <Section eyebrow="The model">
           <Prose>
-            The wire uses a language model to evaluate documents against the
-            heuristic set. The model is plumbing. It does not narrate,
-            summarize, or recommend. It fires the rules and assigns severity.
-            Where a rule fits the document poorly, the model is meant to
-            abstain rather than guess; where a document is too short to
-            judge, the wire surfaces that fact instead of inventing
-            heuristics to satisfy a slot.
+            The agent is a language model (currently Maple) that runs
+            against a structured prompt. Its job is to read the document,
+            assign it to a topic, and emit graded heuristics. It does not
+            narrate, summarize, or recommend. It is a working part of the
+            grading pipeline, not a contributor to the editorial product.
           </Prose>
           <Prose>
-            The product is not the model. The product is the user&apos;s
-            improved judgment.
+            The model is also replaceable. If a stronger or more
+            specialized model becomes available, the grading layer is
+            swapped without changes to the heuristic schema, the
+            sensitivity scale, or the dashboard.
           </Prose>
         </Section>
+
+        <Box pt="14" mt="10" borderTopWidth="1px" borderColor="border.muted">
+          <Text
+            fontFamily="body"
+            fontSize="13px"
+            lineHeight="20px"
+            color="fg.muted"
+            maxW="62ch"
+          >
+            The grading pipeline is open to inspection. We invite security
+            researchers, journalists, and adversarial red-teamers to audit,
+            critique, and propose improvements.
+          </Text>
+        </Box>
       </Stack>
     </Container>
   );
 }
 
-function RatingTable() {
-  const rows: { rating: Rating; meaning: string }[] = [
+function HeuristicList() {
+  const items: { name: string; rating: Rating; description: string }[] = [
     {
+      name: "sensitivity",
       rating: "high",
-      meaning:
-        "Probably leads the day. Read it now, escalate if confirmed.",
+      description: "Highest sensitivity level in this topic is 3.",
     },
     {
+      name: "claims",
       rating: "medium",
-      meaning: "Worth a look. Stays in the queue, not at the top.",
+      description: "1 factual claim extracted in this topic.",
     },
     {
-      rating: "low",
-      meaning:
-        "Likely background. Useful context, rarely the next action.",
+      name: "claim_supported",
+      rating: "high",
+      description:
+        "Atlas lacked a purchase order. Evidence: no PO on file.",
+    },
+    {
+      name: "classification_rationale",
+      rating: "high",
+      description: "The memo discusses vendor approval gaps.",
     },
   ];
 
   return (
-    <Box maxW="65ch">
-      <Stack gap="0">
-        {rows.map((r, i) => (
+    <Box pt="2">
+      <Text
+        as="p"
+        fontFamily="body"
+        fontSize="14px"
+        lineHeight="20px"
+        color="fg.muted"
+        pb="3"
+      >
+        Examples the agent has emitted in production:
+      </Text>
+      <Stack
+        gap="0"
+        borderTopWidth="1px"
+        borderColor="border.muted"
+      >
+        {items.map((h) => (
           <HStack
-            key={r.rating}
-            gap="5"
-            align="baseline"
-            py="4"
-            borderTopWidth={i === 0 ? "0" : "1px"}
+            key={h.name}
+            gap="4"
+            align="flex-start"
+            py="3.5"
+            borderBottomWidth="1px"
             borderColor="border.muted"
           >
-            <Box minW="80px">
-              <TriageBadge level={r.rating} />
+            <Box minW="170px">
+              <Mono>{h.name}</Mono>
+            </Box>
+            <Box flexShrink={0}>
+              <TriageBadge level={h.rating} />
             </Box>
             <Text
               fontFamily="body"
-              fontSize="16px"
-              lineHeight="26px"
+              fontSize="14px"
+              lineHeight="20px"
               color="fg"
+              flex="1"
             >
-              {r.meaning}
+              {h.description}
             </Text>
           </HStack>
         ))}
       </Stack>
     </Box>
+  );
+}
+
+function SensitivityTable() {
+  const rows: { level: string; rating: Rating; meaning: string }[] = [
+    {
+      level: "Level 1",
+      rating: "low",
+      meaning:
+        "Background. Useful context, rarely the next action.",
+    },
+    {
+      level: "Level 2",
+      rating: "medium",
+      meaning: "Worth a look. In the queue, not at the top.",
+    },
+    {
+      level: "Levels 3 and 4",
+      rating: "high",
+      meaning: "Read first. Strongest evidence in the case.",
+    },
+  ];
+
+  return (
+    <Stack gap="0" borderTopWidth="1px" borderColor="border.muted" pt="0">
+      {rows.map((r) => (
+        <HStack
+          key={r.level}
+          gap="5"
+          align="center"
+          py="4"
+          borderBottomWidth="1px"
+          borderColor="border.muted"
+        >
+          <Box minW="120px">
+            <Text
+              fontFamily="mono"
+              fontSize="12px"
+              lineHeight="14px"
+              letterSpacing="wide"
+              textTransform="uppercase"
+              fontWeight="600"
+              color="fg"
+            >
+              {r.level}
+            </Text>
+          </Box>
+          <Box minW="80px" flexShrink={0}>
+            <TriageBadge level={r.rating} />
+          </Box>
+          <Text
+            fontFamily="body"
+            fontSize="14px"
+            lineHeight="20px"
+            color="fg.muted"
+            flex="1"
+          >
+            {r.meaning}
+          </Text>
+        </HStack>
+      ))}
+    </Stack>
+  );
+}
+
+function TriageTable() {
+  const rows: { rating: Rating; meaning: string }[] = [
+    {
+      rating: "high",
+      meaning:
+        "Strongest evidence in the case. Read first; verify; consider escalation.",
+    },
+    {
+      rating: "medium",
+      meaning: "Worth a look. In the queue once the highs are clear.",
+    },
+    {
+      rating: "low",
+      meaning: "Background. Context for the rest, rarely the next action.",
+    },
+  ];
+
+  return (
+    <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
+      {rows.map((r) => (
+        <HStack
+          key={r.rating}
+          gap="5"
+          align="center"
+          py="4"
+          borderBottomWidth="1px"
+          borderColor="border.muted"
+        >
+          <Box minW="80px" flexShrink={0}>
+            <TriageBadge level={r.rating} />
+          </Box>
+          <Text
+            fontFamily="body"
+            fontSize="15px"
+            lineHeight="22px"
+            color="fg"
+            flex="1"
+          >
+            {r.meaning}
+          </Text>
+        </HStack>
+      ))}
+    </Stack>
   );
 }
 
@@ -181,14 +367,33 @@ function Section({
 }) {
   return (
     <Stack
-      gap="5"
-      pt="6"
+      gap="4"
+      pt="8"
+      mt="8"
       borderTopWidth="1px"
       borderColor="border.muted"
+      maxW="62ch"
     >
       <Eyebrow>{eyebrow}</Eyebrow>
       <Stack gap="4">{children}</Stack>
     </Stack>
+  );
+}
+
+function RedEyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <Text
+      as="span"
+      fontFamily="mono"
+      fontSize="11px"
+      lineHeight="13px"
+      letterSpacing="wider"
+      textTransform="uppercase"
+      fontWeight="600"
+      color="fg.attention"
+    >
+      {children}
+    </Text>
   );
 }
 
@@ -201,23 +406,48 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
       lineHeight="13px"
       letterSpacing="wider"
       textTransform="uppercase"
-      fontWeight="500"
-      color="fg.muted"
+      fontWeight="600"
+      color="fg"
     >
       {children}
     </Text>
   );
 }
 
-function Prose({ children }: { children: React.ReactNode }) {
+function Prose({
+  children,
+  fontWeight = "400",
+  color = "fg",
+}: {
+  children: React.ReactNode;
+  fontWeight?: string;
+  color?: string;
+}) {
   return (
     <Text
       as="p"
       fontFamily="body"
       fontSize="16px"
       lineHeight="26px"
+      color={color}
+      fontWeight={fontWeight}
+    >
+      {children}
+    </Text>
+  );
+}
+
+function Mono({ children }: { children: React.ReactNode }) {
+  return (
+    <Text
+      as="code"
+      fontFamily="mono"
+      fontSize="13px"
+      bg="bg.subtle"
       color="fg"
-      maxW="65ch"
+      px="1.5"
+      py="0.5"
+      borderRadius="sm"
     >
       {children}
     </Text>

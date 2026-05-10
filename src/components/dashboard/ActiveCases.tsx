@@ -1,9 +1,9 @@
 "use client";
 
-import { Box, HStack, Stack, Text } from "@chakra-ui/react";
+import { Box, HStack, Input, Stack, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
-import type { KeyboardEvent } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 import { casesStore } from "@/lib/cases-store";
 import { corroborationScore, topTriage, TRIAGE_RANK, type Row } from "@/lib/triage";
 import type { Rating, TopicSummary } from "@/lib/types";
@@ -53,19 +53,92 @@ function titleFor(row: Row): string {
   return top?.title ?? row.entry.displayName;
 }
 
+function rowMatches(row: Row, query: string): boolean {
+  if (query.length === 0) return true;
+  const haystack: string[] = [row.entry.displayName];
+  if (row.summary) {
+    for (const t of row.summary.topics) {
+      haystack.push(t.title, t.description);
+    }
+  }
+  const q = query.toLowerCase();
+  return haystack.some((s) => s.toLowerCase().includes(q));
+}
+
 export function ActiveCases({ rows }: { rows: Row[] }) {
+  const [query, setQuery] = useState("");
+
+  const filtered = useMemo(
+    () => rows.filter((row) => rowMatches(row, query.trim())),
+    [rows, query],
+  );
+
   if (rows.length === 0) return null;
+
+  const showSearch = rows.length > 1;
 
   return (
     <Stack gap="0" w="full">
-      <Eyebrow pl="0" pb="3">
-        Active cases · {rows.length}
-      </Eyebrow>
-      <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
-        {rows.map((row) => (
-          <CaseRow key={row.entry.caseId} row={row} />
-        ))}
-      </Stack>
+      <HStack
+        align="center"
+        justify="space-between"
+        gap="4"
+        pb="4"
+        wrap="wrap"
+      >
+        <Eyebrow pl="0" pb="0">
+          Active cases · {filtered.length}
+          {filtered.length !== rows.length ? ` of ${rows.length}` : ""}
+        </Eyebrow>
+        {showSearch && (
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search cases"
+            size="sm"
+            maxW="280px"
+            fontFamily="body"
+            fontSize="13px"
+            lineHeight="15px"
+            px="3"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="lg"
+            bg="bg"
+            color="fg"
+            _placeholder={{ color: "fg.muted" }}
+            _hover={{ bg: "bg.subtle" }}
+            _focusVisible={{
+              outline: "none",
+              bg: "bg",
+              borderColor: "border.strong",
+            }}
+            aria-label="Search cases"
+          />
+        )}
+      </HStack>
+      {filtered.length === 0 ? (
+        <Box
+          py="8"
+          borderTopWidth="1px"
+          borderColor="border.muted"
+        >
+          <Text
+            fontFamily="body"
+            fontSize="14px"
+            lineHeight="20px"
+            color="fg.muted"
+          >
+            No cases match &ldquo;{query}&rdquo;.
+          </Text>
+        </Box>
+      ) : (
+        <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
+          {filtered.map((row) => (
+            <CaseRow key={row.entry.caseId} row={row} />
+          ))}
+        </Stack>
+      )}
     </Stack>
   );
 }

@@ -1,6 +1,5 @@
-import { Container, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box, Container, Heading, Stack, Text } from "@chakra-ui/react";
 import type { Metadata } from "next";
-import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 
 export const metadata: Metadata = {
   title: "About · Palantir for the People",
@@ -8,63 +7,122 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <Container maxW="6xl" pb="20">
-      <Breadcrumbs
-        items={[{ label: "Dashboard", href: "/" }, { label: "About" }]}
-      />
-      <Stack gap="10" pt="2">
-        <Stack gap="3">
-          <Heading
-            as="h1"
-            fontFamily="heading"
-            fontWeight="400"
-            letterSpacing="tight"
-            fontSize={{ base: "32px", md: "44px" }}
-            lineHeight="1.05"
-          >
-            About the wire
-          </Heading>
-          <Eyebrow>What it is, what it is not</Eyebrow>
+    <Container maxW="3xl" pb="20">
+      <Stack gap="0" pt={{ base: "8", md: "12" }}>
+        <RedEyebrow>About</RedEyebrow>
+
+        <Heading
+          as="h1"
+          fontFamily="heading"
+          fontWeight="600"
+          letterSpacing="-0.01em"
+          fontSize={{ base: "44px", md: "60px" }}
+          lineHeight="1"
+          color="fg"
+          pt="3"
+        >
+          About Palantir for the People
+        </Heading>
+
+        <Text
+          as="p"
+          fontFamily="body"
+          fontSize={{ base: "18px", md: "20px" }}
+          lineHeight="30px"
+          color="fg.muted"
+          pt="4"
+          pb="6"
+          maxW="62ch"
+        >
+          Palantir for the People is a verification tool for newsrooms. It
+          helps journalists assess whistleblower claims and source documents
+          using a transparent agent that grades evidence and surfaces the
+          strongest leads first.
+        </Text>
+
+        <Box
+          borderTopWidth="3px"
+          borderColor="fg"
+          mt="2"
+          mb="10"
+        />
+
+        <Stack gap="6" maxW="62ch">
+          <Prose>
+            Authoritarian regimes, captured institutions, and corrupt private
+            actors depend on opacity to function. The people closest to
+            wrongdoing (civil servants, contractors, NGO staff, family
+            members) usually know what is happening before any journalist
+            does. Few of them come forward, and the few who do arrive at
+            newsrooms with folders of unstructured material that overworked
+            desks rarely have the time to read in full.
+          </Prose>
+          <Prose fontWeight="600" color="fg">
+            Palantir for the People is the verification layer between the
+            source and the desk.
+          </Prose>
         </Stack>
 
-        <Section eyebrow="What this is">
+        <Section eyebrow="What we do">
           <Prose>
-            The wire ingests plain-text corpora (leaks, transcripts, FOIA
-            returns, raw notes) and returns a triaged, categorized read on
-            which threads to pull first. It is built for people on a deadline:
-            newsroom investigations, intelligence and fraud analysts,
-            regulatory tip-line reviewers, internal-affairs intake.
+            Journalists upload documents, transcripts, leaked memos, and
+            notes. The agent reads each document, assigns it to a topic, and
+            grades it against an open set of heuristics: sensitivity, claim
+            support, classification rationale, and others that the model
+            generates as it goes. Every grading carries a short description
+            so the reporter can see, in plain language, why the heuristic
+            fired and at what severity.
           </Prose>
           <Prose>
-            The user uploads. The system grades. The user navigates the
-            result fastest first. Success is measured in the speed and
-            confidence of the next action: opening the right document,
-            escalating the right topic, killing the rest.
+            Topics roll up to a case. The case lands on the dashboard ranked
+            fastest first: high severity at the top, low severity at the
+            bottom. The reporter walks the queue and stops where the
+            evidence stops being defensible.
+          </Prose>
+        </Section>
+
+        <Section eyebrow="What we produce">
+          <Prose>
+            Triaged topics, graded documents, and named heuristics with
+            descriptions. We do not write, summarize, or recommend. We
+            grade. The reporter is the editor.
           </Prose>
         </Section>
 
         <Section eyebrow="What this is not">
           <Prose>
-            Not a chat assistant. Not a generator. Not a summarizer that
-            performs intelligence rather than producing it. The output is
-            structured triage, not prose.
+            Not a tip line for anonymous submitters. Not a publication. Not
+            a substitute for reporting, calling sources, or verifying
+            documents in the field. A high triage is the start of the work,
+            not the end of it. A low triage is the back of the queue, not a
+            clearance.
           </Prose>
           <Prose>
-            The model is plumbing. Judgment is the product. The wire never
-            personifies, never narrates, never decorates its work. It fires
-            the rules, assigns severity, and gets out of the way.
+            We are also not the model. The model is a working part of the
+            grading pipeline. It is replaceable, auditable, and does not
+            speak for the product.
           </Prose>
         </Section>
 
-        <Section eyebrow="Who runs it">
-          {/* TODO: replace with real attribution before public launch. */}
+        <Section eyebrow="Governance">
           <Prose>
-            Built as an independent project by Erik. Editorial direction,
-            heuristic curation, and product calls are made in-house. Methods
-            are documented on the{" "}
-            <InlineLink href="/methodology">methodology page</InlineLink>; new
-            rules ship as cases reveal patterns the existing set misses.
+            Palantir for the People is built as an independent project. The
+            grading methodology is documented on the{" "}
+            <InlineLink href="/methodology">methodology page</InlineLink> and
+            the codebase is open to inspection.
           </Prose>
+          <Prose>
+            We accept no advertising, no government contracts, and no
+            donations from named subjects of submitted documents.
+          </Prose>
+        </Section>
+
+        <Section eyebrow="Contact">
+          <Prose>
+            {/* TODO: replace with real contact addresses before public launch. */}
+            For press: press@palantirforthepeople.org
+          </Prose>
+          <Prose>Source code: github.com/swedishfrenchpress/thewire-ui</Prose>
         </Section>
       </Stack>
     </Container>
@@ -80,14 +138,33 @@ function Section({
 }) {
   return (
     <Stack
-      gap="5"
-      pt="6"
+      gap="4"
+      pt="8"
+      mt="8"
       borderTopWidth="1px"
       borderColor="border.muted"
+      maxW="62ch"
     >
       <Eyebrow>{eyebrow}</Eyebrow>
       <Stack gap="4">{children}</Stack>
     </Stack>
+  );
+}
+
+function RedEyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <Text
+      as="span"
+      fontFamily="mono"
+      fontSize="11px"
+      lineHeight="13px"
+      letterSpacing="wider"
+      textTransform="uppercase"
+      fontWeight="600"
+      color="fg.attention"
+    >
+      {children}
+    </Text>
   );
 }
 
@@ -100,23 +177,31 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
       lineHeight="13px"
       letterSpacing="wider"
       textTransform="uppercase"
-      fontWeight="500"
-      color="fg.muted"
+      fontWeight="600"
+      color="fg"
     >
       {children}
     </Text>
   );
 }
 
-function Prose({ children }: { children: React.ReactNode }) {
+function Prose({
+  children,
+  fontWeight = "400",
+  color = "fg",
+}: {
+  children: React.ReactNode;
+  fontWeight?: string;
+  color?: string;
+}) {
   return (
     <Text
       as="p"
       fontFamily="body"
       fontSize="16px"
       lineHeight="26px"
-      color="fg"
-      maxW="65ch"
+      color={color}
+      fontWeight={fontWeight}
     >
       {children}
     </Text>

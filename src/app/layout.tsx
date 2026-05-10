@@ -4,7 +4,7 @@ import { JetBrains_Mono } from "next/font/google";
 import { Provider } from "@/components/Provider";
 import { QueryProvider } from "@/components/QueryProvider";
 import { Toaster } from "@/components/Toaster";
-import { TopBar } from "@/components/dashboard/TopBar";
+import { SiteHeader } from "@/components/dashboard/SiteHeader";
 import "./globals.css";
 
 // Heading: Newsreader (locally hosted, OFL-licensed editorial serif from Google).
@@ -57,7 +57,7 @@ export default function RootLayout({
       <body>
         <Provider>
           <QueryProvider>
-            <TopBar />
+            <SiteHeader />
             {children}
             <Toaster />
           </QueryProvider>
