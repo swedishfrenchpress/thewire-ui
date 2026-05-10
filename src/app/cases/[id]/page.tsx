@@ -17,6 +17,10 @@ import {
 import NextLink from "next/link";
 import { useParams } from "next/navigation";
 import {
+  TriageFilterIndicator,
+  useTriageFilter,
+} from "@/components/TriageFilterIndicator";
+import {
   type KeyboardEvent,
   type MouseEvent,
   Suspense,
@@ -532,6 +536,44 @@ function TopicsSection({
   caseId: number;
   topics: TopicSummary[];
 }) {
+  const triage = useTriageFilter();
+
+  if (triage !== null) {
+    const filtered = topics.filter((t) => t.triage === triage);
+    return (
+      <Stack gap="4">
+        <SectionHeading label={`Topics · ${topics.length}`} />
+        <TriageFilterIndicator
+          rating={triage}
+          shown={filtered.length}
+          total={topics.length}
+        />
+        {filtered.length === 0 ? (
+          <Text
+            as="p"
+            fontFamily="body"
+            fontSize="14px"
+            lineHeight="20px"
+            color="fg.muted"
+          >
+            No topics at {triage} priority.
+          </Text>
+        ) : (
+          <Stack gap="0">
+            {filtered.map((t, i) => (
+              <TopicRow
+                key={t.id}
+                topic={t}
+                caseId={caseId}
+                isFirst={i === 0}
+              />
+            ))}
+          </Stack>
+        )}
+      </Stack>
+    );
+  }
+
   const grouped = topics.length >= GROUPING_THRESHOLD;
 
   if (!grouped) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, HStack, Text } from "@chakra-ui/react";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { ActiveCases } from "@/components/dashboard/ActiveCases";
 import { OrbHero } from "@/components/landing/OrbHero";
 import { TipComposer } from "@/components/landing/TipComposer";
@@ -32,7 +32,9 @@ export default function HomePage() {
             lastFilingAgeMs={signal.lastFilingAgeMs}
           />
           <Box pt="6">
-            <ActiveCases rows={rows} />
+            <Suspense fallback={null}>
+              <ActiveCases rows={rows} />
+            </Suspense>
           </Box>
         </Box>
       )}

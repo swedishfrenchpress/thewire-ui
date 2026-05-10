@@ -7,7 +7,7 @@ import { Dialog } from "@/components/Dialog";
 
 const G_PREFIX_TIMEOUT_MS = 1000;
 
-type Scope = "anywhere" | "list" | "home";
+type Scope = "anywhere" | "list" | "triage" | "home";
 
 type Shortcut = {
   keys: string[];
@@ -21,9 +21,29 @@ const SHORTCUTS: Shortcut[] = [
   { keys: ["j"], label: "Next row", scope: "list" },
   { keys: ["k"], label: "Previous row", scope: "list" },
   { keys: ["Enter"], label: "Open focused row", scope: "list" },
+  { keys: ["1"], label: "Filter to high", scope: "triage" },
+  { keys: ["2"], label: "Filter to medium", scope: "triage" },
+  { keys: ["3"], label: "Filter to low", scope: "triage" },
+  { keys: ["0"], label: "Clear triage filter", scope: "triage" },
   { keys: ["/"], label: "Focus search", scope: "home" },
   { keys: ["Esc"], label: "Clear search and focus", scope: "home" },
 ];
+
+type TriageRating = "high" | "medium" | "low";
+
+const TRIAGE_KEY: Record<string, TriageRating> = {
+  "1": "high",
+  "2": "medium",
+  "3": "low",
+};
+
+function isTriageSurface(pathname: string): boolean {
+  return (
+    pathname === "/" ||
+    /^\/cases\/\d+/.test(pathname) ||
+    /^\/topic\/\d+/.test(pathname)
+  );
+}
 
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
@@ -76,6 +96,23 @@ export function KeyboardShortcuts() {
 
   const onHome = pathname === "/";
   const rowSelector = getRowSelector(pathname);
+  const triageSurface = isTriageSurface(pathname);
+
+  const setTriageParam = useCallback(
+    (rating: TriageRating | null) => {
+      const url = new URL(window.location.href);
+      if (rating === null) {
+        url.searchParams.delete("triage");
+      } else {
+        url.searchParams.set("triage", rating);
+      }
+      const search = url.searchParams.toString();
+      router.replace(`${url.pathname}${search ? `?${search}` : ""}`, {
+        scroll: false,
+      });
+    },
+    [router],
+  );
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
@@ -125,6 +162,19 @@ export function KeyboardShortcuts() {
         return;
       }
 
+      if (triageSurface) {
+        if (e.key in TRIAGE_KEY) {
+          e.preventDefault();
+          setTriageParam(TRIAGE_KEY[e.key]);
+          return;
+        }
+        if (e.key === "0") {
+          e.preventDefault();
+          setTriageParam(null);
+          return;
+        }
+      }
+
       if (!rowSelector) return;
 
       if (e.key === "j") {
@@ -137,7 +187,7 @@ export function KeyboardShortcuts() {
         return;
       }
     },
-    [onHome, rowSelector, router, showCheat],
+    [onHome, rowSelector, router, setTriageParam, showCheat, triageSurface],
   );
 
   useEffect(() => {
@@ -170,6 +220,11 @@ function CheatOverlay({
             </Section>
             <Section title="Lists · home, case, topic">
               {SHORTCUTS.filter((s) => s.scope === "list").map((s) => (
+                <Row key={s.keys.join("+")} keys={s.keys} label={s.label} />
+              ))}
+            </Section>
+            <Section title="Triage · home, case, topic">
+              {SHORTCUTS.filter((s) => s.scope === "triage").map((s) => (
                 <Row key={s.keys.join("+")} keys={s.keys} label={s.label} />
               ))}
             </Section>

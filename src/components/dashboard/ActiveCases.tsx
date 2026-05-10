@@ -2,7 +2,12 @@
 
 import { Box, Stack, Text } from "@chakra-ui/react";
 import { useMemo, useState } from "react";
-import { compareCases, type Row } from "@/lib/triage";
+import {
+  TriageFilterIndicator,
+  useTriageFilter,
+} from "@/components/TriageFilterIndicator";
+import { compareCases, topTriage, type Row } from "@/lib/triage";
+import type { Rating } from "@/lib/types";
 import { CaseListRow } from "./CaseListRow";
 import {
   DeskFilters,
@@ -46,14 +51,21 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
   const [query, setQuery] = useState("");
   const [dateFilter, setDateFilter] = useState<DateFilter>("all");
   const [sort, setSort] = useState<DeskSort>("topTriage");
+  const triage = useTriageFilter();
 
   const filtered = useMemo(() => {
     const cutoff = dateFilterCutoff(dateFilter, Date.now());
     const q = query.trim();
-    return rows.filter(
-      (row) => dateMatches(row, cutoff) && rowMatches(row, q),
-    );
-  }, [rows, query, dateFilter]);
+    return rows.filter((row) => {
+      if (!dateMatches(row, cutoff)) return false;
+      if (!rowMatches(row, q)) return false;
+      if (triage !== null) {
+        if (!row.summary) return false;
+        if (topTriage(row.summary.topics) !== triage) return false;
+      }
+      return true;
+    });
+  }, [rows, query, dateFilter, triage]);
 
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
@@ -95,9 +107,17 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
         />
       </Box>
 
+      {triage !== null && (
+        <TriageFilterIndicator
+          rating={triage}
+          shown={sorted.length}
+          total={rows.length}
+        />
+      )}
+
       {sorted.length === 0 ? (
         <Box
-          key={`empty|${query}|${dateFilter}`}
+          key={`empty|${query}|${dateFilter}|${triage ?? "all"}`}
           borderTopWidth="1px"
           borderColor="border.muted"
           pt="6"
@@ -123,7 +143,7 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
             color="fg"
             pt="2"
           >
-            {emptyReason(query, dateFilter)}
+            {emptyReason(query, dateFilter, triage)}
           </Text>
         </Box>
       ) : (
@@ -144,9 +164,14 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
   );
 }
 
-function emptyReason(query: string, dateFilter: DateFilter): string {
+function emptyReason(
+  query: string,
+  dateFilter: DateFilter,
+  triage: Rating | null,
+): string {
   const trimmed = query.trim();
   if (trimmed.length > 0) return `No cases match "${trimmed}".`;
   if (dateFilter !== "all") return "No cases in this date range.";
+  if (triage !== null) return `No cases at ${triage} priority.`;
   return "No cases match.";
 }
