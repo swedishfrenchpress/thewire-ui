@@ -163,15 +163,28 @@ function CaseDetail() {
         <TopicSkeletonList progress={{ topicsInferred: data.topics.length }} />
       ) : sorted.length === 0 ? (
         data.status === "complete" && (
-          <Box
+          <Stack
+            gap="1.5"
             borderTopWidth="1px"
             borderColor="border.muted"
             pt="6"
           >
+            <Text
+              as="span"
+              fontFamily="mono"
+              fontSize="11px"
+              lineHeight="13px"
+              letterSpacing="wider"
+              textTransform="uppercase"
+              fontWeight="500"
+              color="fg.muted"
+            >
+              Filed clean
+            </Text>
             <Text fontSize="14px" color="fg.muted">
               No topics were inferred for this case.
             </Text>
-          </Box>
+          </Stack>
         )
       ) : (
         <Box

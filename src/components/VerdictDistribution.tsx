@@ -115,6 +115,7 @@ export function VerdictDistributionView({
                 fontWeight="600"
                 whiteSpace="nowrap"
                 overflow="hidden"
+                fontVariantNumeric="tabular-nums"
                 title={`${VERDICT_LABELS[seg.verdict]} ${seg.pct.toFixed(0)}% (${seg.count})`}
               >
                 {VERDICT_LABELS[seg.verdict]} {seg.pct.toFixed(0)}%
