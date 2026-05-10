@@ -40,8 +40,42 @@ const mono = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+const SITE_DESCRIPTION =
+  "A verification tool for newsrooms. A transparent agent grades whistleblower claims and source documents, then surfaces the strongest leads first.";
+
 export const metadata: Metadata = {
   title: "Palantir for the People",
+  description: SITE_DESCRIPTION,
+  applicationName: "Palantir for the People",
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Palantir for the People",
+    title: "Palantir for the People",
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Palantir for the People",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Palantir for the People",
+    description: SITE_DESCRIPTION,
+    images: ["/opengraph-image.png"],
+  },
 };
 
 export default function RootLayout({
