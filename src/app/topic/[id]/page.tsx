@@ -54,8 +54,16 @@ function sortHeuristics(heuristics: Heuristic[]): Heuristic[] {
 
 function HeuristicBullet({ h }: { h: Heuristic }) {
   return (
-    <Box display="flex" gap="3" alignItems="baseline">
-      <Box flexShrink={0} pt="1">
+    <Box
+      display="grid"
+      gridTemplateColumns={{
+        base: "72px minmax(0, 1fr)",
+        sm: "88px minmax(0, 1fr)",
+      }}
+      gap="3"
+      alignItems="start"
+    >
+      <Box pt="0.5">
         <HeuristicChip
           name={h.name}
           rating={h.rating}
@@ -63,7 +71,7 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
           signal={h.signal}
         />
       </Box>
-      <Stack gap="1.5" minW="0" flex="1">
+      <Stack gap="1.5" minW="0">
         <Box>
           <HeuristicName name={h.name} />
         </Box>
