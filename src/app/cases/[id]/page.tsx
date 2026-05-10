@@ -31,6 +31,7 @@ import {
 import { Dialog } from "@/components/Dialog";
 import { HelperText } from "@/components/HelperText";
 import { TriageTag } from "@/components/TriageTag";
+import { WireTime } from "@/components/WireTime";
 import { InfoTip } from "@/components/shared/InfoTip";
 import {
   CaseCardMenu,
@@ -38,7 +39,6 @@ import {
 } from "@/components/dashboard/CaseCardMenu";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { type CaseEntry, casesStore } from "@/lib/cases-store";
-import { formatRelative } from "@/lib/format";
 import { formatElapsed, useCase } from "@/lib/hooks/useCase";
 import { TRIAGE_RANK, topTriage } from "@/lib/triage";
 import type { CaseSummary, Rating, TopicSummary } from "@/lib/types";
@@ -78,13 +78,6 @@ function prettifyDisplayName(name: string): string {
   const spaced = name.replace(/[-_]+/g, " ");
   if (spaced.length === 0) return spaced;
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
-}
-
-function formatCreatedRelative(iso: string): string {
-  const rel = formatRelative(iso);
-  if (rel === "just now") return "Just now";
-  if (rel === "—") return "—";
-  return `${rel} ago`;
 }
 
 function CaseDetail() {
@@ -375,7 +368,7 @@ function StatusStrip({
       </HStack>
       <Sep />
       <Text as="span" fontFamily="mono" fontSize="11px" lineHeight="13px">
-        {formatCreatedRelative(createdAt)}
+        <WireTime iso={createdAt} eyebrow="Filed" />
       </Text>
       <Sep />
       <Text as="span" fontFamily="mono" fontSize="11px" lineHeight="13px">
