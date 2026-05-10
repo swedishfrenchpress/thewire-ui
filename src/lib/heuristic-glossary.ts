@@ -3,7 +3,7 @@
 // The grading API returns a per-instance `description` string ("7 factual
 // claim(s) extracted in this topic.") which tells the reader the *value*
 // the heuristic took on. It does not tell the reader what the heuristic
-// *is* or what HIGH / MEDIUM / LOW mean for that specific signal. This
+// *is* or what the verdict bands mean for that specific signal. This
 // glossary supplies that — short, declarative, derived from API behavior
 // and from the published methodology.
 //
@@ -23,7 +23,7 @@ const REGISTRY: Record<string, HeuristicDefinition> = {
     measures:
       "The highest sensitivity rating any document in this topic received, on a four-point scale.",
     bands:
-      "Drives the topic's triage. Level 1 maps to LOW, level 2 to MEDIUM, levels 3 and 4 to HIGH.",
+      "Drives the topic's triage. Level 1 reads as Calm, level 2 as Notable, levels 3 and 4 as Severe.",
   },
   claims: {
     measures:
@@ -41,13 +41,13 @@ const REGISTRY: Record<string, HeuristicDefinition> = {
     measures:
       "The agent's plain-language judgment of why this topic matters editorially.",
     bands:
-      "LOW reads as opinion or context. MEDIUM is worth a look. HIGH carries specific allegations of wrongdoing or risk.",
+      "Light reads as opinion or context. Moderate is worth a look. Heavy carries specific allegations of wrongdoing or risk.",
   },
   evidence_quality: {
     measures:
       "Quality of the underlying evidence: sourcing, specificity, corroboration.",
     bands:
-      "Caps the topic's triage. LOW evidence holds the topic at LOW even if a claim sounds severe.",
+      "Caps the topic's triage. Weak evidence holds the topic at a low verdict even if a claim sounds severe.",
   },
 
   // --- Document-level signals (returned on /topics/{id}/documents) ---
@@ -55,41 +55,41 @@ const REGISTRY: Record<string, HeuristicDefinition> = {
     measures:
       "Internal coherence of the document's argumentation and stated facts.",
     bands:
-      "HIGH means coherent and self-consistent. LOW means contradictions or significant logical gaps.",
+      "Solid means coherent and self-consistent. Inconsistent means contradictions or significant logical gaps.",
   },
   references: {
     measures:
       "Verifiable specifics in the document: named entities, dates, document numbers, transactions.",
     bands:
-      "HIGH means many checkable details. LOW means abstractions and unsourced claims.",
+      "Sourced means many checkable details. Unsourced means abstractions and unsupported claims.",
   },
   emotive_language: {
     measures: "Use of inflammatory or emotionally charged language.",
     bands:
-      "HIGH means a polemic register. LOW means neutral, procedural prose.",
+      "Charged means a polemic register. Even means neutral, procedural prose.",
   },
   emotive: {
     measures: "Use of inflammatory or emotionally charged language.",
     bands:
-      "HIGH means a polemic register. LOW means neutral, procedural prose.",
+      "Charged means a polemic register. Even means neutral, procedural prose.",
   },
   ideology_or_incentives: {
     measures:
       "Whether the document is agenda-driven or framed by partisan incentives.",
     bands:
-      "HIGH means strongly ideological framing. LOW means descriptive and even-handed.",
+      "Slanted means strongly ideological framing. Neutral means descriptive and even-handed.",
   },
   ideology: {
     measures:
       "Whether the document is agenda-driven or framed by partisan incentives.",
     bands:
-      "HIGH means strongly ideological framing. LOW means descriptive and even-handed.",
+      "Slanted means strongly ideological framing. Neutral means descriptive and even-handed.",
   },
   claim_supported: {
     measures:
       "For an extracted factual claim, whether the agent could find supporting evidence.",
     bands:
-      "HIGH means corroborated by independent sources. LOW means contradicted or unverifiable.",
+      "Backed means corroborated by independent sources. Unbacked means contradicted or unverifiable.",
   },
 };
 

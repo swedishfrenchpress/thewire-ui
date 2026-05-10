@@ -231,7 +231,7 @@ function HeuristicList() {
               <Mono>{h.name}</Mono>
             </Box>
             <Box flexShrink={0}>
-              <HeuristicChip name={h.name} rating={h.rating} />
+              <HeuristicChip name={h.name} rating={h.rating} description={h.description} />
             </Box>
             <Text textStyle="body.md" color="fg" flex="1">
               {h.description}

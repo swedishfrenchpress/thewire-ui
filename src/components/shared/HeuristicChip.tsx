@@ -2,7 +2,11 @@
 
 import { Box } from "@chakra-ui/react";
 import { polarityFor, type Polarity } from "@/lib/heuristic-polarity";
-import { RATING_SHORT_LABEL } from "@/lib/triage";
+import {
+  countLabelFor,
+  extractLeadingCount,
+  vocabularyFor,
+} from "@/lib/heuristic-vocabulary";
 import type { Rating } from "@/lib/types";
 
 type ToneStyle = { bg: string; color: string; border: string };
@@ -50,11 +54,16 @@ function toneFor(polarity: Polarity, rating: Rating): ToneStyle {
 type Props = {
   name: string;
   rating: Rating;
+  // Optional. Count metrics (claims, validation) embed a number in the
+  // description ("7 factual claim(s)…"); when present we render the number
+  // instead of a level word.
+  description?: string;
 };
 
-export function HeuristicChip({ name, rating }: Props) {
+export function HeuristicChip({ name, rating, description }: Props) {
   const polarity = polarityFor(name);
   const tone = toneFor(polarity, rating);
+  const label = labelFor(name, rating, polarity, description);
 
   return (
     <Box
@@ -71,7 +80,23 @@ export function HeuristicChip({ name, rating }: Props) {
       fontWeight="600"
       borderRadius="sm"
     >
-      {RATING_SHORT_LABEL[rating]}
+      {label}
     </Box>
   );
+}
+
+function labelFor(
+  name: string,
+  rating: Rating,
+  polarity: Polarity,
+  description: string | undefined,
+): string {
+  if (polarity === "unknown" && description) {
+    const count = extractLeadingCount(description);
+    if (count !== null) {
+      const unit = countLabelFor(name, count);
+      if (unit) return `${count} ${unit}`;
+    }
+  }
+  return vocabularyFor(name, rating);
 }

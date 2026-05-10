@@ -17,14 +17,14 @@ import { HelperText } from "@/components/HelperText";
 import { TriageDistribution } from "@/components/TriageDistribution";
 import { HeuristicChip } from "@/components/shared/HeuristicChip";
 import { HeuristicName } from "@/components/shared/HeuristicName";
-import { TriageTag } from "@/components/TriageTag";
+import { VerdictTag } from "@/components/VerdictTag";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { getTopic, getTopicDocuments } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
 import {
-  TRIAGE_LABELS,
+  VERDICT_LABELS,
   distributeHeuristics,
-  documentTriage,
+  documentVerdict,
 } from "@/lib/triage";
 import type { DocumentRecord, Heuristic } from "@/lib/types";
 
@@ -32,7 +32,7 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
   return (
     <Box display="flex" gap="3" alignItems="baseline">
       <Box flexShrink={0} pt="1">
-        <HeuristicChip name={h.name} rating={h.rating} />
+        <HeuristicChip name={h.name} rating={h.rating} description={h.description} />
       </Box>
       <Stack gap="1.5" minW="0" flex="1">
         <Box>
@@ -199,7 +199,7 @@ function DocumentContent() {
     );
   }
 
-  const overall = documentTriage(doc);
+  const verdict = documentVerdict(doc);
   const lines = doc.content.split("\n").length;
   const chars = doc.content.length;
   const facts = doc.facts_to_verify ?? [];
@@ -208,7 +208,7 @@ function DocumentContent() {
     <Stack gap="10">
       <Stack gap="3">
         <Box display="flex" alignItems="center" gap="3" flexWrap="wrap">
-          <TriageTag rating={overall} />
+          <VerdictTag verdict={verdict} />
           <Heading
             as="h1"
             fontFamily="mono"
@@ -223,9 +223,10 @@ function DocumentContent() {
         </Box>
         <Text textStyle="eyebrow" color="fg.muted">
           {doc.heuristics.length} heuristic
-          {doc.heuristics.length === 1 ? "" : "s"} graded · severity{" "}
-          {TRIAGE_LABELS[overall]} · {lines} line{lines === 1 ? "" : "s"} ·{" "}
-          {chars.toLocaleString()} char{chars === 1 ? "" : "s"}
+          {doc.heuristics.length === 1 ? "" : "s"} graded ·{" "}
+          {VERDICT_LABELS[verdict].toLowerCase()} · {lines} line
+          {lines === 1 ? "" : "s"} · {chars.toLocaleString()} char
+          {chars === 1 ? "" : "s"}
         </Text>
       </Stack>
 

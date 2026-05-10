@@ -1,4 +1,5 @@
 import type { CaseEntry } from "@/lib/cases-store";
+import { polarityFor } from "@/lib/heuristic-polarity";
 import type {
   CaseSummary,
   DocumentRecord,
@@ -6,6 +7,18 @@ import type {
   Rating,
   TopicSummary,
 } from "@/lib/types";
+
+// A document's verdict is polarity-aware: it asks "how concerning is this?",
+// not "what's the highest raw rating present?" A document scored entirely on
+// positive-polarity highs (strong evidence, solid consistency) is HEALTHY,
+// not CONCERNING, even though those heuristics are stored as rating="high".
+export type Verdict = "healthy" | "mixed" | "concerning";
+
+export const VERDICT_LABELS: Record<Verdict, string> = {
+  healthy: "Healthy",
+  mixed: "Mixed",
+  concerning: "Concerning",
+};
 
 export const TRIAGE_RANK: Record<Rating, number> = {
   high: 0,
@@ -142,8 +155,39 @@ export function maxSeverity(ratings: Rating[]): Rating | null {
   );
 }
 
+// Polarity-aware document verdict. Counts "bad highs" (negative-polarity
+// rated high, or positive-polarity rated low) and "good highs" (the inverse).
+// Unknown-polarity heuristics (counts like `claims`) don't move the needle.
+export function documentVerdict(doc: { heuristics: Heuristic[] }): Verdict {
+  let bad = 0;
+  let good = 0;
+  for (const h of doc.heuristics) {
+    const polarity = polarityFor(h.name);
+    if (polarity === "unknown") continue;
+    if (h.rating === "medium") continue;
+    const isGood =
+      (polarity === "positive" && h.rating === "high") ||
+      (polarity === "negative" && h.rating === "low");
+    if (isGood) good++;
+    else bad++;
+  }
+  if (bad === 0 && good === 0) return "mixed";
+  if (bad === 0) return "healthy";
+  if (good === 0) return "concerning";
+  return bad > good ? "concerning" : "mixed";
+}
+
+const VERDICT_TO_RATING: Record<Verdict, Rating> = {
+  healthy: "low",
+  mixed: "medium",
+  concerning: "high",
+};
+
+// Rating-shaped projection of the verdict, kept for the distribution machinery
+// (which buckets documents into high/medium/low). The numeric severity rank
+// mirrors the verdict scale: concerning > mixed > healthy.
 export function documentTriage(doc: { heuristics: Heuristic[] }): Rating {
-  return maxSeverity(doc.heuristics.map((h) => h.rating)) ?? "low";
+  return VERDICT_TO_RATING[documentVerdict(doc)];
 }
 
 export interface DistributionSegment {

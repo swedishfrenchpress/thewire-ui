@@ -21,6 +21,7 @@ import { TriageDistribution } from "@/components/TriageDistribution";
 import { HeuristicChip } from "@/components/shared/HeuristicChip";
 import { HeuristicName } from "@/components/shared/HeuristicName";
 import { TriageTag } from "@/components/TriageTag";
+import { VerdictTag } from "@/components/VerdictTag";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { ApiRequestError, getTopic, getTopicDocuments } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
@@ -29,14 +30,9 @@ import { useCase } from "@/lib/hooks/useCase";
 import {
   distributeDocuments,
   distributeHeuristics,
-  documentTriage,
+  documentVerdict,
 } from "@/lib/triage";
-import type {
-  DocumentRecord,
-  Heuristic,
-  Rating,
-  TopicDetail,
-} from "@/lib/types";
+import type { DocumentRecord, Heuristic } from "@/lib/types";
 
 // Order heuristics by how much attention they warrant for the journalist.
 // A negative-polarity HIGH ("sensitivity HIGH") and a positive-polarity LOW
@@ -60,7 +56,7 @@ function HeuristicBullet({ h }: { h: Heuristic }) {
   return (
     <Box display="flex" gap="3" alignItems="baseline">
       <Box flexShrink={0} pt="1">
-        <HeuristicChip name={h.name} rating={h.rating} />
+        <HeuristicChip name={h.name} rating={h.rating} description={h.description} />
       </Box>
       <Stack gap="1.5" minW="0" flex="1">
         <Box>
@@ -128,29 +124,34 @@ function DocumentList({
   if (docs.length === 0) {
     return <HelperText>No documents linked to this topic.</HelperText>;
   }
-  const sorted = [...docs].sort((a, b) => {
-    const ra = documentTriage(a);
-    const rb = documentTriage(b);
-    const order: Record<Rating, number> = { high: 0, medium: 1, low: 2 };
-    return order[ra] - order[rb];
-  });
+  const VERDICT_ORDER = { concerning: 0, mixed: 1, healthy: 2 };
+  const sorted = [...docs].sort(
+    (a, b) => VERDICT_ORDER[documentVerdict(a)] - VERDICT_ORDER[documentVerdict(b)],
+  );
   return (
     <Table.Root>
       <Table.Header>
         <Table.Row>
-          <Table.ColumnHeader width="80px">Triage</Table.ColumnHeader>
+          <Table.ColumnHeader width="100px">Verdict</Table.ColumnHeader>
           <Table.ColumnHeader>Filename</Table.ColumnHeader>
           <Table.ColumnHeader width="160px">Heuristics</Table.ColumnHeader>
         </Table.Row>
       </Table.Header>
       <Table.Body>
         {sorted.map((d) => {
-          const t = documentTriage(d);
-          const highCount = d.heuristics.filter((h) => h.rating === "high").length;
+          const v = documentVerdict(d);
+          const flaggedCount = d.heuristics.filter((h) => {
+            const polarity = polarityFor(h.name);
+            if (polarity === "unknown" || h.rating === "medium") return false;
+            return (
+              (polarity === "negative" && h.rating === "high") ||
+              (polarity === "positive" && h.rating === "low")
+            );
+          }).length;
           return (
             <Table.Row key={d.id}>
               <Table.Cell>
-                <TriageTag rating={t} />
+                <VerdictTag verdict={v} />
               </Table.Cell>
               <Table.Cell>
                 <ChakraLink asChild>
@@ -170,7 +171,7 @@ function DocumentList({
                   >
                     {d.heuristics.length} graded
                   </Text>
-                  {highCount > 0 && (
+                  {flaggedCount > 0 && (
                     <Box
                       as="span"
                       bg="bg.attentionSubtle"
@@ -182,7 +183,7 @@ function DocumentList({
                       borderRadius="sm"
                       fontVariantNumeric="tabular-nums"
                     >
-                      {highCount} HIGH
+                      {flaggedCount} flagged
                     </Box>
                   )}
                 </Box>
