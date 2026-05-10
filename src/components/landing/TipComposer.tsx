@@ -8,8 +8,16 @@ import { HelperText } from "@/components/HelperText";
 import { createCase } from "@/lib/api";
 import { notify } from "@/lib/notify";
 import { casesStore } from "@/lib/cases-store";
-import { formatBytes, readFileAsText } from "@/lib/upload-helpers";
+import {
+  deriveTextFilename,
+  formatBytes,
+  makeTextFile,
+  readFileAsText,
+} from "@/lib/upload-helpers";
 
+type SubmitVars = { selected: File[] };
+
+const MAX_FILES = 5;
 const ACCEPT = "text/plain,.txt,.md";
 
 export function TipComposer() {
@@ -19,24 +27,13 @@ export function TipComposer() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const mutation = useMutation({
-    mutationFn: async ({
-      text,
-      selected,
-    }: {
-      text: string;
-      selected: File[];
-    }) => {
+    mutationFn: async ({ selected }: SubmitVars) => {
       const documents = await Promise.all(
         selected.map(async (f) => ({
           filename: f.name,
           content: await readFileAsText(f),
         })),
       );
-      const trimmed = text.trim();
-      if (trimmed.length > 0) {
-        // TODO: switch to a per-document `description` field when backend ships it.
-        documents.unshift({ filename: "report.txt", content: trimmed });
-      }
       const result = await createCase({ documents });
       return {
         result,
@@ -56,13 +53,30 @@ export function TipComposer() {
     },
   });
 
-  const hasContent = reportText.trim().length > 0 || files.length > 0;
+  const trimmedText = reportText.trim();
+  const hasText = trimmedText.length > 0;
   const disabled = mutation.isPending;
+  const canAddMore = files.length < MAX_FILES;
 
   const onPickFiles = (incoming: FileList | null) => {
     if (!incoming || disabled) return;
-    const next = Array.from(incoming);
-    setFiles(next);
+    setFiles((prev) => {
+      const room = Math.max(0, MAX_FILES - prev.length);
+      if (room === 0) return prev;
+      return [...prev, ...Array.from(incoming).slice(0, room)];
+    });
+    if (inputRef.current) inputRef.current.value = "";
+  };
+
+  const onAddTextAsFile = () => {
+    if (!hasText || disabled || !canAddMore) return;
+    setFiles((prev) => {
+      const noteIndex =
+        prev.filter((f) => /^note-\d+\.txt$/.test(f.name)).length + 1;
+      const filename = deriveTextFilename(trimmedText, noteIndex);
+      return [...prev, makeTextFile(trimmedText, filename)];
+    });
+    setReportText("");
   };
 
   const clearFiles = () => {
@@ -71,8 +85,8 @@ export function TipComposer() {
   };
 
   const onSubmit = () => {
-    if (!hasContent || disabled) return;
-    mutation.mutate({ text: reportText, selected: files });
+    if (files.length === 0 || disabled) return;
+    mutation.mutate({ selected: files });
   };
 
   return (
@@ -138,12 +152,10 @@ export function TipComposer() {
           variant="outline"
           size="sm"
           onClick={() => inputRef.current?.click()}
-          disabled={disabled}
+          disabled={disabled || !canAddMore}
         >
           <PaperclipIcon />
-          {files.length === 0
-            ? "Attach files"
-            : `${files.length} attached`}
+          {files.length === 0 ? "Attach files" : `${files.length} attached`}
         </Button>
         <Text
           fontFamily="body"
@@ -192,11 +204,11 @@ export function TipComposer() {
         variant="solid"
         size="lg"
         w="full"
-        onClick={onSubmit}
+        onClick={hasText ? onAddTextAsFile : onSubmit}
         loading={mutation.isPending}
-        disabled={!hasContent}
+        disabled={hasText ? !canAddMore : files.length === 0}
       >
-        File and grade
+        {hasText ? "Add file" : "Submit for grading"}
       </Button>
     </Stack>
   );
