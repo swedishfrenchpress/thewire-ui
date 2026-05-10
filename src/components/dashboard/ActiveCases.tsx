@@ -16,12 +16,7 @@ import { useMemo, useState, type KeyboardEvent } from "react";
 import { TriageMixBar } from "@/components/shared/TriageMixBar";
 import { casesStore } from "@/lib/cases-store";
 import { coverImageFor } from "@/lib/cover-image";
-import {
-  corroborationScore,
-  topTopic,
-  triageMix,
-  type Row,
-} from "@/lib/triage";
+import { topTopic, triageMix, type Row } from "@/lib/triage";
 
 const MONTHS_FULL = [
   "JANUARY",
@@ -175,7 +170,7 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
                 }
               }
             }}
-            placeholder="Search cases  (press / to focus)"
+            placeholder="Search cases"
             size="sm"
             fontFamily="body"
             fontSize="13px"
@@ -324,7 +319,7 @@ function CaseCard({ row }: { row: Row }) {
               textUnderlineOffset="3px"
               _hover={{ color: "fg.muted" }}
             >
-              Review the case
+              Open case
             </Text>
           </NextLink>
         </Box>
@@ -390,7 +385,7 @@ function CardCover({
 }
 
 function CardMetricRow({ row }: { row: Row }) {
-  const { summary, isError, entry } = row;
+  const { summary, isError } = row;
 
   if (isError || summary?.status === "failed") {
     return (
@@ -418,14 +413,10 @@ function CardMetricRow({ row }: { row: Row }) {
   }
 
   const mix = triageMix(summary.topics);
-  const score = corroborationScore(entry.caseId);
 
   return (
     <HStack gap="3" align="center" wrap="wrap">
       <TriageMixBar mix={mix} />
-      <Text as="span" textStyle="body.sm" color="fg.muted">
-        · {score}% corroboration
-      </Text>
     </HStack>
   );
 }

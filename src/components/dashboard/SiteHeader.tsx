@@ -129,7 +129,7 @@ function AnalyzeTipCell() {
         _hover={{ bg: "neutral.700" }}
       >
         <Text as="span" textStyle="link" fontWeight="600" color="bg">
-          Analyze tip
+          File and grade
         </Text>
       </Box>
     </NextLink>

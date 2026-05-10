@@ -135,7 +135,7 @@ export function TipComposer() {
           <PaperclipIcon />
           {files.length === 0
             ? "Attach files"
-            : `Attached (${files.length})`}
+            : `${files.length} attached`}
         </Button>
         <Text
           fontFamily="body"
@@ -188,7 +188,7 @@ export function TipComposer() {
         loading={mutation.isPending}
         disabled={!hasContent}
       >
-        Analyze tip
+        File and grade
       </Button>
     </Stack>
   );

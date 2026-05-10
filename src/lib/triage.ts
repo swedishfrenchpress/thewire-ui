@@ -33,15 +33,6 @@ export function triageMix(topics: TopicSummary[]): TriageMixCounts {
   return out;
 }
 
-// Placeholder corroboration score (0-100) until the API returns one per topic.
-// Deterministic from caseId so the same case shows the same number across renders.
-// Range biased to 60-95 for plausible demo values; tighten or widen when real
-// scores arrive.
-export function corroborationScore(caseId: number): number {
-  const mixed = Math.imul(caseId | 0, 2654435761) >>> 0;
-  return 60 + (mixed % 36);
-}
-
 export function topTriage(topics: TopicSummary[]): Rating | null {
   if (topics.length === 0) return null;
   let best: Rating = "low";

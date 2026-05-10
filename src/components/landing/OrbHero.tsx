@@ -47,7 +47,7 @@ export function OrbHero() {
           letterSpacing="tight"
           color="fg"
         >
-          Submit a tip
+          File a report
         </Heading>
       </Stack>
     </Box>

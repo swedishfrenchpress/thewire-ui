@@ -79,7 +79,9 @@ function CaseDetail() {
   const { data, isLoading, isError, refetch, isFetching } = query;
 
   if (!caseIdValid) {
-    return <HelperText tone="error">Invalid case id.</HelperText>;
+    return (
+      <HelperText tone="error">Case id is missing or invalid.</HelperText>
+    );
   }
   if (isLoading) return <HelperText>Loading…</HelperText>;
   if (isError) {
@@ -134,7 +136,8 @@ function CaseDetail() {
       {isProcessing && cappedOut && (
         <Stack gap="3">
           <HelperText tone="warning">
-            Still processing. Refresh to check again.
+            Still processing. The case has run past the usual cap; refresh to
+            check again.
           </HelperText>
           <Button
             variant="outline"
@@ -411,7 +414,7 @@ function AtAGlance({
         gap={{ base: "4", md: "8" }}
         alignItems="center"
       >
-        <Stat label="Top triage" value={top ? <TriageTag rating={top} /> : "—"} />
+        <Stat label="Highest triage" value={top ? <TriageTag rating={top} /> : "—"} />
         <Stat
           label={`Topics · ${total}`}
           value={<TriageMix mix={mix} />}

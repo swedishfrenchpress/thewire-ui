@@ -19,9 +19,9 @@ const SHORTCUTS: Shortcut[] = [
   { keys: ["j"], label: "Next case", scope: "home" },
   { keys: ["k"], label: "Previous case", scope: "home" },
   { keys: ["Enter"], label: "Open focused case", scope: "home" },
-  { keys: ["Esc"], label: "Clear search and selection", scope: "home" },
+  { keys: ["Esc"], label: "Clear search and focus", scope: "home" },
   { keys: ["g", "d"], label: "Go to dashboard", scope: "global" },
-  { keys: ["?"], label: "Show this help", scope: "global" },
+  { keys: ["?"], label: "Show shortcuts", scope: "global" },
 ];
 
 function isEditableTarget(target: EventTarget | null): boolean {

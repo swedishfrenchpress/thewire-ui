@@ -245,7 +245,7 @@ function DocumentContent() {
   if (!idsValid) {
     return (
       <HelperText tone="error">
-        Missing or invalid ids in URL (need ?case= and ?topic=).
+        This document page needs a case and a topic. Open it from a topic.
       </HelperText>
     );
   }
@@ -282,7 +282,7 @@ function DocumentContent() {
         </Box>
         <Text textStyle="eyebrow" color="fg.muted">
           {doc.heuristics.length} heuristic
-          {doc.heuristics.length === 1 ? "" : "s"} fired · severity{" "}
+          {doc.heuristics.length === 1 ? "" : "s"} graded · severity{" "}
           {TRIAGE_LABELS[overall]}
         </Text>
       </Stack>
@@ -296,10 +296,10 @@ function DocumentContent() {
           <Stack gap="6">
             <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
               <Text textStyle="eyebrow" color="fg.muted" pt="4" pb="2">
-                What this document fires on
+                Signals from this document
               </Text>
               {doc.heuristics.length === 0 ? (
-                <Text color="fg.muted">No heuristics returned.</Text>
+                <Text color="fg.muted">The agent did not emit heuristics here.</Text>
               ) : (
                 <Stack gap="5" pt="2" maxW="65ch">
                   {doc.heuristics.map((h) => (

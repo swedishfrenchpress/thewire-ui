@@ -49,7 +49,7 @@ export function OverviewPanel({ rows }: { rows: Row[] }) {
           <BigValue>{String(documentsAnalyzed)}</BigValue>
         </MetricColumn>
 
-        <MetricColumn label="High triage topics">
+        <MetricColumn label="Topics rated HIGH">
           <BigValue tone={highTriageTopics > 0 ? "attention" : "default"}>
             {pad(highTriageTopics)}
           </BigValue>

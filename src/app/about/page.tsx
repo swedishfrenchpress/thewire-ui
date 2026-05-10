@@ -70,8 +70,8 @@ export default function AboutPage() {
             grades it against an open set of heuristics: sensitivity, claim
             support, classification rationale, and others that the model
             generates as it goes. Every grading carries a short description
-            so the reporter can see, in plain language, why the heuristic
-            fired and at what severity.
+            so the reporter can see, in plain language, what the heuristic
+            measured and how the agent graded it.
           </Prose>
           <Prose>
             Topics roll up to a case. The case lands on the dashboard ranked

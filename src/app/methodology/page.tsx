@@ -80,7 +80,7 @@ export default function MethodologyPage() {
             (for example, <Mono>sensitivity</Mono>,{" "}
             <Mono>claim_supported</Mono>), a rating in{" "}
             <Mono>high / medium / low</Mono>, and a description that
-            explains in plain language why it fired.
+            explains in plain language how the agent reached that grade.
           </Prose>
           <Prose>
             The heuristic set is open: the agent generates the names it
@@ -97,7 +97,7 @@ export default function MethodologyPage() {
           <Prose>
             Every topic carries a sensitivity level on a four-point scale.
             Sensitivity is derived from the highest-sensitivity heuristic
-            the agent fired on any document in that topic, for that case.
+            the agent returned for any document in that topic, for that case.
             The mapping to a triage rating is fixed:
           </Prose>
           <SensitivityTable />

@@ -301,7 +301,7 @@ function DocumentList({
                     color="fg.muted"
                     fontVariantNumeric="tabular-nums"
                   >
-                    {d.heuristics.length} fired
+                    {d.heuristics.length} graded
                   </Text>
                   {highCount > 0 && (
                     <Box
@@ -404,10 +404,16 @@ function TopicContent() {
   }, [caseStatus, detail]);
 
   if (caseId === null) {
-    return <HelperText tone="warning">Missing ?case= query param.</HelperText>;
+    return (
+      <HelperText tone="warning">
+        This topic page needs a case. Open it from a case.
+      </HelperText>
+    );
   }
   if (!idsValid) {
-    return <HelperText tone="error">Invalid ids.</HelperText>;
+    return (
+      <HelperText tone="error">Case or topic id is missing.</HelperText>
+    );
   }
 
   if (topicNotFound) {
@@ -466,10 +472,10 @@ function TopicContent() {
                 pt="4"
                 pb="3"
               >
-                What this topic fires on
+                Signals across this topic
               </Text>
               {t.heuristics.length === 0 ? (
-                <Text color="fg.muted">No heuristics returned.</Text>
+                <Text color="fg.muted">The agent did not emit heuristics here.</Text>
               ) : (
                 <Stack gap="5" pt="1" maxW="65ch">
                   {sortHeuristics(t.heuristics).map((h) => (
@@ -492,7 +498,7 @@ function TopicContent() {
 
       <Stack gap="3" borderTopWidth="1px" borderColor="border.muted" pt="4">
         <Text textStyle="eyebrow" color="fg.muted">
-          Documents in scope ({t.document_count})
+          Documents in this topic ({t.document_count})
         </Text>
         {docsQuery.isLoading && <HelperText>Loading documents…</HelperText>}
         {docsQuery.isError && (

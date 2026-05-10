@@ -25,7 +25,7 @@ export function CaseMetricStrip({ row }: { row: Row }) {
       wrap="wrap"
       mt="5"
     >
-      <MetricColumn label="Top triage">
+      <MetricColumn label="Highest triage">
         {isFailed || noSummaryYet ? <Dash /> : <TriageBadge level={top} />}
       </MetricColumn>
 

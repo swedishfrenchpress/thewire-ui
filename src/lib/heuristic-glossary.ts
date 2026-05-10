@@ -21,7 +21,7 @@ const REGISTRY: Record<string, HeuristicDefinition> = {
   // --- Topic-level signals (returned on /topics/{id}) ---
   sensitivity: {
     measures:
-      "The maximum sensitivity level any document in this topic fired, on a four-point scale.",
+      "The highest sensitivity rating any document in this topic received, on a four-point scale.",
     bands:
       "Drives the topic's triage. Level 1 maps to LOW, level 2 to MEDIUM, levels 3 and 4 to HIGH.",
   },
