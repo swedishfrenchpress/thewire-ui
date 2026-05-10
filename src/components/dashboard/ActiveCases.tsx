@@ -96,7 +96,13 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
       </Box>
 
       {sorted.length === 0 ? (
-        <Box borderTopWidth="1px" borderColor="border.muted" pt="6">
+        <Box
+          key={`empty|${query}|${dateFilter}`}
+          borderTopWidth="1px"
+          borderColor="border.muted"
+          pt="6"
+          animation="surfaceIn var(--chakra-durations-swift) var(--chakra-easings-standard) both"
+        >
           <Text
             as="span"
             fontFamily="mono"
@@ -121,7 +127,10 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
           </Text>
         </Box>
       ) : (
-        <Box>
+        <Box
+          key={`rows|${query}|${dateFilter}|${sort}`}
+          animation="surfaceIn var(--chakra-durations-swift) var(--chakra-easings-standard) both"
+        >
           {sorted.map((row, i) => (
             <CaseListRow
               key={row.entry.caseId}

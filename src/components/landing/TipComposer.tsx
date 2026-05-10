@@ -2,6 +2,7 @@
 
 import { Box, Button, HStack, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { HelperText } from "@/components/HelperText";
@@ -17,6 +18,7 @@ const MAX_FILES = 5;
 const ACCEPT = "text/plain,.txt,.md";
 
 export function TipComposer() {
+  const router = useRouter();
   const [reportText, setReportText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -52,6 +54,7 @@ export function TipComposer() {
       setReportText("");
       setFiles([]);
       if (inputRef.current) inputRef.current.value = "";
+      router.push(`/cases/${result.case_id}`);
       toast.success(`Analyzing ${displayName}`, {
         description: `Case #${result.case_id} · ${count} document${count === 1 ? "" : "s"} · processing`,
       });
@@ -78,7 +81,17 @@ export function TipComposer() {
   };
 
   return (
-    <Stack gap="4" w="full" maxW="640px" mx="auto">
+    <Stack
+      gap="4"
+      w="full"
+      maxW="640px"
+      mx="auto"
+      css={{
+        transition:
+          "opacity var(--chakra-durations-swift) var(--chakra-easings-standard)",
+        opacity: mutation.isPending ? 0.6 : 1,
+      }}
+    >
       <input
         ref={inputRef}
         type="file"

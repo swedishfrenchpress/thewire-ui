@@ -94,7 +94,7 @@ function CaseDetail() {
       <HelperText tone="error">Case id is missing or invalid.</HelperText>
     );
   }
-  if (isLoading) return <HelperText>Loading…</HelperText>;
+  if (isLoading) return <TopicSkeletonList />;
   if (isError) {
     return (
       <Stack gap="3">
@@ -172,7 +172,11 @@ function CaseDetail() {
           </Box>
         )
       ) : (
-        <TopicsSection caseId={data.case_id} topics={sorted} />
+        <Box
+          animation="surfaceIn var(--chakra-durations-settled) var(--chakra-easings-standard) both"
+        >
+          <TopicsSection caseId={data.case_id} topics={sorted} />
+        </Box>
       )}
 
       {data.status === "complete" && <MethodologyFootnote />}
@@ -247,6 +251,7 @@ function CaseHeader({
         <Box flex="1" minW="0">
           {editing ? (
             <Input
+              key="edit"
               ref={inputRef}
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
@@ -265,15 +270,18 @@ function CaseHeader({
               borderRadius="sm"
               bg="bg"
               aria-label="Case name"
+              animation="fadeIn var(--chakra-durations-instant) var(--chakra-easings-standard)"
             />
           ) : (
             <Heading
+              key="view"
               as="h1"
               fontFamily="heading"
               fontWeight="400"
               letterSpacing="tight"
               fontSize={{ base: "28px", md: "36px" }}
               lineHeight="1.05"
+              animation="fadeIn var(--chakra-durations-instant) var(--chakra-easings-standard)"
             >
               {headingText}
             </Heading>
@@ -726,10 +734,12 @@ function ProcessingBanner({
           {formatElapsed(elapsedMs)}
         </Text>
       </HStack>
-      <Skeleton
+      <Box
         height="2px"
         width="100%"
         borderRadius="sm"
+        bg="bg.muted"
+        animation="wirePulse 2s ease-in-out infinite"
         aria-hidden
         role="presentation"
       />

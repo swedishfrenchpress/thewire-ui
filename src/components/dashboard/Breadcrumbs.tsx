@@ -74,7 +74,7 @@ function CrumbLabel({
       textOverflow="ellipsis"
       whiteSpace="nowrap"
       _hover={muted ? { color: "fg" } : undefined}
-      transition="color 150ms"
+      transition="color var(--chakra-durations-instant) var(--chakra-easings-standard)"
       aria-current={current ? "page" : undefined}
     >
       {children}

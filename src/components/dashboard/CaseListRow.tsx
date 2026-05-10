@@ -167,7 +167,7 @@ export function CaseListRow({
               color="fg.muted"
               opacity={0}
               transform="translateX(-4px)"
-              transition="opacity 120ms, transform 120ms"
+              transition="opacity var(--chakra-durations-swift) var(--chakra-easings-standard), transform var(--chakra-durations-swift) var(--chakra-easings-standard)"
               aria-hidden
             >
               ›

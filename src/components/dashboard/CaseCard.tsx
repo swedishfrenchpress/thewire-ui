@@ -106,7 +106,7 @@ export function CaseCard({ row, variant = "default" }: Props) {
       py="6"
       borderBottomWidth="1px"
       borderColor="border.muted"
-      transition="background-color 150ms"
+      transition="background-color var(--chakra-durations-instant) var(--chakra-easings-standard)"
       _hover={editing ? undefined : { bg: "bg.subtle" }}
       _focusVisible={{ outline: "none", boxShadow: "focusRing" }}
       mx="-3"
@@ -342,7 +342,7 @@ function InlineIconButton({
       color="fg.muted"
       borderRadius="sm"
       cursor="pointer"
-      transition="color 150ms"
+      transition="color var(--chakra-durations-instant) var(--chakra-easings-standard)"
       _hover={{ color: "fg" }}
       _focusVisible={{ outline: "none", boxShadow: "focusRing" }}
     >

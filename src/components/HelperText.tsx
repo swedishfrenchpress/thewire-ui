@@ -32,6 +32,7 @@ export function HelperText({
       textStyle="body.sm"
       borderRadius="sm"
       role={tone === "error" ? "alert" : undefined}
+      animation="surfaceIn var(--chakra-durations-swift) var(--chakra-easings-standard) both"
     >
       <Box as="span" aria-hidden fontWeight="600">
         {s.icon}

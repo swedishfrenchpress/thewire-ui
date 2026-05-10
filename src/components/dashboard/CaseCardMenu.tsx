@@ -35,7 +35,7 @@ export function CaseCardMenu({ pinned, onSelect, showRefresh = false }: Props) {
           color="fg.muted"
           borderRadius="sm"
           cursor="pointer"
-          transition="background-color 150ms, color 150ms"
+          transition="background-color var(--chakra-durations-instant) var(--chakra-easings-standard), color var(--chakra-durations-instant) var(--chakra-easings-standard)"
           _hover={{ color: "fg", bg: "bg.subtle" }}
           _focusVisible={{ outline: "none", boxShadow: "focusRing" }}
         >

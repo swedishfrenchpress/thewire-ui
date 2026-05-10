@@ -61,8 +61,16 @@ export function InfoTip({ eyebrow, measures, bands, children }: InfoTipProps) {
             px="3.5"
             py="3"
             maxW="320px"
-            // Override the default scale-fade so the surface doesn't pop.
-            // Subtle opacity-only transition keeps it on-brand.
+            css={{
+              "&[data-state=open]": {
+                animation:
+                  "fadeIn var(--chakra-durations-instant) var(--chakra-easings-standard)",
+              },
+              "&[data-state=closed]": {
+                animation:
+                  "fadeOut 100ms var(--chakra-easings-standard)",
+              },
+            }}
           >
             <Text
               textStyle="eyebrow.sm"

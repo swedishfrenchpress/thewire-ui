@@ -109,28 +109,44 @@ function SourcePanel({ content }: { content: string }) {
         </Box>
         {open ? "Hide source text" : "Show source text"}
       </Button>
-      {open && (
-        <Box
-          bg="bg.subtle"
-          borderRadius="sm"
-          borderWidth="1px"
-          borderColor="border.muted"
-          p="4"
-          maxH="60vh"
-          overflowY="auto"
-        >
-          <Text
-            as="pre"
-            whiteSpace="pre-wrap"
-            fontFamily="mono"
-            fontSize="12px"
-            lineHeight="18px"
-            color="fg"
+      <Box
+        data-open={open}
+        aria-hidden={!open}
+        css={{
+          display: "grid",
+          gridTemplateRows: "0fr",
+          transition:
+            "grid-template-rows var(--chakra-durations-settled) var(--chakra-easings-standard)",
+          "&[data-open='true']": { gridTemplateRows: "1fr" },
+        }}
+      >
+        <Box minH="0" overflow="hidden">
+          <Box
+            bg="bg.subtle"
+            borderRadius="sm"
+            borderWidth="1px"
+            borderColor="border.muted"
+            p="4"
+            maxH="60vh"
+            overflowY="auto"
+            css={{
+              opacity: open ? 1 : 0,
+              transition: `opacity var(--chakra-durations-instant) var(--chakra-easings-standard) ${open ? "50ms" : "0ms"}`,
+            }}
           >
-            {content}
-          </Text>
+            <Text
+              as="pre"
+              whiteSpace="pre-wrap"
+              fontFamily="mono"
+              fontSize="12px"
+              lineHeight="18px"
+              color="fg"
+            >
+              {content}
+            </Text>
+          </Box>
         </Box>
-      )}
+      </Box>
     </Stack>
   );
 }
@@ -200,7 +216,7 @@ function DocumentContent() {
       </HelperText>
     );
   }
-  if (docsQuery.isLoading) return <HelperText>Loading…</HelperText>;
+  if (docsQuery.isLoading) return null;
   if (docsQuery.isError)
     return <HelperText tone="error">Could not load this document.</HelperText>;
   if (!docsQuery.data) return null;
@@ -218,7 +234,10 @@ function DocumentContent() {
   const facts = doc.facts_to_verify ?? [];
 
   return (
-    <Stack gap="10">
+    <Stack
+      gap="10"
+      animation="surfaceIn var(--chakra-durations-settled) var(--chakra-easings-standard) both"
+    >
       <Stack gap="3">
         <Box display="flex" alignItems="center" gap="3" flexWrap="wrap">
           <VerdictTag verdict={verdict} />

@@ -307,7 +307,7 @@ function TopicContent() {
     );
   }
 
-  if (detail.isLoading) return <HelperText>Loading…</HelperText>;
+  if (detail.isLoading) return null;
   if (detail.isError)
     return <HelperText tone="error">Could not load this topic.</HelperText>;
   if (!detail.data) return null;
@@ -316,7 +316,10 @@ function TopicContent() {
   const docs = docsQuery.data?.documents ?? [];
 
   return (
-    <Stack gap="10">
+    <Stack
+      gap="10"
+      animation="surfaceIn var(--chakra-durations-settled) var(--chakra-easings-standard) both"
+    >
       <Stack gap="3">
         <Box display="flex" alignItems="center" gap="3" flexWrap="wrap">
           <TriageTag rating={t.triage} />

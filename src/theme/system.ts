@@ -389,6 +389,22 @@ const dialogSlotRecipe = defineSlotRecipe({
       lg: { content: { width: "100%", maxW: "560px" } },
     },
     motionPreset: {
+      // Opacity-only fade — house default. Scale violates flat-by-doctrine;
+      // boxShadow:dialog already carries the elevation cue.
+      fade: {
+        content: {
+          _open: {
+            animationName: "fadeIn",
+            animationDuration: "settled",
+            animationTimingFunction: "standard",
+          },
+          _closed: {
+            animationName: "fadeOut",
+            animationDuration: "swift",
+            animationTimingFunction: "standard",
+          },
+        },
+      },
       scale: {
         content: {
           _open: { animationName: "scale-in, fade-in" },
@@ -407,7 +423,7 @@ const dialogSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     size: "md",
     placement: "center",
-    motionPreset: "scale",
+    motionPreset: "fade",
   },
 });
 
@@ -952,6 +968,20 @@ const config = defineConfig({
         "0%, 100%": { opacity: "1" },
         "50%": { opacity: "0.55" },
       },
+      fadeIn: {
+        from: { opacity: "0" },
+        to: { opacity: "1" },
+      },
+      fadeOut: {
+        from: { opacity: "1" },
+        to: { opacity: "0" },
+      },
+      // Same shape as fadeIn today; named separately so we can later add
+      // a 2px translateY without it bleeding into tooltip/dialog fades.
+      surfaceIn: {
+        from: { opacity: "0" },
+        to: { opacity: "1" },
+      },
     },
     tokens: {
       colors: palette,
@@ -986,6 +1016,22 @@ const config = defineConfig({
         "2xl": { value: "16px" },
         "3xl": { value: "20px" },
         full: { value: "9999px" },
+      },
+      // Motion vocabulary. Three durations, two easings — every animation
+      // and transition in the app should pick from this list and only this
+      // list. Chakra emits these as `--chakra-durations-*` /
+      // `--chakra-easings-*` CSS vars; component prop API also accepts the
+      // token name directly (e.g. `transitionDuration="swift"`).
+      durations: {
+        instant: { value: "120ms" }, // hover state changes, focus rings
+        swift: { value: "180ms" }, //   disclosures, in-place swaps
+        settled: { value: "240ms" }, // surface-in, dialog enter
+      },
+      easings: {
+        // ease-out-quart — the house curve.
+        standard: { value: "cubic-bezier(0.22, 1, 0.36, 1)" },
+        // ease-out-expo — for the rare longer settle (240ms+).
+        emphatic: { value: "cubic-bezier(0.16, 1, 0.3, 1)" },
       },
       shadows: {
         // Figma: Components/Focus — 2px blue ring with 1px halo.
@@ -1411,7 +1457,8 @@ const config = defineConfig({
     },
     "[data-pencil]": {
       opacity: 0,
-      transition: "opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+      transition:
+        "opacity var(--chakra-durations-instant) var(--chakra-easings-standard)",
     },
     "tr[data-row]:hover [data-pencil]": { opacity: 1 },
     "[data-pencil]:focus-visible": { opacity: 1 },
