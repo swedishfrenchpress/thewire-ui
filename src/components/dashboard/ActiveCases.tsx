@@ -16,7 +16,12 @@ import { useMemo, useState, type KeyboardEvent } from "react";
 import { TriageMixBar } from "@/components/shared/TriageMixBar";
 import { casesStore } from "@/lib/cases-store";
 import { coverImageFor } from "@/lib/cover-image";
-import { topTopic, triageMix, type Row } from "@/lib/triage";
+import {
+  corroborationScore,
+  topTopic,
+  triageMix,
+  type Row,
+} from "@/lib/triage";
 
 const MONTHS_FULL = [
   "JANUARY",
@@ -385,7 +390,7 @@ function CardCover({
 }
 
 function CardMetricRow({ row }: { row: Row }) {
-  const { summary, isError } = row;
+  const { summary, isError, entry } = row;
 
   if (isError || summary?.status === "failed") {
     return (
@@ -413,10 +418,14 @@ function CardMetricRow({ row }: { row: Row }) {
   }
 
   const mix = triageMix(summary.topics);
+  const score = corroborationScore(entry.caseId);
 
   return (
     <HStack gap="3" align="center" wrap="wrap">
       <TriageMixBar mix={mix} />
+      <Text as="span" textStyle="body.sm" color="fg.muted">
+        · {score}% corroboration
+      </Text>
     </HStack>
   );
 }
