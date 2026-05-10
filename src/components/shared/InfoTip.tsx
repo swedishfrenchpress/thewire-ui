@@ -36,7 +36,7 @@ export function InfoTip({ eyebrow, measures, bands, children }: InfoTipProps) {
           cursor="help"
           textDecoration="underline"
           textDecorationStyle="dotted"
-          textDecorationColor="border"
+          textDecorationColor="fg.muted"
           textUnderlineOffset="3px"
           tabIndex={0}
           _hover={{ textDecorationColor: "fg" }}

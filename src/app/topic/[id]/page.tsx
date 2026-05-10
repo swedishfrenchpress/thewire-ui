@@ -26,7 +26,7 @@ import { ApiRequestError, getTopic, getTopicDocuments } from "@/lib/api";
 import { casesStore } from "@/lib/cases-store";
 import { polarityFor } from "@/lib/heuristic-polarity";
 import { useCase } from "@/lib/hooks/useCase";
-import { distributeDocuments, documentTriage } from "@/lib/triage";
+import { TRIAGE_LABELS, distributeDocuments, documentTriage } from "@/lib/triage";
 import type {
   DocumentRecord,
   Heuristic,
@@ -114,6 +114,88 @@ function StatsRow({
   );
 }
 
+const TRIAGE_TONE: Record<Rating, { bg: string; color: string }> = {
+  high: { bg: "bg.attentionSubtle", color: "fg.attention" },
+  medium: { bg: "bg.warningSubtle", color: "fg.warning" },
+  low: { bg: "bg.successSubtle", color: "fg.success" },
+};
+
+const SHORT_LABEL: Record<Rating, string> = {
+  high: "HIGH",
+  medium: "MED",
+  low: "LOW",
+};
+
+function SeverityChip({ rating }: { rating: Rating }) {
+  const tone = TRIAGE_TONE[rating];
+  return (
+    <Box
+      as="span"
+      display="inline-flex"
+      alignItems="center"
+      px="3"
+      py="1.5"
+      bg={tone.bg}
+      color={tone.color}
+      fontFamily="mono"
+      fontSize="13px"
+      lineHeight="16px"
+      fontWeight="600"
+      textTransform="uppercase"
+      letterSpacing="0.05em"
+      borderRadius="sm"
+    >
+      {rating}
+    </Box>
+  );
+}
+
+function DocumentMixBar({ docs }: { docs: DocumentRecord[] }) {
+  const dist = distributeDocuments(docs);
+  if (dist.total === 0) return null;
+  const visible = dist.ordered.filter((s) => s.count > 0);
+  return (
+    <Box
+      display="flex"
+      h="6"
+      borderRadius="sm"
+      overflow="hidden"
+      bg="bg.subtle"
+      role="figure"
+      aria-label={`Document mix: ${visible
+        .map((s) => `${TRIAGE_LABELS[s.rating]} ${s.pct.toFixed(0)}% (${s.count})`)
+        .join(", ")}`}
+    >
+      {visible.map((seg) => {
+        const tone = TRIAGE_TONE[seg.rating];
+        return (
+          <Box
+            key={seg.rating}
+            flexBasis={`${seg.pct}%`}
+            flexGrow={0}
+            flexShrink={0}
+            bg={tone.bg}
+            color={tone.color}
+            display="flex"
+            alignItems="center"
+            px="2"
+            fontFamily="mono"
+            fontWeight="600"
+            fontSize="10px"
+            letterSpacing="wide"
+            textTransform="uppercase"
+            whiteSpace="nowrap"
+            overflow="hidden"
+            title={`${TRIAGE_LABELS[seg.rating]} ${seg.pct.toFixed(0)}% (${seg.count})`}
+          >
+            {SHORT_LABEL[seg.rating]} {seg.pct.toFixed(0)}%
+          </Box>
+        );
+      })}
+    </Box>
+  );
+}
+
 function StatsPanel({
   topic,
   docs,
@@ -121,37 +203,41 @@ function StatsPanel({
   topic: TopicDetail;
   docs: DocumentRecord[];
 }) {
-  const docDist = distributeDocuments(docs);
   return (
     <Box
       borderWidth="1px"
       borderColor="border"
       borderRadius="sm"
-      p="4"
+      p="5"
       bg="bg"
     >
-      <Stack gap="3">
-        <Text
-          fontFamily="mono"
-          fontSize="11px"
-          letterSpacing="wider"
-          textTransform="uppercase"
-          color="fg.muted"
-          fontWeight="500"
-        >
-          Triage details
-        </Text>
-        <Stack gap="0">
-          <StatsRow label="Documents" value={topic.document_count} />
-          <StatsRow label="High" value={docDist.segments.high.count} indent />
-          <StatsRow label="Medium" value={docDist.segments.medium.count} indent />
-          <StatsRow label="Low" value={docDist.segments.low.count} indent />
-          <StatsRow label="Heuristics" value={topic.heuristics.length} />
-          <StatsRow
-            label="Severity"
-            value={<TriageTag rating={topic.triage} />}
-          />
+      <Stack gap="5">
+        <Stack gap="3">
+          <Text
+            fontFamily="mono"
+            fontSize="11px"
+            letterSpacing="wider"
+            textTransform="uppercase"
+            color="fg.muted"
+            fontWeight="500"
+          >
+            Severity
+          </Text>
+          <Box>
+            <SeverityChip rating={topic.triage} />
+          </Box>
         </Stack>
+
+        <Box borderTopWidth="1px" borderColor="border.muted" />
+
+        <Stack gap="3">
+          <StatsRow label="Documents" value={topic.document_count} />
+          {docs.length > 0 && <DocumentMixBar docs={docs} />}
+        </Stack>
+
+        <Box borderTopWidth="1px" borderColor="border.muted" />
+
+        <StatsRow label="Heuristics" value={topic.heuristics.length} />
       </Stack>
     </Box>
   );
@@ -411,35 +497,18 @@ function TopicContent() {
               </Text>
             )}
             <Stack gap="0" borderTopWidth="1px" borderColor="border.muted">
-              <Box
-                display="flex"
-                alignItems="baseline"
-                justifyContent="space-between"
-                gap="3"
+              <Text
+                fontFamily="mono"
+                fontSize="11px"
+                letterSpacing="wider"
+                textTransform="uppercase"
+                color="fg.muted"
+                fontWeight="500"
                 pt="4"
                 pb="3"
               >
-                <Text
-                  fontFamily="mono"
-                  fontSize="11px"
-                  letterSpacing="wider"
-                  textTransform="uppercase"
-                  color="fg.muted"
-                  fontWeight="500"
-                >
-                  What this topic fires on
-                </Text>
-                {t.heuristics.length > 0 && (
-                  <Text
-                    fontFamily="body"
-                    fontSize="12px"
-                    lineHeight="16px"
-                    color="fg.muted"
-                  >
-                    Hover a name for what it measures.
-                  </Text>
-                )}
-              </Box>
+                What this topic fires on
+              </Text>
               {t.heuristics.length === 0 ? (
                 <Text color="fg.muted">No heuristics returned.</Text>
               ) : (
