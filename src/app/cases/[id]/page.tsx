@@ -3,15 +3,18 @@
 import {
   Box,
   Button,
+  Link as ChakraLink,
   Container,
   Grid,
   GridItem,
   HStack,
   Heading,
   Input,
+  Portal,
   Skeleton,
   Stack,
   Text,
+  Tooltip,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useParams } from "next/navigation";
@@ -26,7 +29,6 @@ import {
 import { Dialog } from "@/components/Dialog";
 import { HelperText } from "@/components/HelperText";
 import { TriageTag } from "@/components/TriageTag";
-import { TriageMix } from "@/components/shared/TriageMix";
 import {
   CaseCardMenu,
   type CaseMenuAction,
@@ -35,7 +37,7 @@ import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { type CaseEntry, casesStore } from "@/lib/cases-store";
 import { formatRelative } from "@/lib/format";
 import { formatElapsed, useCase } from "@/lib/hooks/useCase";
-import { TRIAGE_RANK, topTriage, triageMix } from "@/lib/triage";
+import { TRIAGE_RANK, topTriage } from "@/lib/triage";
 import type { CaseSummary, Rating, TopicSummary } from "@/lib/types";
 
 const STATUS_LABEL: Record<CaseSummary["status"], string> = {
@@ -63,6 +65,16 @@ function caseHeading(
   if (entry?.displayName) return entry.displayName;
   if (caseId === null || !Number.isFinite(caseId)) return "Case";
   return `Case ${caseId}`;
+}
+
+// Render-time prettifier for filename-derived case titles. Replaces
+// hyphens / underscores with spaces and sentence-cases the first letter
+// only — auto title-casing every word would mis-capitalize across cases.
+// Stored displayName in casesStore is left untouched.
+function prettifyDisplayName(name: string): string {
+  const spaced = name.replace(/[-_]+/g, " ");
+  if (spaced.length === 0) return spaced;
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
 
 function formatCreatedRelative(iso: string): string {
@@ -122,12 +134,7 @@ function CaseDetail() {
 
   return (
     <Stack gap="8">
-      <CaseHeader
-        data={data}
-        elapsedMs={elapsedMs}
-        onRefresh={() => refetch()}
-        isFetching={isFetching}
-      />
+      <CaseHeader data={data} elapsedMs={elapsedMs} onRefresh={() => refetch()} />
 
       {isProcessing && !cappedOut && (
         <ProcessingBanner caseId={data.case_id} elapsedMs={elapsedMs} />
@@ -168,6 +175,8 @@ function CaseDetail() {
       ) : (
         <TopicsSection caseId={data.case_id} topics={sorted} />
       )}
+
+      {data.status === "complete" && <MethodologyFootnote />}
     </Stack>
   );
 }
@@ -176,31 +185,30 @@ function CaseHeader({
   data,
   elapsedMs: _elapsedMs,
   onRefresh,
-  isFetching = false,
 }: {
   data: CaseSummary;
   elapsedMs: number;
   onRefresh?: () => void;
-  isFetching?: boolean;
 }) {
   const entry = casesStore.getCase(data.case_id);
-  const displayName = caseHeading(entry, data.case_id);
+  const storedName = caseHeading(entry, data.case_id);
+  const headingText = prettifyDisplayName(storedName);
 
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(displayName);
+  const [draft, setDraft] = useState(headingText);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (editing) {
-      setDraft(displayName);
+      setDraft(headingText);
       requestAnimationFrame(() => inputRef.current?.select());
     }
-  }, [editing, displayName]);
+  }, [editing, headingText]);
 
   const commitRename = () => {
     const next = draft.trim();
-    if (next && next !== displayName) {
+    if (next && next !== storedName) {
       casesStore.updateCase(data.case_id, { displayName: next });
     }
     setEditing(false);
@@ -208,7 +216,9 @@ function CaseHeader({
   const cancelRename = () => setEditing(false);
 
   const handleMenuSelect = (action: CaseMenuAction) => {
-    if (action === "rename") {
+    if (action === "refresh") {
+      onRefresh?.();
+    } else if (action === "rename") {
       setEditing(true);
     } else if (action === "pin") {
       casesStore.pinCase(data.case_id, !(entry?.pinned ?? false));
@@ -266,25 +276,16 @@ function CaseHeader({
               fontSize={{ base: "28px", md: "36px" }}
               lineHeight="1.05"
             >
-              {displayName}
+              {headingText}
             </Heading>
           )}
         </Box>
 
         <HStack gap="2" align="center">
-          {onRefresh && data.status !== "failed" && (
-            <Button
-              variant="outline"
-              size="sm"
-              loading={isFetching}
-              onClick={onRefresh}
-            >
-              Refresh
-            </Button>
-          )}
           <CaseCardMenu
             pinned={entry?.pinned ?? false}
             onSelect={handleMenuSelect}
+            showRefresh={Boolean(onRefresh) && data.status !== "failed"}
           />
         </HStack>
       </HStack>
@@ -303,7 +304,7 @@ function CaseHeader({
       <DeleteConfirmDialog
         open={confirmingDelete}
         onOpenChange={setConfirmingDelete}
-        caseName={displayName}
+        caseName={headingText}
         onConfirm={() => {
           casesStore.removeCase(data.case_id);
           setConfirmingDelete(false);
@@ -370,13 +371,7 @@ function StatusStrip({
         {documentCount} {documentCount === 1 ? "document" : "documents"}
       </Text>
       <Sep />
-      <Text
-        as="span"
-        fontFamily="mono"
-        fontSize="11px"
-        lineHeight="13px"
-        color="fg.disabled"
-      >
+      <Text as="span" fontFamily="mono" fontSize="11px" lineHeight="13px">
         Case #{caseId}
       </Text>
     </HStack>
@@ -399,8 +394,6 @@ function AtAGlance({
   documentCount: number;
 }) {
   const top = topTriage(topics);
-  const mix = triageMix(topics);
-  const total = topics.length;
 
   return (
     <Box
@@ -410,17 +403,18 @@ function AtAGlance({
       py="4"
     >
       <Grid
-        templateColumns={{ base: "1fr 1fr", md: "repeat(4, auto)" }}
+        templateColumns={{ base: "1fr 1fr", md: "repeat(3, auto)" }}
         gap={{ base: "4", md: "8" }}
         alignItems="center"
       >
-        <Stat label="Highest triage" value={top ? <TriageTag rating={top} /> : "—"} />
         <Stat
-          label={`Topics · ${total}`}
-          value={<TriageMix mix={mix} />}
+          label="Highest urgency"
+          tooltip="Highest urgency in this case, taken from its most urgent topic."
+          value={top ? <TriageTag rating={top} /> : "—"}
         />
         <Stat
           label="Documents"
+          tooltip="Plain-text and Markdown files in this case."
           value={
             <Text
               as="span"
@@ -437,6 +431,7 @@ function AtAGlance({
         />
         <Stat
           label="Top topic"
+          tooltip="The topic with the highest urgency."
           value={
             <Text
               as="span"
@@ -468,24 +463,78 @@ function topTopicTitle(topics: TopicSummary[]): string | null {
 function Stat({
   label,
   value,
+  tooltip,
 }: {
   label: string;
   value: React.ReactNode;
+  tooltip?: string;
 }) {
+  const labelEl = (
+    <Text
+      as="span"
+      fontFamily="mono"
+      fontSize="10px"
+      lineHeight="12px"
+      letterSpacing="wider"
+      textTransform="uppercase"
+      color="fg.muted"
+      fontWeight="500"
+    >
+      {label}
+    </Text>
+  );
   return (
     <Stack gap="1.5" align="flex-start">
-      <Text
-        as="span"
-        fontFamily="mono"
-        fontSize="10px"
-        lineHeight="12px"
-        letterSpacing="wider"
-        textTransform="uppercase"
-        color="fg.muted"
-        fontWeight="500"
-      >
-        {label}
-      </Text>
+      {tooltip ? (
+        <HStack gap="1" align="center">
+          {labelEl}
+          <Tooltip.Root openDelay={120} closeDelay={100}>
+            <Tooltip.Trigger asChild>
+              <Box
+                as="span"
+                display="inline-flex"
+                alignItems="center"
+                color="fg.muted"
+                fontFamily="mono"
+                fontSize="11px"
+                lineHeight="11px"
+                cursor="help"
+                tabIndex={0}
+                aria-label={`${label}: ${tooltip}`}
+                _hover={{ color: "fg" }}
+                _focusVisible={{
+                  outline: "none",
+                  boxShadow: "focusRing",
+                  borderRadius: "xs",
+                }}
+              >
+                ⓘ
+              </Box>
+            </Tooltip.Trigger>
+            <Portal>
+              <Tooltip.Positioner>
+                <Tooltip.Content
+                  bg="bg"
+                  color="fg"
+                  borderWidth="1px"
+                  borderColor="border"
+                  borderRadius="sm"
+                  boxShadow="menu"
+                  px="3"
+                  py="2"
+                  maxW="280px"
+                  fontSize="12px"
+                  lineHeight="16px"
+                >
+                  {tooltip}
+                </Tooltip.Content>
+              </Tooltip.Positioner>
+            </Portal>
+          </Tooltip.Root>
+        </HStack>
+      ) : (
+        labelEl
+      )}
       <Box>{value}</Box>
     </Stack>
   );
@@ -782,6 +831,26 @@ function DeleteConfirmDialog({
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog>
+  );
+}
+
+function MethodologyFootnote() {
+  return (
+    <Box borderTopWidth="1px" borderColor="border.muted" pt="6" mt="2">
+      <Text
+        as="p"
+        fontFamily="body"
+        fontSize="13px"
+        lineHeight="20px"
+        color="fg.muted"
+      >
+        New here?{" "}
+        <ChakraLink asChild>
+          <NextLink href="/methodology">How the wire scores documents</NextLink>
+        </ChakraLink>
+        .
+      </Text>
+    </Box>
   );
 }
 

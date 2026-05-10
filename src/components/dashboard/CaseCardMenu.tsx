@@ -4,14 +4,15 @@ import { Menu, Portal, chakra } from "@chakra-ui/react";
 
 const StyledButton = chakra("button");
 
-export type CaseMenuAction = "rename" | "pin" | "delete";
+export type CaseMenuAction = "refresh" | "rename" | "pin" | "delete";
 
 type Props = {
   pinned: boolean;
   onSelect: (action: CaseMenuAction) => void;
+  showRefresh?: boolean;
 };
 
-export function CaseCardMenu({ pinned, onSelect }: Props) {
+export function CaseCardMenu({ pinned, onSelect, showRefresh = false }: Props) {
   return (
     <Menu.Root
       positioning={{ placement: "bottom-end" }}
@@ -44,6 +45,7 @@ export function CaseCardMenu({ pinned, onSelect }: Props) {
       <Portal>
         <Menu.Positioner>
           <Menu.Content minW="180px">
+            {showRefresh && <Menu.Item value="refresh">Refresh</Menu.Item>}
             <Menu.Item value="rename">Rename</Menu.Item>
             <Menu.Item value="pin">{pinned ? "Unpin" : "Pin"}</Menu.Item>
             <Menu.Separator />
