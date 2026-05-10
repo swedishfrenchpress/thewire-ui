@@ -66,7 +66,7 @@ export function ActiveCasesSection({ rows }: { rows: Row[] }) {
       icon={<DocumentIcon />}
       tone="attention"
       rows={rows}
-      emptyMessage="No active cases. Start one by uploading documents."
+      emptyMessage="No active cases. Upload documents to file the first."
     />
   );
 }

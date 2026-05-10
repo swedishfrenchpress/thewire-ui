@@ -16,8 +16,17 @@ import { useQuery } from "@tanstack/react-query";
 import NextLink from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef } from "react";
+import {
+  BureauLine,
+  BureauNum,
+  BureauSep,
+} from "@/components/BureauLine";
 import { HeuristicBreakdownView } from "@/components/HeuristicBreakdownView";
 import { HelperText } from "@/components/HelperText";
+import {
+  TriageFilterIndicator,
+  useTriageFilter,
+} from "@/components/TriageFilterIndicator";
 import { VerdictDistributionView } from "@/components/VerdictDistribution";
 import { HeuristicMoodChip } from "@/components/shared/HeuristicMoodChip";
 import { HeuristicName } from "@/components/shared/HeuristicName";
@@ -30,7 +39,16 @@ import { getHeuristicDisplay } from "@/lib/heuristic-display";
 import { polarityOf } from "@/lib/heuristic-polarity";
 import { useCase } from "@/lib/hooks/useCase";
 import { distributeDocumentsByVerdict, documentVerdict } from "@/lib/triage";
-import type { DocumentRecord, Heuristic } from "@/lib/types";
+import type { DocumentRecord, Heuristic, Rating } from "@/lib/types";
+
+// Document verdict and topic triage are different vocabularies that align by
+// severity. The keyboard filter (1=high, 2=medium, 3=low) maps to verdict so
+// pressing 1 on a topic page shows only "concerning" docs.
+const TRIAGE_TO_VERDICT: Record<Rating, "concerning" | "mixed" | "healthy"> = {
+  high: "concerning",
+  medium: "mixed",
+  low: "healthy",
+};
 
 // Order pills so concerning leads, mixed sits in the middle, healthy trails.
 // Sort key uses the same mood the sidebar buckets use, so the visual order on
@@ -117,6 +135,7 @@ function DocumentList({
   caseId: number;
   topicId: number;
 }) {
+  const triage = useTriageFilter();
   if (docs.length === 0) {
     return <HelperText>No documents linked to this topic.</HelperText>;
   }
@@ -124,71 +143,98 @@ function DocumentList({
   const sorted = [...docs].sort(
     (a, b) => VERDICT_ORDER[documentVerdict(a)] - VERDICT_ORDER[documentVerdict(b)],
   );
+  const targetVerdict = triage !== null ? TRIAGE_TO_VERDICT[triage] : null;
+  const visible =
+    targetVerdict === null
+      ? sorted
+      : sorted.filter((d) => documentVerdict(d) === targetVerdict);
   return (
-    <Table.Root>
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader width="100px">Verdict</Table.ColumnHeader>
-          <Table.ColumnHeader>Filename</Table.ColumnHeader>
-          <Table.ColumnHeader width="160px">Heuristics</Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {sorted.map((d) => {
-          const v = documentVerdict(d);
-          const flaggedCount = d.heuristics.filter((h) => {
-            const polarity = polarityOf(h);
-            if (polarity === "unknown" || h.rating === "medium") return false;
-            return (
-              (polarity === "negative" && h.rating === "high") ||
-              (polarity === "positive" && h.rating === "low")
-            );
-          }).length;
-          return (
-            <Table.Row key={d.id}>
-              <Table.Cell>
-                <VerdictTag verdict={v} />
-              </Table.Cell>
-              <Table.Cell>
-                <ChakraLink asChild>
-                  <NextLink
-                    href={`/document/${d.id}?case=${caseId}&topic=${topicId}`}
-                  >
-                    {d.filename}
-                  </NextLink>
-                </ChakraLink>
-              </Table.Cell>
-              <Table.Cell>
-                <Box display="inline-flex" alignItems="center" gap="2">
-                  <Text
-                    textStyle="eyebrow"
-                    color="fg.muted"
-                    fontVariantNumeric="tabular-nums"
-                  >
-                    {d.heuristics.length} graded
-                  </Text>
-                  {flaggedCount > 0 && (
-                    <Box
-                      as="span"
-                      bg="bg.attentionSubtle"
-                      color="fg.attention"
-                      textStyle="eyebrow.sm"
-                      fontWeight="600"
-                      px="1.5"
-                      py="0.5"
-                      borderRadius="sm"
-                      fontVariantNumeric="tabular-nums"
-                    >
-                      {flaggedCount} flagged
-                    </Box>
-                  )}
-                </Box>
-              </Table.Cell>
+    <Stack gap="3">
+      {triage !== null && (
+        <TriageFilterIndicator
+          rating={triage}
+          shown={visible.length}
+          total={docs.length}
+        />
+      )}
+      {visible.length === 0 ? (
+        <Text
+          as="p"
+          fontFamily="body"
+          fontSize="14px"
+          lineHeight="20px"
+          color="fg.muted"
+        >
+          No documents at {triage} priority.
+        </Text>
+      ) : (
+        <Table.Root>
+          <Table.Header>
+            <Table.Row>
+              <Table.ColumnHeader width="100px">Verdict</Table.ColumnHeader>
+              <Table.ColumnHeader>Filename</Table.ColumnHeader>
+              <Table.ColumnHeader width="160px">Heuristics</Table.ColumnHeader>
             </Table.Row>
-          );
-        })}
-      </Table.Body>
-    </Table.Root>
+          </Table.Header>
+          <Table.Body>
+            {visible.map((d) => {
+              const v = documentVerdict(d);
+              const flaggedCount = d.heuristics.filter((h) => {
+                const polarity = polarityOf(h);
+                if (polarity === "unknown" || h.rating === "medium") return false;
+                return (
+                  (polarity === "negative" && h.rating === "high") ||
+                  (polarity === "positive" && h.rating === "low")
+                );
+              }).length;
+              return (
+                <Table.Row key={d.id}>
+                  <Table.Cell>
+                    <VerdictTag verdict={v} />
+                  </Table.Cell>
+                  <Table.Cell>
+                    <ChakraLink asChild>
+                      <NextLink
+                        href={`/document/${d.id}?case=${caseId}&topic=${topicId}`}
+                        data-document-row
+                      >
+                        {d.filename}
+                      </NextLink>
+                    </ChakraLink>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Box display="inline-flex" alignItems="center" gap="2">
+                      <Text
+                        textStyle="eyebrow"
+                        color="fg.muted"
+                        fontVariantNumeric="tabular-nums"
+                      >
+                        {d.heuristics.length} graded
+                      </Text>
+                      {flaggedCount > 0 && (
+                        <Box
+                          as="span"
+                          bg="bg.attentionSubtle"
+                          color="fg.attention"
+                          textStyle="eyebrow.sm"
+                          fontWeight="600"
+                          px="1.5"
+                          py="0.5"
+                          borderRadius="sm"
+                          fontVariantNumeric="tabular-nums"
+                        >
+                          {flaggedCount} flagged
+                        </Box>
+                      )}
+                    </Box>
+                  </Table.Cell>
+                </Table.Row>
+              );
+            })}
+          </Table.Body>
+        </Table.Root>
+      )}
+    </Stack>
   );
 }
 
@@ -383,7 +429,67 @@ function TopicContent() {
           />
         )}
       </Stack>
+
+      <TopicBureauLine
+        caseId={detail.data.case_id}
+        topicId={t.id}
+        triage={t.triage}
+        docCount={t.document_count}
+        docs={docs}
+      />
     </Stack>
+  );
+}
+
+function TopicBureauLine({
+  caseId,
+  topicId,
+  triage,
+  docCount,
+  docs,
+}: {
+  caseId: number;
+  topicId: number;
+  triage: Rating;
+  docCount: number;
+  docs: DocumentRecord[];
+}) {
+  const verdictCounts = { concerning: 0, mixed: 0, healthy: 0 };
+  for (const d of docs) verdictCounts[documentVerdict(d)]++;
+  const haveVerdicts = docs.length > 0;
+  return (
+    <BureauLine
+      left={
+        <>
+          <Box as="span">
+            <BureauNum>{docCount}</BureauNum> {docCount === 1 ? "doc" : "docs"}
+          </Box>
+          {haveVerdicts ? (
+            <>
+              <BureauSep />
+              <Box as="span">
+                <BureauNum>{verdictCounts.concerning}</BureauNum> Concerning{" "}
+                <BureauNum>{verdictCounts.mixed}</BureauNum> Mixed{" "}
+                <BureauNum>{verdictCounts.healthy}</BureauNum> Healthy
+              </Box>
+            </>
+          ) : null}
+        </>
+      }
+      right={
+        <>
+          <Box as="span">
+            Topic <BureauNum>#{String(topicId).padStart(5, "0")}</BureauNum>
+          </Box>
+          <BureauSep />
+          <Box as="span">
+            Case <BureauNum>#{String(caseId).padStart(5, "0")}</BureauNum>
+          </Box>
+          <BureauSep />
+          <Box as="span">{triage} priority</Box>
+        </>
+      }
+    />
   );
 }
 
@@ -475,7 +581,7 @@ function TopicHeaderCrumbs() {
 
 export default function TopicPage() {
   return (
-    <Container maxW="6xl" pb="12">
+    <Container maxW="6xl" pb={{ base: "12", md: "20" }}>
       <Suspense fallback={null}>
         <TopicHeaderCrumbs />
       </Suspense>

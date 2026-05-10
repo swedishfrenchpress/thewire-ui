@@ -6,29 +6,59 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Dialog } from "@/components/Dialog";
 
 const G_PREFIX_TIMEOUT_MS = 1000;
-const HOME_PATHS = new Set(["/"]);
+
+type Scope = "anywhere" | "list" | "triage" | "home";
 
 type Shortcut = {
   keys: string[];
   label: string;
-  scope: "global" | "home";
+  scope: Scope;
 };
 
 const SHORTCUTS: Shortcut[] = [
+  { keys: ["?"], label: "Show shortcuts", scope: "anywhere" },
+  { keys: ["g", "h"], label: "Go to home", scope: "anywhere" },
+  { keys: ["j"], label: "Next row", scope: "list" },
+  { keys: ["k"], label: "Previous row", scope: "list" },
+  { keys: ["Enter"], label: "Open focused row", scope: "list" },
+  { keys: ["1"], label: "Filter to high", scope: "triage" },
+  { keys: ["2"], label: "Filter to medium", scope: "triage" },
+  { keys: ["3"], label: "Filter to low", scope: "triage" },
+  { keys: ["0"], label: "Clear triage filter", scope: "triage" },
   { keys: ["/"], label: "Focus search", scope: "home" },
-  { keys: ["j"], label: "Next case", scope: "home" },
-  { keys: ["k"], label: "Previous case", scope: "home" },
-  { keys: ["Enter"], label: "Open focused case", scope: "home" },
   { keys: ["Esc"], label: "Clear search and focus", scope: "home" },
-  { keys: ["g", "h"], label: "Go to home", scope: "global" },
-  { keys: ["?"], label: "Show shortcuts", scope: "global" },
 ];
+
+type TriageRating = "high" | "medium" | "low";
+
+const TRIAGE_KEY: Record<string, TriageRating> = {
+  "1": "high",
+  "2": "medium",
+  "3": "low",
+};
+
+function isTriageSurface(pathname: string): boolean {
+  return (
+    pathname === "/" ||
+    /^\/cases\/\d+/.test(pathname) ||
+    /^\/topic\/\d+/.test(pathname)
+  );
+}
 
 function isEditableTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
   const tag = target.tagName;
   if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
   return target.isContentEditable;
+}
+
+// Map the current pathname to the data-attribute that tags its navigable rows.
+// Returns null on surfaces with no list to step through (e.g. /document/[id]).
+function getRowSelector(pathname: string): string | null {
+  if (pathname === "/") return "[data-case-card]";
+  if (/^\/cases\/\d+/.test(pathname)) return "[data-topic-row]";
+  if (/^\/topic\/\d+/.test(pathname)) return "[data-document-row]";
+  return null;
 }
 
 function focusSearch(): boolean {
@@ -41,20 +71,20 @@ function focusSearch(): boolean {
   return true;
 }
 
-function focusCase(direction: 1 | -1): boolean {
-  const cards = Array.from(
-    document.querySelectorAll<HTMLElement>("[data-case-card]"),
+function focusRow(selector: string, direction: 1 | -1): boolean {
+  const rows = Array.from(
+    document.querySelectorAll<HTMLElement>(selector),
   );
-  if (cards.length === 0) return false;
+  if (rows.length === 0) return false;
   const current = document.activeElement as HTMLElement | null;
-  const index = current ? cards.indexOf(current) : -1;
+  const index = current ? rows.indexOf(current) : -1;
   let next: number;
   if (index === -1) {
-    next = direction === 1 ? 0 : cards.length - 1;
+    next = direction === 1 ? 0 : rows.length - 1;
   } else {
-    next = (index + direction + cards.length) % cards.length;
+    next = (index + direction + rows.length) % rows.length;
   }
-  cards[next]?.focus();
+  rows[next]?.focus();
   return true;
 }
 
@@ -64,7 +94,25 @@ export function KeyboardShortcuts() {
   const [showCheat, setShowCheat] = useState(false);
   const gPressedAtRef = useRef<number | null>(null);
 
-  const onHome = HOME_PATHS.has(pathname);
+  const onHome = pathname === "/";
+  const rowSelector = getRowSelector(pathname);
+  const triageSurface = isTriageSurface(pathname);
+
+  const setTriageParam = useCallback(
+    (rating: TriageRating | null) => {
+      const url = new URL(window.location.href);
+      if (rating === null) {
+        url.searchParams.delete("triage");
+      } else {
+        url.searchParams.set("triage", rating);
+      }
+      const search = url.searchParams.toString();
+      router.replace(`${url.pathname}${search ? `?${search}` : ""}`, {
+        scroll: false,
+      });
+    },
+    [router],
+  );
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
@@ -109,24 +157,37 @@ export function KeyboardShortcuts() {
 
       gPressedAtRef.current = null;
 
-      if (!onHome) return;
-
-      if (e.key === "/") {
+      if (onHome && e.key === "/") {
         if (focusSearch()) e.preventDefault();
         return;
       }
 
+      if (triageSurface) {
+        if (e.key in TRIAGE_KEY) {
+          e.preventDefault();
+          setTriageParam(TRIAGE_KEY[e.key]);
+          return;
+        }
+        if (e.key === "0") {
+          e.preventDefault();
+          setTriageParam(null);
+          return;
+        }
+      }
+
+      if (!rowSelector) return;
+
       if (e.key === "j") {
-        if (focusCase(1)) e.preventDefault();
+        if (focusRow(rowSelector, 1)) e.preventDefault();
         return;
       }
 
       if (e.key === "k") {
-        if (focusCase(-1)) e.preventDefault();
+        if (focusRow(rowSelector, -1)) e.preventDefault();
         return;
       }
     },
-    [onHome, router, showCheat],
+    [onHome, rowSelector, router, setTriageParam, showCheat, triageSurface],
   );
 
   useEffect(() => {
@@ -153,7 +214,17 @@ function CheatOverlay({
         <Dialog.Body>
           <Stack gap="4">
             <Section title="Anywhere">
-              {SHORTCUTS.filter((s) => s.scope === "global").map((s) => (
+              {SHORTCUTS.filter((s) => s.scope === "anywhere").map((s) => (
+                <Row key={s.keys.join("+")} keys={s.keys} label={s.label} />
+              ))}
+            </Section>
+            <Section title="Lists · home, case, topic">
+              {SHORTCUTS.filter((s) => s.scope === "list").map((s) => (
+                <Row key={s.keys.join("+")} keys={s.keys} label={s.label} />
+              ))}
+            </Section>
+            <Section title="Triage · home, case, topic">
+              {SHORTCUTS.filter((s) => s.scope === "triage").map((s) => (
                 <Row key={s.keys.join("+")} keys={s.keys} label={s.label} />
               ))}
             </Section>

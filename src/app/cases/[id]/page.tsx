@@ -17,6 +17,10 @@ import {
 import NextLink from "next/link";
 import { useParams } from "next/navigation";
 import {
+  TriageFilterIndicator,
+  useTriageFilter,
+} from "@/components/TriageFilterIndicator";
+import {
   type KeyboardEvent,
   type MouseEvent,
   Suspense,
@@ -24,9 +28,15 @@ import {
   useRef,
   useState,
 } from "react";
+import {
+  BureauLine,
+  BureauNum,
+  BureauSep,
+} from "@/components/BureauLine";
 import { Dialog } from "@/components/Dialog";
 import { HelperText } from "@/components/HelperText";
 import { TriageTag } from "@/components/TriageTag";
+import { WireTime } from "@/components/WireTime";
 import { InfoTip } from "@/components/shared/InfoTip";
 import {
   CaseCardMenu,
@@ -34,9 +44,8 @@ import {
 } from "@/components/dashboard/CaseCardMenu";
 import { Breadcrumbs } from "@/components/dashboard/Breadcrumbs";
 import { type CaseEntry, casesStore } from "@/lib/cases-store";
-import { formatRelative } from "@/lib/format";
 import { formatElapsed, useCase } from "@/lib/hooks/useCase";
-import { TRIAGE_RANK, topTriage } from "@/lib/triage";
+import { TRIAGE_RANK, topTriage, triageMix } from "@/lib/triage";
 import type { CaseSummary, Rating, TopicSummary } from "@/lib/types";
 
 const STATUS_LABEL: Record<CaseSummary["status"], string> = {
@@ -74,13 +83,6 @@ function prettifyDisplayName(name: string): string {
   const spaced = name.replace(/[-_]+/g, " ");
   if (spaced.length === 0) return spaced;
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
-}
-
-function formatCreatedRelative(iso: string): string {
-  const rel = formatRelative(iso);
-  if (rel === "just now") return "Just now";
-  if (rel === "—") return "—";
-  return `${rel} ago`;
 }
 
 function CaseDetail() {
@@ -158,18 +160,31 @@ function CaseDetail() {
       )}
 
       {isProcessing && sorted.length < 3 ? (
-        <TopicSkeletonList />
+        <TopicSkeletonList progress={{ topicsInferred: data.topics.length }} />
       ) : sorted.length === 0 ? (
         data.status === "complete" && (
-          <Box
+          <Stack
+            gap="1.5"
             borderTopWidth="1px"
             borderColor="border.muted"
             pt="6"
           >
+            <Text
+              as="span"
+              fontFamily="mono"
+              fontSize="11px"
+              lineHeight="13px"
+              letterSpacing="wider"
+              textTransform="uppercase"
+              fontWeight="500"
+              color="fg.muted"
+            >
+              Filed clean
+            </Text>
             <Text fontSize="14px" color="fg.muted">
               No topics were inferred for this case.
             </Text>
-          </Box>
+          </Stack>
         )
       ) : (
         <Box
@@ -180,7 +195,46 @@ function CaseDetail() {
       )}
 
       {data.status === "complete" && <MethodologyFootnote />}
+
+      <CaseBureauLine data={data} />
     </Stack>
+  );
+}
+
+function CaseBureauLine({ data }: { data: CaseSummary }) {
+  const mix = triageMix(data.topics);
+  const docCount = data.document_count;
+  return (
+    <BureauLine
+      left={
+        <>
+          <Box as="span">
+            <BureauNum>{docCount}</BureauNum> {docCount === 1 ? "doc" : "docs"}
+          </Box>
+          <BureauSep />
+          <Box as="span">
+            <BureauNum>{mix.high}</BureauNum>H{" "}
+            <BureauNum>{mix.medium}</BureauNum>M{" "}
+            <BureauNum>{mix.low}</BureauNum>L
+          </Box>
+        </>
+      }
+      right={
+        <>
+          <Box as="span">
+            Case <BureauNum>#{String(data.case_id).padStart(5, "0")}</BureauNum>
+          </Box>
+          <BureauSep />
+          <Box as="span" color={data.status === "failed" ? "fg.attention" : "fg"}>
+            {STATUS_LABEL[data.status]}
+          </Box>
+          <BureauSep />
+          <Box as="span">
+            <WireTime iso={data.created_at} eyebrow="Filed" />
+          </Box>
+        </>
+      }
+    />
   );
 }
 
@@ -371,7 +425,7 @@ function StatusStrip({
       </HStack>
       <Sep />
       <Text as="span" fontFamily="mono" fontSize="11px" lineHeight="13px">
-        {formatCreatedRelative(createdAt)}
+        <WireTime iso={createdAt} eyebrow="Filed" />
       </Text>
       <Sep />
       <Text as="span" fontFamily="mono" fontSize="11px" lineHeight="13px">
@@ -532,6 +586,44 @@ function TopicsSection({
   caseId: number;
   topics: TopicSummary[];
 }) {
+  const triage = useTriageFilter();
+
+  if (triage !== null) {
+    const filtered = topics.filter((t) => t.triage === triage);
+    return (
+      <Stack gap="4">
+        <SectionHeading label={`Topics · ${topics.length}`} />
+        <TriageFilterIndicator
+          rating={triage}
+          shown={filtered.length}
+          total={topics.length}
+        />
+        {filtered.length === 0 ? (
+          <Text
+            as="p"
+            fontFamily="body"
+            fontSize="14px"
+            lineHeight="20px"
+            color="fg.muted"
+          >
+            No topics at {triage} priority.
+          </Text>
+        ) : (
+          <Stack gap="0">
+            {filtered.map((t, i) => (
+              <TopicRow
+                key={t.id}
+                topic={t}
+                caseId={caseId}
+                isFirst={i === 0}
+              />
+            ))}
+          </Stack>
+        )}
+      </Stack>
+    );
+  }
+
   const grouped = topics.length >= GROUPING_THRESHOLD;
 
   if (!grouped) {
@@ -642,6 +734,7 @@ function TopicRow({
   return (
     <NextLink
       href={`/topic/${topic.id}?case=${caseId}`}
+      data-topic-row
       style={{ textDecoration: "none", color: "inherit" }}
     >
       <Box
@@ -747,29 +840,70 @@ function ProcessingBanner({
   );
 }
 
-function TopicSkeletonList() {
+function TopicSkeletonList({
+  progress,
+}: {
+  progress?: { topicsInferred: number };
+}) {
   return (
-    <Stack gap="0">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <Box
-          key={i}
-          py="4"
-          borderTopWidth={i === 0 ? "0" : "1px"}
-          borderColor="border.muted"
-        >
-          <Grid templateColumns={{ base: "auto 1fr", md: "80px 1fr" }} gap="5">
-            <GridItem>
-              <Skeleton height="16px" width="56px" />
-            </GridItem>
-            <GridItem>
-              <Stack gap="2">
-                <Skeleton height="20px" width="40%" />
-                <Skeleton height="16px" width="80%" />
-              </Stack>
-            </GridItem>
-          </Grid>
-        </Box>
-      ))}
+    <Stack gap="3">
+      {progress ? (
+        <HStack gap="2" align="baseline">
+          <Text
+            as="span"
+            fontFamily="mono"
+            fontSize="11px"
+            lineHeight="13px"
+            letterSpacing="wider"
+            textTransform="uppercase"
+            fontWeight="500"
+            color="fg.muted"
+          >
+            Analyzing ·{" "}
+            <Box
+              as="span"
+              color="fg"
+              fontVariantNumeric="tabular-nums"
+            >
+              {progress.topicsInferred}
+            </Box>{" "}
+            {progress.topicsInferred === 1 ? "topic" : "topics"} inferred
+          </Text>
+          <Box
+            as="span"
+            color="fg.muted"
+            animation="wirePulse 1.4s var(--chakra-easings-emphatic) infinite"
+            aria-hidden
+          >
+            ⋯
+          </Box>
+        </HStack>
+      ) : null}
+      <Stack
+        gap="0"
+        animation="wirePulse 2s var(--chakra-easings-emphatic) infinite"
+      >
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Box
+            key={i}
+            py="4"
+            borderTopWidth={i === 0 ? "0" : "1px"}
+            borderColor="border.muted"
+          >
+            <Grid templateColumns={{ base: "auto 1fr", md: "80px 1fr" }} gap="5">
+              <GridItem>
+                <Skeleton height="16px" width="56px" />
+              </GridItem>
+              <GridItem>
+                <Stack gap="2">
+                  <Skeleton height="20px" width="40%" />
+                  <Skeleton height="16px" width="80%" />
+                </Stack>
+              </GridItem>
+            </Grid>
+          </Box>
+        ))}
+      </Stack>
     </Stack>
   );
 }
@@ -851,7 +985,7 @@ function CaseCrumbs() {
 
 export default function CasePage() {
   return (
-    <Container maxW="5xl" pb="12">
+    <Container maxW="5xl" pb={{ base: "12", md: "20" }}>
       <Suspense fallback={null}>
         <CaseCrumbs />
       </Suspense>

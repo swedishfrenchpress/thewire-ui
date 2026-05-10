@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { JetBrains_Mono } from "next/font/google";
+import { ConsoleSignature } from "@/components/ConsoleSignature";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Provider } from "@/components/Provider";
 import { QueryProvider } from "@/components/QueryProvider";
@@ -96,6 +97,7 @@ export default function RootLayout({
             {children}
             <KeyboardShortcuts />
             <Toaster />
+            <ConsoleSignature />
           </QueryProvider>
         </Provider>
       </body>

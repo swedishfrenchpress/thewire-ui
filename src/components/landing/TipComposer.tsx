@@ -4,9 +4,9 @@ import { Box, Button, HStack, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { toast } from "sonner";
 import { HelperText } from "@/components/HelperText";
 import { createCase } from "@/lib/api";
+import { notify } from "@/lib/notify";
 import { casesStore } from "@/lib/cases-store";
 import {
   deriveDisplayName,
@@ -54,8 +54,8 @@ export function TipComposer() {
       setFiles([]);
       if (inputRef.current) inputRef.current.value = "";
       router.push(`/cases/${result.case_id}`);
-      toast.success(`Analyzing ${displayName}`, {
-        description: `Case #${result.case_id} · ${count} document${count === 1 ? "" : "s"} · processing`,
+      notify.filed(`Analyzing ${displayName}`, {
+        meta: `Case #${String(result.case_id).padStart(5, "0")} · ${count} document${count === 1 ? "" : "s"} · processing`,
       });
     },
   });
@@ -188,7 +188,7 @@ export function TipComposer() {
 
       {mutation.isError && (
         <HelperText tone="error">
-          Upload failed: {String(mutation.error)}
+          Upload failed. {String(mutation.error)}
         </HelperText>
       )}
 
