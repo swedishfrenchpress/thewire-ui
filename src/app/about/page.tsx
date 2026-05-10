@@ -120,13 +120,6 @@ export default function AboutPage() {
           </Prose>
         </Section>
 
-        <Section eyebrow="Contact">
-          <Prose>
-            {/* TODO: replace with real contact addresses before public launch. */}
-            For press: press@palantirforthepeople.org
-          </Prose>
-          <Prose>Source code: github.com/swedishfrenchpress/thewire-ui</Prose>
-        </Section>
       </Stack>
     </Container>
   );

@@ -14,7 +14,6 @@ import {
   readFileAsText,
 } from "@/lib/upload-helpers";
 
-const MAX_FILES = 5;
 const ACCEPT = "text/plain,.txt,.md";
 
 export function TipComposer() {
@@ -66,7 +65,7 @@ export function TipComposer() {
 
   const onPickFiles = (incoming: FileList | null) => {
     if (!incoming || disabled) return;
-    const next = Array.from(incoming).slice(0, MAX_FILES);
+    const next = Array.from(incoming);
     setFiles(next);
   };
 
@@ -156,7 +155,7 @@ export function TipComposer() {
           lineHeight="16px"
           color="fg.muted"
         >
-          Plain text or Markdown, up to {MAX_FILES} files.
+          Plain text or Markdown.
         </Text>
       </HStack>
 
