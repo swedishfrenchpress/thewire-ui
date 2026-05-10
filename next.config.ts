@@ -9,13 +9,6 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "fastly.picsum.photos" },
     ],
   },
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.glsl$/,
-      type: "asset/source",
-    });
-    return config;
-  },
 };
 
 export default nextConfig;

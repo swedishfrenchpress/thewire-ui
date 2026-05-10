@@ -153,30 +153,45 @@ export function ActiveCases({ rows }: { rows: Row[] }) {
           <SegmentGroup.Items items={DATE_FILTERS} />
         </SegmentGroup.Root>
 
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search cases"
-          size="sm"
-          maxW="280px"
-          fontFamily="body"
-          fontSize="13px"
-          lineHeight="15px"
-          px="3"
-          borderWidth="1px"
-          borderColor="border"
-          borderRadius="lg"
-          bg="bg"
-          color="fg"
-          _placeholder={{ color: "fg.muted" }}
-          _hover={{ bg: "bg.subtle" }}
-          _focusVisible={{
-            outline: "none",
-            bg: "bg",
-            borderColor: "border.strong",
-          }}
-          aria-label="Search cases"
-        />
+        <Box position="relative" maxW="280px" w="full">
+          <Box
+            position="absolute"
+            left="3"
+            top="50%"
+            transform="translateY(-50%)"
+            color="fg.muted"
+            pointerEvents="none"
+            display="flex"
+            alignItems="center"
+            aria-hidden
+          >
+            <SearchIcon />
+          </Box>
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search cases"
+            size="sm"
+            fontFamily="body"
+            fontSize="13px"
+            lineHeight="15px"
+            pl="9"
+            pr="3"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="lg"
+            bg="bg"
+            color="fg"
+            _placeholder={{ color: "fg.muted" }}
+            _hover={{ bg: "bg.subtle" }}
+            _focusVisible={{
+              outline: "none",
+              bg: "bg",
+              borderColor: "border.strong",
+            }}
+            aria-label="Search cases"
+          />
+        </Box>
       </HStack>
 
       {filtered.length === 0 ? (
@@ -473,5 +488,24 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
     >
       {children}
     </Text>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="square"
+      strokeLinejoin="miter"
+      aria-hidden
+    >
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-3.5-3.5" />
+    </svg>
   );
 }

@@ -793,6 +793,158 @@ const fileUploadRecipe = defineRecipe({
   defaultVariants: { state: "idle" },
 });
 
+// Pill tab/segment style — matches Figma "Tab Group / pill / md".
+// Container: bg.subtle, rounded full, 4px padding, 2px gap.
+// Active item: bg primary (white), elevation1 shadow, fg primary.
+// Inactive: transparent, fg.muted, mono 12px uppercase, 0.025em tracking.
+const TAB_PILL_LABEL = {
+  fontFamily: "mono",
+  fontSize: "12px",
+  fontWeight: "500",
+  lineHeight: "18px",
+  letterSpacing: "0.025em",
+  textTransform: "uppercase",
+} as const;
+
+const TAB_PILL_ELEVATION =
+  "0 1px 2px 0 rgba(0,0,0,0.05), inset 0 -1px 0 0 rgba(0,0,0,0.10)";
+
+// Tabs slot recipe — adds a `pill` variant on top of the Chakra defaults.
+const tabsSlotRecipe = defineSlotRecipe({
+  className: "agentic-tabs",
+  slots: ["root", "list", "trigger", "content", "indicator"],
+  variants: {
+    variant: {
+      pill: {
+        list: {
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "0.5",
+          p: "1",
+          bg: "bg.subtle",
+          borderRadius: "full",
+        },
+        trigger: {
+          ...TAB_PILL_LABEL,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "2",
+          px: "4",
+          py: "2.5",
+          color: "fg.muted",
+          bg: "transparent",
+          borderRadius: "full",
+          borderWidth: 0,
+          cursor: "pointer",
+          whiteSpace: "nowrap",
+          transitionProperty: "background-color, color, box-shadow",
+          transitionDuration: "fast",
+          _hover: { color: "fg" },
+          _selected: {
+            color: "fg",
+            bg: "bg",
+            boxShadow: TAB_PILL_ELEVATION,
+          },
+          _focusVisible: {
+            outline: "none",
+            boxShadow: "focusRing",
+          },
+          _disabled: {
+            color: "fg.disabled",
+            cursor: "not-allowed",
+            _hover: { color: "fg.disabled" },
+          },
+        },
+        content: {
+          pt: "4",
+        },
+      },
+    },
+  },
+});
+
+// SegmentGroup slot recipe — same pill look as Tabs/pill. Chakra's default
+// recipe paints separator lines, an inset shadow, and a default-size height
+// that all bleed through deep-merge if we don't explicitly null them.
+const segmentGroupSlotRecipe = defineSlotRecipe({
+  className: "agentic-segment-group",
+  slots: ["root", "item", "itemText", "indicator"],
+  base: {
+    root: {
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "0.5",
+      p: "1",
+      bg: "bg.subtle",
+      borderRadius: "full",
+      position: "relative",
+      borderWidth: 0,
+      // null Chakra defaults so they don't bleed through deep-merge
+      boxShadow: "none",
+      isolation: "auto",
+      "--segment-indicator-bg": "transparent",
+      "--segment-indicator-shadow": "none",
+      "--segment-radius": "9999px",
+    },
+    item: {
+      ...TAB_PILL_LABEL,
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "2",
+      px: "4",
+      py: "2",
+      height: "auto",
+      color: "fg.muted",
+      bg: "transparent",
+      borderRadius: "full",
+      borderWidth: 0,
+      cursor: "pointer",
+      whiteSpace: "nowrap",
+      position: "relative",
+      zIndex: 1,
+      transitionProperty: "background-color, color, box-shadow",
+      transitionDuration: "fast",
+      // null Chakra's vertical-separator pseudo
+      _before: { display: "none", content: "none" },
+      _hover: { color: "fg" },
+      // override BOTH the unqualified state and the SSR-qualified default
+      "&[data-state=checked]": {
+        color: "fg",
+        bg: "bg",
+        boxShadow: TAB_PILL_ELEVATION,
+      },
+      "&[data-state=checked][data-ssr]": {
+        color: "fg",
+        bg: "bg",
+        boxShadow: TAB_PILL_ELEVATION,
+      },
+      _focusVisible: {
+        outline: "none",
+        boxShadow: "focusRing",
+      },
+      _disabled: {
+        color: "fg.disabled",
+        cursor: "not-allowed",
+        _hover: { color: "fg.disabled" },
+      },
+    },
+    itemText: {
+      position: "relative",
+      zIndex: 1,
+    },
+    indicator: { display: "none" },
+  },
+  variants: {
+    size: {
+      sm: { item: { px: "4", py: "2", height: "auto", fontSize: "12px" } },
+      md: { item: { px: "4", py: "2.5", height: "auto", fontSize: "12px" } },
+    },
+  },
+  defaultVariants: { size: "sm" },
+});
+
 const config = defineConfig({
   theme: {
     keyframes: {
@@ -1087,6 +1239,8 @@ const config = defineConfig({
       dialog: dialogSlotRecipe,
       select: selectSlotRecipe,
       nativeSelect: nativeSelectSlotRecipe,
+      tabs: tabsSlotRecipe,
+      segmentGroup: segmentGroupSlotRecipe,
     },
   },
   globalCss: {
