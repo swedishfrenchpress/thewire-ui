@@ -15,7 +15,7 @@ import {
 
 function headlineFor(row: Row): string {
   const top = row.summary ? topTopic(row.summary.topics) : null;
-  return top?.title ?? row.entry.displayName;
+  return top?.title ?? `Case ${row.entry.caseId}`;
 }
 
 function metaLineFor(row: Row): string {
