@@ -27,3 +27,22 @@ export function formatBytes(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }
+
+export function deriveTextFilename(
+  text: string,
+  fallbackIndex: number,
+): string {
+  const firstLine = text.trim().split(/\r?\n/)[0]?.trim() ?? "";
+  const cleaned = firstLine
+    .slice(0, 40)
+    .replace(/[^\w\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .toLowerCase();
+  if (!cleaned) return `note-${fallbackIndex}.txt`;
+  return `${cleaned}.txt`;
+}
+
+export function makeTextFile(text: string, filename: string): File {
+  return new File([text], filename, { type: "text/plain" });
+}
