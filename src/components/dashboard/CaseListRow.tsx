@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, HStack, Stack, Text } from "@chakra-ui/react";
+import { Box, HStack, Spinner, Stack, Text } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { TriageBadge } from "@/components/shared/TriageBadge";
 import { useReducedMotion } from "@/lib/hooks/useReducedMotion";
@@ -82,11 +82,17 @@ export function CaseListRow({
             {isFailed ? (
               <StatusChip tone="attention" label="Failed" />
             ) : isProcessing ? (
-              <StatusChip
-                tone="muted"
-                label="Pending"
-                pulse={!reducedMotion}
-              />
+              <Stack gap="1.5" align="center">
+                {!reducedMotion && (
+                  <Spinner
+                    size="xs"
+                    color="fg.muted"
+                    borderWidth="1.5px"
+                    animationDuration="0.9s"
+                  />
+                )}
+                <StatusChip tone="muted" label="Pending" />
+              </Stack>
             ) : (
               <TriageBadge level={top} />
             )}
@@ -176,11 +182,9 @@ export function CaseListRow({
 function StatusChip({
   tone,
   label,
-  pulse = false,
 }: {
   tone: "muted" | "attention";
   label: string;
-  pulse?: boolean;
 }) {
   const styles =
     tone === "attention"
@@ -203,7 +207,6 @@ function StatusChip({
       borderRadius="md"
       minH="19px"
       minW="64px"
-      animation={pulse ? "wirePulse 2s ease-in-out infinite" : undefined}
     >
       {label}
     </Box>
