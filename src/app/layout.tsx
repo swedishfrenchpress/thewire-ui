@@ -6,6 +6,7 @@ import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Provider } from "@/components/Provider";
 import { QueryProvider } from "@/components/QueryProvider";
 import { Toaster } from "@/components/Toaster";
+import { SiteFooter } from "@/components/dashboard/SiteFooter";
 import { SiteHeader } from "@/components/dashboard/SiteHeader";
 import "./globals.css";
 
@@ -95,6 +96,7 @@ export default function RootLayout({
           <QueryProvider>
             <SiteHeader />
             {children}
+            <SiteFooter />
             <KeyboardShortcuts />
             <Toaster />
             <ConsoleSignature />

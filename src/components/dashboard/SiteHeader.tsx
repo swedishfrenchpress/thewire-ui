@@ -54,7 +54,7 @@ export function SiteHeader() {
         </NextLink>
       </Box>
 
-      <Box borderTopWidth="2px" borderColor="fg">
+      <Box borderTopWidth="1px" borderColor="border">
         <Box maxW="1100px" mx="auto" px="6">
           <HStack
             gap="0"
