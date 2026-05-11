@@ -16,7 +16,6 @@ const FRONTEND_URL = "https://github.com/swedishfrenchpress/pftp-ui";
 const SOURCE_LINKS: { href: string; label: string }[] = [
   { href: BACKEND_URL, label: "Backend" },
   { href: FRONTEND_URL, label: "Frontend" },
-  { href: EVENT_URL, label: "Event" },
 ];
 
 export function SiteFooter() {
