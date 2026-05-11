@@ -17,14 +17,15 @@ import {
 
 type SubmitVars = { selected: File[] };
 
-const MAX_FILES = 5;
 const ACCEPT = "text/plain,.txt,.md";
 
 export function TipComposer() {
   const router = useRouter();
   const [reportText, setReportText] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+  const [inputKey, setInputKey] = useState(0);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const resetInput = () => setInputKey((k) => k + 1);
 
   const mutation = useMutation({
     mutationFn: async ({ selected }: SubmitVars) => {
@@ -45,7 +46,7 @@ export function TipComposer() {
       casesStore.addCase(result.case_id, displayName);
       setReportText("");
       setFiles([]);
-      if (inputRef.current) inputRef.current.value = "";
+      resetInput();
       router.push(`/cases/${result.case_id}`);
       notify.filed(`Analyzing ${displayName}`, {
         meta: `Case #${String(result.case_id).padStart(5, "0")} · ${count} document${count === 1 ? "" : "s"} · processing`,
@@ -56,20 +57,15 @@ export function TipComposer() {
   const trimmedText = reportText.trim();
   const hasText = trimmedText.length > 0;
   const disabled = mutation.isPending;
-  const canAddMore = files.length < MAX_FILES;
 
   const onPickFiles = (incoming: FileList | null) => {
     if (!incoming || disabled) return;
-    setFiles((prev) => {
-      const room = Math.max(0, MAX_FILES - prev.length);
-      if (room === 0) return prev;
-      return [...prev, ...Array.from(incoming).slice(0, room)];
-    });
-    if (inputRef.current) inputRef.current.value = "";
+    setFiles((prev) => [...prev, ...Array.from(incoming)]);
+    resetInput();
   };
 
   const onAddTextAsFile = () => {
-    if (!hasText || disabled || !canAddMore) return;
+    if (!hasText || disabled) return;
     setFiles((prev) => {
       const noteIndex =
         prev.filter((f) => /^note-\d+\.txt$/.test(f.name)).length + 1;
@@ -81,7 +77,7 @@ export function TipComposer() {
 
   const clearFiles = () => {
     setFiles([]);
-    if (inputRef.current) inputRef.current.value = "";
+    resetInput();
   };
 
   const onSubmit = () => {
@@ -102,6 +98,7 @@ export function TipComposer() {
       }}
     >
       <input
+        key={inputKey}
         ref={inputRef}
         type="file"
         multiple
@@ -152,7 +149,7 @@ export function TipComposer() {
           variant="outline"
           size="sm"
           onClick={() => inputRef.current?.click()}
-          disabled={disabled || !canAddMore}
+          disabled={disabled}
         >
           <PaperclipIcon />
           {files.length === 0 ? "Attach files" : `${files.length} attached`}
@@ -206,7 +203,7 @@ export function TipComposer() {
         w="full"
         onClick={hasText ? onAddTextAsFile : onSubmit}
         loading={mutation.isPending}
-        disabled={hasText ? !canAddMore : files.length === 0}
+        disabled={hasText ? false : files.length === 0}
       >
         {hasText ? "Add file" : "Submit for grading"}
       </Button>
