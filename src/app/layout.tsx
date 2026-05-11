@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { ConsoleSignature } from "@/components/ConsoleSignature";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { Provider } from "@/components/Provider";
@@ -102,6 +103,7 @@ export default function RootLayout({
             <ConsoleSignature />
           </QueryProvider>
         </Provider>
+        <Analytics />
       </body>
     </html>
   );
