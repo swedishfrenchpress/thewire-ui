@@ -2,6 +2,7 @@
 
 import { Box, Button, HStack, Stack, Text, Textarea } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
+import { BorderBeam } from "border-beam";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { HelperText } from "@/components/HelperText";
@@ -110,37 +111,45 @@ export function TipComposer() {
 
       <Stack gap="2">
         <FieldLabel htmlFor="tip-report">What is the report?</FieldLabel>
-        <Textarea
-          id="tip-report"
-          value={reportText}
-          onChange={(e) => setReportText(e.target.value)}
-          placeholder="Describe what happened. When, where, who was involved."
-          minH="180px"
-          resize="vertical"
-          disabled={disabled}
-          fontFamily="body"
-          fontSize="15px"
-          lineHeight="22px"
-          px="3.5"
-          py="3"
-          borderWidth="1px"
-          borderColor="border"
-          borderRadius="lg"
-          bg="bg"
-          color="fg"
-          _placeholder={{ color: "fg.muted" }}
-          _hover={{ bg: "bg.subtle" }}
-          _focusVisible={{
-            outline: "none",
-            bg: "bg",
-            borderColor: "border.strong",
-          }}
-          _disabled={{
-            bg: "bg",
-            color: "fg.disabled",
-            cursor: "not-allowed",
-          }}
-        />
+        <BorderBeam
+          size="md"
+          colorVariant="mono"
+          theme="light"
+          duration={1.96}
+          strength={1}
+        >
+          <Textarea
+            id="tip-report"
+            value={reportText}
+            onChange={(e) => setReportText(e.target.value)}
+            placeholder="Describe what happened. When, where, who was involved."
+            minH="180px"
+            resize="vertical"
+            disabled={disabled}
+            fontFamily="body"
+            fontSize="15px"
+            lineHeight="22px"
+            px="3.5"
+            py="3"
+            borderWidth="1px"
+            borderColor="border"
+            borderRadius="lg"
+            bg="bg"
+            color="fg"
+            _placeholder={{ color: "fg.muted" }}
+            _hover={{ bg: "bg.subtle" }}
+            _focusVisible={{
+              outline: "none",
+              bg: "bg",
+              borderColor: "border.medium",
+            }}
+            _disabled={{
+              bg: "bg",
+              color: "fg.disabled",
+              cursor: "not-allowed",
+            }}
+          />
+        </BorderBeam>
       </Stack>
 
       <HStack justify="space-between" align="center" gap="3" wrap="wrap">
