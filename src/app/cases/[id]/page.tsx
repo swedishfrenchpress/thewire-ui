@@ -790,15 +790,24 @@ function TopicRow({
               >
                 {topic.description}
               </Text>
-              <Text
+              <Box
                 as="span"
                 data-topic-cta
-                textStyle="eyebrow.sm"
-                color="fg"
+                display="inline-flex"
+                alignItems="center"
                 alignSelf="flex-end"
+                bg="fg"
+                color="bg"
+                px="5"
+                py="3"
+                mt="1"
+                transition="background-color 120ms"
+                _hover={{ bg: "neutral.700" }}
               >
-                View topic →
-              </Text>
+                <Text as="span" textStyle="link" fontWeight="600" color="bg">
+                  View topic →
+                </Text>
+              </Box>
             </Stack>
           </GridItem>
         </Grid>
