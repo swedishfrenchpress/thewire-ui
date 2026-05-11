@@ -120,7 +120,7 @@ function NavCell({ href, label }: { href: string; label: string }) {
         display="inline-flex"
         alignItems="center"
         px={{ base: "3.5", md: "5" }}
-        py="3"
+        py={{ base: "4", md: "3" }}
         transition="background-color 120ms"
         _hover={{ bg: "bg.subtle" }}
       >
@@ -154,7 +154,7 @@ function FileAndGradeCell() {
         bg="fg"
         color="bg"
         px={{ base: "5", md: "8" }}
-        py="3"
+        py={{ base: "4", md: "3" }}
         transition="background-color 120ms"
         _hover={{ bg: "neutral.700" }}
       >

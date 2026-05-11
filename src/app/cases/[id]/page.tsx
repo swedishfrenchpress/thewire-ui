@@ -744,7 +744,6 @@ function TopicRow({
         transition="background-color 120ms"
         _hover={{
           bg: "bg.subtle",
-          "& [data-topic-cta]": { color: "fg" },
         }}
         _focusVisible={{
           outline: "none",
@@ -795,9 +794,8 @@ function TopicRow({
                 as="span"
                 data-topic-cta
                 textStyle="eyebrow.sm"
-                color="fg.muted"
+                color="fg"
                 alignSelf="flex-end"
-                transition="color 120ms"
               >
                 View topic →
               </Text>

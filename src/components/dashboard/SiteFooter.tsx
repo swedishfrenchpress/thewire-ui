@@ -1,6 +1,12 @@
 "use client";
 
-import { Box, HStack, Stack, Text } from "@chakra-ui/react";
+import {
+  Box,
+  HStack,
+  Link as ChakraLink,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { Logomark } from "./Logomark";
 
 const EVENT_URL = "https://www.aihackforfreedom.org/";
@@ -137,19 +143,18 @@ function ExternalLink({
   letterSpacing?: string;
 }) {
   return (
-    <Text
-      as="a"
+    <ChakraLink
       href={href}
       target="_blank"
       rel="noreferrer noopener"
       color="fg"
+      textDecoration="none"
       transition="color 120ms"
-      _hover={{ color: "fg.muted" }}
-      style={{ textDecoration: "none" }}
+      _hover={{ color: "fg.muted", textDecoration: "none" }}
       {...rest}
     >
       {children}
-    </Text>
+    </ChakraLink>
   );
 }
 

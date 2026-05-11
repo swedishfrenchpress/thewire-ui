@@ -6,6 +6,7 @@ import {
   Container,
   Grid,
   GridItem,
+  HStack,
   Heading,
   Link as ChakraLink,
   Stack,
@@ -168,71 +169,136 @@ function DocumentList({
           No documents at {triage} priority.
         </Text>
       ) : (
-        <Table.Root>
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader width="100px">Verdict</Table.ColumnHeader>
-              <Table.ColumnHeader>Filename</Table.ColumnHeader>
-              <Table.ColumnHeader width="160px">Heuristics</Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {visible.map((d) => {
-              const v = documentVerdict(d);
-              const flaggedCount = d.heuristics.filter((h) => {
-                const polarity = polarityOf(h);
-                if (polarity === "unknown" || h.rating === "medium") return false;
-                return (
-                  (polarity === "negative" && h.rating === "high") ||
-                  (polarity === "positive" && h.rating === "low")
-                );
-              }).length;
+        (() => {
+          const rows = visible.map((d) => {
+            const v = documentVerdict(d);
+            const flaggedCount = d.heuristics.filter((h) => {
+              const polarity = polarityOf(h);
+              if (polarity === "unknown" || h.rating === "medium") return false;
               return (
-                <Table.Row key={d.id}>
-                  <Table.Cell>
-                    <VerdictTag verdict={v} />
-                  </Table.Cell>
-                  <Table.Cell>
-                    <ChakraLink asChild>
-                      <NextLink
-                        href={`/document/${d.id}?case=${caseId}&topic=${topicId}`}
-                        data-document-row
+                (polarity === "negative" && h.rating === "high") ||
+                (polarity === "positive" && h.rating === "low")
+              );
+            }).length;
+            return { d, v, flaggedCount };
+          });
+          const HeuristicsMeta = ({
+            graded,
+            flagged,
+          }: {
+            graded: number;
+            flagged: number;
+          }) => (
+            <HStack gap="2" align="center">
+              <Text
+                textStyle="eyebrow"
+                color="fg.muted"
+                fontVariantNumeric="tabular-nums"
+              >
+                {graded} graded
+              </Text>
+              {flagged > 0 && (
+                <Box
+                  as="span"
+                  bg="bg.attentionSubtle"
+                  color="fg.attention"
+                  textStyle="eyebrow.sm"
+                  fontWeight="600"
+                  px="1.5"
+                  py="0.5"
+                  borderRadius="sm"
+                  fontVariantNumeric="tabular-nums"
+                >
+                  {flagged} flagged
+                </Box>
+              )}
+            </HStack>
+          );
+          return (
+            <>
+              <Box display={{ base: "none", md: "block" }}>
+                <Table.Root>
+                  <Table.Header>
+                    <Table.Row>
+                      <Table.ColumnHeader width="100px">
+                        Verdict
+                      </Table.ColumnHeader>
+                      <Table.ColumnHeader>Filename</Table.ColumnHeader>
+                      <Table.ColumnHeader width="160px">
+                        Heuristics
+                      </Table.ColumnHeader>
+                    </Table.Row>
+                  </Table.Header>
+                  <Table.Body>
+                    {rows.map(({ d, v, flaggedCount }) => (
+                      <Table.Row key={d.id}>
+                        <Table.Cell>
+                          <VerdictTag verdict={v} />
+                        </Table.Cell>
+                        <Table.Cell>
+                          <ChakraLink asChild>
+                            <NextLink
+                              href={`/document/${d.id}?case=${caseId}&topic=${topicId}`}
+                              data-document-row
+                            >
+                              {d.filename}
+                            </NextLink>
+                          </ChakraLink>
+                        </Table.Cell>
+                        <Table.Cell>
+                          <HeuristicsMeta
+                            graded={d.heuristics.length}
+                            flagged={flaggedCount}
+                          />
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table.Root>
+              </Box>
+
+              <Stack
+                display={{ base: "flex", md: "none" }}
+                gap="0"
+                borderTopWidth="1px"
+                borderColor="border.muted"
+              >
+                {rows.map(({ d, v, flaggedCount }) => (
+                  <NextLink
+                    key={d.id}
+                    href={`/document/${d.id}?case=${caseId}&topic=${topicId}`}
+                    data-document-row
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <Stack
+                      gap="2"
+                      py="3"
+                      borderBottomWidth="1px"
+                      borderColor="border.muted"
+                    >
+                      <Text
+                        fontFamily="body"
+                        fontSize="15px"
+                        lineHeight="20px"
+                        color="fg"
+                        truncate
                       >
                         {d.filename}
-                      </NextLink>
-                    </ChakraLink>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Box display="inline-flex" alignItems="center" gap="2">
-                      <Text
-                        textStyle="eyebrow"
-                        color="fg.muted"
-                        fontVariantNumeric="tabular-nums"
-                      >
-                        {d.heuristics.length} graded
                       </Text>
-                      {flaggedCount > 0 && (
-                        <Box
-                          as="span"
-                          bg="bg.attentionSubtle"
-                          color="fg.attention"
-                          textStyle="eyebrow.sm"
-                          fontWeight="600"
-                          px="1.5"
-                          py="0.5"
-                          borderRadius="sm"
-                          fontVariantNumeric="tabular-nums"
-                        >
-                          {flaggedCount} flagged
-                        </Box>
-                      )}
-                    </Box>
-                  </Table.Cell>
-                </Table.Row>
-              );
-            })}
-          </Table.Body>
-        </Table.Root>
+                      <HStack gap="2.5" align="center" flexWrap="wrap">
+                        <VerdictTag verdict={v} />
+                        <HeuristicsMeta
+                          graded={d.heuristics.length}
+                          flagged={flaggedCount}
+                        />
+                      </HStack>
+                    </Stack>
+                  </NextLink>
+                ))}
+              </Stack>
+            </>
+          );
+        })()
       )}
     </Stack>
   );
@@ -391,7 +457,7 @@ function TopicContent() {
                   Signals across this topic
                 </Text>
                 <Text as="span" textStyle="eyebrow.sm" color="fg.muted">
-                  · hover any name for its definition
+                  · tap any name for its definition
                 </Text>
               </Box>
               {t.heuristics.length === 0 ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Portal, Text, Tooltip } from "@chakra-ui/react";
+import { Box, Popover, Portal, Text } from "@chakra-ui/react";
 import type { ReactNode } from "react";
 
 export interface InfoTipProps {
@@ -14,21 +14,14 @@ export interface InfoTipProps {
   children: ReactNode;
 }
 
-/**
- * Footnote-style tooltip for definable terms.
- *
- * The trigger renders the child content with a dotted underline so the
- * reader knows it carries a definition; the tooltip surfaces a short,
- * authoritative gloss on hover and on keyboard focus.
- */
+// Footnote-style definition popover. Tap or click the dotted-underlined term
+// to surface a short, authoritative gloss; click outside or press Escape to
+// dismiss. Popover is used over Tooltip so touch devices can trigger it —
+// Tooltip is hover/focus only and never opens on tap.
 export function InfoTip({ eyebrow, measures, bands, children }: InfoTipProps) {
   return (
-    <Tooltip.Root
-      openDelay={120}
-      closeDelay={100}
-      positioning={{ placement: "top-start", gutter: 8 }}
-    >
-      <Tooltip.Trigger asChild>
+    <Popover.Root positioning={{ placement: "top-start", gutter: 8 }}>
+      <Popover.Trigger asChild>
         <Box
           as="span"
           display="inline-flex"
@@ -38,7 +31,6 @@ export function InfoTip({ eyebrow, measures, bands, children }: InfoTipProps) {
           textDecorationStyle="dotted"
           textDecorationColor="fg.muted"
           textUnderlineOffset="3px"
-          tabIndex={0}
           _hover={{ textDecorationColor: "fg" }}
           _focusVisible={{
             outline: "none",
@@ -48,10 +40,10 @@ export function InfoTip({ eyebrow, measures, bands, children }: InfoTipProps) {
         >
           {children}
         </Box>
-      </Tooltip.Trigger>
+      </Popover.Trigger>
       <Portal>
-        <Tooltip.Positioner>
-          <Tooltip.Content
+        <Popover.Positioner>
+          <Popover.Content
             bg="bg"
             color="fg"
             borderWidth="1px"
@@ -61,16 +53,7 @@ export function InfoTip({ eyebrow, measures, bands, children }: InfoTipProps) {
             px="3.5"
             py="3"
             maxW="320px"
-            css={{
-              "&[data-state=open]": {
-                animation:
-                  "fadeIn var(--chakra-durations-instant) var(--chakra-easings-standard)",
-              },
-              "&[data-state=closed]": {
-                animation:
-                  "fadeOut 100ms var(--chakra-easings-standard)",
-              },
-            }}
+            _focusVisible={{ outline: "none" }}
           >
             <Text
               textStyle="eyebrow.sm"
@@ -86,9 +69,9 @@ export function InfoTip({ eyebrow, measures, bands, children }: InfoTipProps) {
             <Text textStyle="body.sm" color="fg.muted">
               {bands}
             </Text>
-          </Tooltip.Content>
-        </Tooltip.Positioner>
+          </Popover.Content>
+        </Popover.Positioner>
       </Portal>
-    </Tooltip.Root>
+    </Popover.Root>
   );
 }

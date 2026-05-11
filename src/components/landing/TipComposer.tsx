@@ -147,7 +147,7 @@ export function TipComposer() {
         <Button
           type="button"
           variant="outline"
-          size="sm"
+          size="md"
           onClick={() => inputRef.current?.click()}
           disabled={disabled}
         >

@@ -227,7 +227,7 @@ function HeuristicList() {
             borderBottomWidth="1px"
             borderColor="border.muted"
           >
-            <Box minW="170px">
+            <Box minW={{ base: "120px", md: "170px" }}>
               <Mono>{h.name}</Mono>
             </Box>
             <Box flexShrink={0}>
